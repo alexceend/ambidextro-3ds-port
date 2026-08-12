@@ -1,7 +1,5 @@
-main.o: C:/Users/alexc/Desktop/Ambidextro3DSPort/source/main.c \
- C:/devkitPro/libctru/include/citro2d.h \
- C:/devkitPro/libctru/include/citro3d.h \
- C:/devkitPro/libctru/include/c3d/types.h \
+menu.o: C:/Users/alexc/Desktop/Ambidextro3DSPort/source/menu.c \
+ C:/Users/alexc/Desktop/Ambidextro3DSPort/source/menu.h \
  C:/devkitPro/libctru/include/3ds.h \
  C:/devkitPro/libctru/include/3ds/types.h \
  C:/devkitPro/libctru/include/3ds/result.h \
@@ -89,6 +87,9 @@ main.o: C:/Users/alexc/Desktop/Ambidextro3DSPort/source/main.c \
  C:/devkitPro/libctru/include/3ds/font.h \
  C:/devkitPro/libctru/include/3ds/gdbhio_dev.h \
  C:/devkitPro/libctru/include/3ds/3dslink.h \
+ C:/devkitPro/libctru/include/citro2d.h \
+ C:/devkitPro/libctru/include/citro3d.h \
+ C:/devkitPro/libctru/include/c3d/types.h \
  C:/devkitPro/libctru/include/c3d/maths.h \
  C:/devkitPro/libctru/include/c3d/mtxstack.h \
  C:/devkitPro/libctru/include/c3d/uniforms.h \
@@ -110,12 +111,8 @@ main.o: C:/Users/alexc/Desktop/Ambidextro3DSPort/source/main.c \
  C:/devkitPro/libctru/include/c2d/sprite.h \
  C:/devkitPro/libctru/include/c2d/text.h \
  C:/devkitPro/libctru/include/c2d/font.h \
- C:/Users/alexc/Desktop/Ambidextro3DSPort/build/sprites.h \
- C:/Users/alexc/Desktop/Ambidextro3DSPort/source/audio_core.h \
- C:/Users/alexc/Desktop/Ambidextro3DSPort/source/menu.h
-C:/devkitPro/libctru/include/citro2d.h:
-C:/devkitPro/libctru/include/citro3d.h:
-C:/devkitPro/libctru/include/c3d/types.h:
+ C:/Users/alexc/Desktop/Ambidextro3DSPort/build/sprites.h
+C:/Users/alexc/Desktop/Ambidextro3DSPort/source/menu.h:
 C:/devkitPro/libctru/include/3ds.h:
 C:/devkitPro/libctru/include/3ds/types.h:
 C:/devkitPro/libctru/include/3ds/result.h:
@@ -203,6 +200,9 @@ C:/devkitPro/libctru/include/3ds/romfs.h:
 C:/devkitPro/libctru/include/3ds/font.h:
 C:/devkitPro/libctru/include/3ds/gdbhio_dev.h:
 C:/devkitPro/libctru/include/3ds/3dslink.h:
+C:/devkitPro/libctru/include/citro2d.h:
+C:/devkitPro/libctru/include/citro3d.h:
+C:/devkitPro/libctru/include/c3d/types.h:
 C:/devkitPro/libctru/include/c3d/maths.h:
 C:/devkitPro/libctru/include/c3d/mtxstack.h:
 C:/devkitPro/libctru/include/c3d/uniforms.h:
@@ -225,5 +225,3 @@ C:/devkitPro/libctru/include/c2d/sprite.h:
 C:/devkitPro/libctru/include/c2d/text.h:
 C:/devkitPro/libctru/include/c2d/font.h:
 C:/Users/alexc/Desktop/Ambidextro3DSPort/build/sprites.h:
-C:/Users/alexc/Desktop/Ambidextro3DSPort/source/audio_core.h:
-C:/Users/alexc/Desktop/Ambidextro3DSPort/source/menu.h:
