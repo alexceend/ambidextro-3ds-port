@@ -11,10 +11,81 @@
 #define SCREEN_HEIGHT 240
 #define NUM_OPTIONS 4
 
+static ndspWaveBuf musicBuf;
+static void* musicData = NULL;
+
+static bool loadWav(const char* path, u32* outSampleRate, u16* outChannels)
+{
+    FILE* fp = fopen(path, "rb");
+    if (!fp) return false;
+
+    char riff[4];
+    fread(riff, 1, 4, fp);
+    if (memcmp(riff, "RIFF", 4) != 0) { fclose(fp); return false; }
+
+    fseek(fp, 4, SEEK_CUR);
+    char wave[4];
+    fread(wave, 1, 4, fp);
+    if (memcmp(wave, "WAVE", 4) != 0) { fclose(fp); return false; }
+
+    u16 channels = 0, bitsPerSample = 0;
+    u32 sampleRate = 0, dataSize = 0;
+    long dataOffset = -1;
+
+    while (!feof(fp))
+    {
+        char chunkId[4];
+        u32 chunkSize;
+        if (fread(chunkId, 1, 4, fp) != 4) break;
+        if (fread(&chunkSize, 4, 1, fp) != 1) break;
+
+        long chunkDataPos = ftell(fp);
+
+        if (memcmp(chunkId, "fmt ", 4) == 0)
+        {
+            u16 audioFormat;
+            fread(&audioFormat, 2, 1, fp);
+            fread(&channels, 2, 1, fp);
+            fread(&sampleRate, 4, 1, fp);
+            fseek(fp, 6, SEEK_CUR);
+            fread(&bitsPerSample, 2, 1, fp);
+        }
+        else if (memcmp(chunkId, "data", 4) == 0)
+        {
+            dataSize = chunkSize;
+            dataOffset = chunkDataPos;
+        }
+        fseek(fp, chunkDataPos + chunkSize + (chunkSize & 1), SEEK_SET);
+    }
+
+    if (dataOffset < 0 || bitsPerSample != 16 || dataSize == 0)
+    {
+        fclose(fp);
+        return false;
+    }
+
+    musicData = linearAlloc(dataSize);
+    if (!musicData) { fclose(fp); return false; }
+
+    fseek(fp, dataOffset, SEEK_SET);
+    fread(musicData, 1, dataSize, fp);
+    fclose(fp);
+
+    memset(&musicBuf, 0, sizeof(musicBuf));
+    musicBuf.data_vaddr = musicData;
+    musicBuf.nsamples = dataSize / (bitsPerSample / 8) / channels;
+    musicBuf.looping = true;
+
+    *outSampleRate = sampleRate;
+    *outChannels = channels;
+    return true;
+}
+
 int main(int argc, char** argv)
 {
     romfsInit();
     gfxInitDefault();
+    consoleInit(GFX_BOTTOM, NULL);
 
     C3D_Init(C3D_DEFAULT_CMDBUF_SIZE);
     C2D_Init(C2D_DEFAULT_MAX_OBJECTS);
@@ -43,7 +114,6 @@ int main(int argc, char** argv)
     C2D_SpriteSetCenter(&titleLogo, 0.5f, 0.5f);
     C2D_SpriteSetPos(&titleLogo, SCREEN_WIDTH / 2, 40);
 
-    // C2D_SpriteSetPos(&selectionArrow, SCREEN_WIDTH / 2 - 60, 140);
     C2D_SpriteSetCenter(&selectionArrow, 0.5f, 0.5f);
 
     C2D_TextBuf textBuf = C2D_TextBufNew(256);
@@ -70,6 +140,34 @@ int main(int argc, char** argv)
     }
 
     int selectedIndex = 0;
+
+    ndspInit();
+    ndspSetOutputMode(NDSP_OUTPUT_STEREO);
+
+    u32 sampleRate;
+    u16 channels;
+
+    if (loadWav("romfs:/audio/menu.wav", &sampleRate, &channels))
+    {
+        printf("Musica cargada: %lu Hz, %u canales, %lu samples\n",
+           sampleRate, channels, musicBuf.nsamples);
+        
+        ndspChnSetInterp(0, NDSP_INTERP_LINEAR);
+        ndspChnSetRate(0, sampleRate);
+        ndspChnSetFormat(0, channels == 2 ? NDSP_FORMAT_STEREO_PCM16 : NDSP_FORMAT_MONO_PCM16);
+
+        float mix[12];
+        memset(mix, 0, sizeof(mix));
+        mix[0] = 1.0f;
+        mix[1] = 1.0f;
+        ndspChnSetMix(0, mix);
+
+        ndspChnWaveBufAdd(0, &musicBuf);
+    }
+    else
+    {
+        printf("ERROR: no se pudo cargar romfs:/audio/menu.wav\n");
+    }
 
     while (aptMainLoop())
     {
@@ -116,6 +214,9 @@ int main(int argc, char** argv)
 
         C3D_FrameEnd(0);
     }
+
+    if (musicData) linearFree(musicData);
+    ndspExit();
 
     C2D_SpriteSheetFree(spriteSheet);
     C2D_Fini();
