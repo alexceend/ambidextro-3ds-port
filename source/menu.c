@@ -144,7 +144,7 @@ bool menuInit(C3D_RenderTarget* target)
     return true;
 }
 
-void menuUpdate(u32 kDown)
+bool menuUpdate(u32 kDown)
 {
     if (kDown & KEY_DOWN)
     {
@@ -158,6 +158,26 @@ void menuUpdate(u32 kDown)
             (selectedIndex + NUM_OPTIONS - 1)
             % NUM_OPTIONS;
     }
+
+    if (kDown & KEY_A)
+    {
+        switch (selectedIndex)
+        {
+            case 0:
+                printf("PLAY selected\n");
+                break;
+            case 1:
+                printf("LEVELS selected\n");
+                break;
+            case 2:
+                printf("SETTINGS selected\n");
+                break;
+            case 3:
+                printf("EXIT selected\n");
+                return true;
+        }
+    }
+
 
     float arrowX =
         labelX[selectedIndex] - 20.0f;

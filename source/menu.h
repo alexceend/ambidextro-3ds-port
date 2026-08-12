@@ -6,7 +6,7 @@
 #include <stdbool.h>
 
 bool menuInit(C3D_RenderTarget* target);
-void menuUpdate(u32 kDown);
+bool menuUpdate(u32 kDown);
 void menuDraw(void);
 void menuExit(void);
 

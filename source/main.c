@@ -64,7 +64,9 @@ int main(int argc, char** argv)
 
     /* MAIN LOOP */
 
-    while (aptMainLoop())
+    bool running = true;
+
+    while (aptMainLoop() && running)
     {
         hidScanInput();
 
@@ -73,7 +75,7 @@ int main(int argc, char** argv)
         if (kDown & KEY_START)
             break;
 
-        menuUpdate(kDown);
+        running = !menuUpdate(kDown);
 
         C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
 
