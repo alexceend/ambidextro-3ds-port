@@ -2,7 +2,7 @@
 #define TEXTURE_H
 
 #define ATLAS_SIZE 256
-#define TILE_SIZE 18
+#define TILE_SIZE 16
 
 #include <citro2d.h>
 #include <stdbool.h>

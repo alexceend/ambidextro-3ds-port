@@ -75,9 +75,9 @@ void testDraw()
 
     C2D_SceneBegin(top);
 
-    for (int i = 0; i < 6; i++)
+    for (int i = 0; i < 25; i++)
     {
-        renderAtlasTexture(atlas, 2, i, 0);
+        renderAtlasTexture(atlas, 2, i, 14);
     }
 
     C2D_Flush();
@@ -88,8 +88,8 @@ void loadPhysics()
     b2Vec2 gravity(0.0f, 100.0f);
     std::unique_ptr<b2World> world = createWorld(gravity);
 
-    for (int i = 0; i < SCREEN_WIDTH; i += 18)
+    for (int i = 0; i < SCREEN_WIDTH; i += 16)
     {
-        loadGroundBox(i, 0, 18, 18);
+        loadGroundBox(i, 0, 16, 16);
     }
 }

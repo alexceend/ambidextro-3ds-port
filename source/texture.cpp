@@ -11,6 +11,6 @@ bool renderAtlasTexture(C2D_SpriteSheet atlas, int atlas_index, int row, int col
     
     C2D_Image img = C2D_SpriteSheetGetImage(atlas, atlas_index);
 
-    return C2D_DrawImageAt(img, col * TILE_SIZE, row * TILE_SIZE, 0.0f, NULL, 1.0f, 1.0f);
+    return C2D_DrawImageAt(img, row * TILE_SIZE, col * TILE_SIZE, 0.0f, NULL, 1.0f, 1.0f);
 }
 
