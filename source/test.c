@@ -7,7 +7,7 @@
 #include "menu.h"
 
 #include "texture.h"
-
+#include "physics.h"
 #include "scene.h"
 
 #define SCREEN_WIDTH 400
@@ -67,7 +67,7 @@ void testUpdate(Scene* nextScene, u32 kDown)
 }
 
 
-void testDraw(void)
+void testDraw()
 {
     C2D_TargetClear(
         top,
@@ -76,7 +76,22 @@ void testDraw(void)
 
     C2D_SceneBegin(top);
 
-    renderAtlasTexture(atlas, 2, 3, 3);
+    for (int i = 0; i < 6; i++)
+    {
+        renderAtlasTexture(atlas, 2, i, 0);
+    }
+    renderAtlasTexture(atlas, atlas_index, pos_x, pos_y);
 
     C2D_Flush();
+}
+
+void loadPhysics()
+{
+    b2Vec2 gravity(0.0f, 100.0f);
+    b2World* world = createWorld(gravity)
+
+    for (int i = 0; i < SCREEN_WIDTH; i+=18)
+    {
+        loadGroundBox(i, 0, 18, 18);
+    }
 }
