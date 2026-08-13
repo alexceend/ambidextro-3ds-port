@@ -10,8 +10,12 @@ static void* musicData = NULL;
 
 bool audioInit(void)
 {
-    if (ndspInit() != 0)
+    Result res = ndspInit();
+
+    if (R_FAILED(res)) {
+        printf("ndspInit failed: 0x%08lX\n", res);
         return false;
+    }
 
     ndspSetOutputMode(NDSP_OUTPUT_STEREO);
 
