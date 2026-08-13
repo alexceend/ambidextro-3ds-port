@@ -4,6 +4,8 @@
 
 #include "sprites.h"
 
+#include "scene.h"
+
 #define SCREEN_WIDTH 400
 #define SCREEN_HEIGHT 240
 #define NUM_OPTIONS 4
@@ -144,7 +146,7 @@ bool menuInit(C3D_RenderTarget* target)
     return true;
 }
 
-bool menuUpdate(u32 kDown)
+Scene menuUpdate(u32 kDown)
 {
     if (kDown & KEY_DOWN)
     {
@@ -165,7 +167,7 @@ bool menuUpdate(u32 kDown)
         {
             case 0:
                 printf("PLAY selected\n");
-                break;
+                return SCENE_TEST;
             case 1:
                 printf("LEVELS selected\n");
                 break;
@@ -174,7 +176,7 @@ bool menuUpdate(u32 kDown)
                 break;
             case 3:
                 printf("EXIT selected\n");
-                return true;
+                break;
         }
     }
 
@@ -191,6 +193,7 @@ bool menuUpdate(u32 kDown)
         arrowX,
         arrowY
     );
+    return SCENE_NONE;
 }
 
 
