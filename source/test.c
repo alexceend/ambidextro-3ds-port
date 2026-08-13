@@ -58,13 +58,12 @@ void testExit(void)
     top = NULL;
 }
 
-bool testUpdate(u32 kDown)
+void testUpdate(Scene* nextScene, u32 kDown)
 {
     if (kDown & KEY_B)
     {
-        return SCENE_MENU;
+        *nextScene = SCENE_MENU;
     }
-    return SCENE_NONE;
 }
 
 

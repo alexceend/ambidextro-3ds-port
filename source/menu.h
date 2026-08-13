@@ -1,10 +1,9 @@
-#ifndef MENU_H
-#define MENU_H
-
-#include <3ds.h>
 #include <citro2d.h>
 #include <stdbool.h>
 #include "scene.h"
+
+#ifndef MENU_H
+#define MENU_H
 
 
 bool menuInit(C3D_RenderTarget* target);

@@ -9,7 +9,6 @@
 #include "audio_core.h"
 #include "test.h"
 #include "menu.h"
-#include "scene.h"
 
 #define SCREEN_WIDTH 400
 #define SCREEN_HEIGHT 240
@@ -72,56 +71,22 @@ int main(int argc, char** argv)
 
         u32 kDown = hidKeysDown();
 
-        if (kDown & KEY_START)
-            break;
+        if (kDown & KEY_START) break;
 
         Scene nextScene = SCENE_NONE;
-        switch (currentScene)
-        {
-            case SCENE_MENU: nextScene = menuUpdate(kDown); break;
-            case SCENE_TEST: nextScene = testUpdate(kDown); break;
-            default: break;
-        }
+    
+        sceneUpdate(&currentScene, &nextScene, kDown);
 
-        if (nextScene != SCENE_NONE && nextScene != currentScene)
-        {
-            bool initOk = false;
-            switch (nextScene)
-            {
-                case SCENE_MENU: initOk = menuInit(top); break;
-                case SCENE_TEST: initOk = testInit(top); break;
-                default: break;
-            }
+        sceneChange(&currentScene, &nextScene, top);
 
-            if (initOk)
-            {
-                switch (currentScene)
-                {
-                    case SCENE_MENU: menuExit(); break;
-                    case SCENE_TEST: testExit(); break;
-                    default: break;
-                }
-                currentScene = nextScene;
-            }
-        }
         C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
 
-        switch (currentScene)
-        {
-            case SCENE_MENU: menuDraw(); break;
-            case SCENE_TEST: testDraw(); break;
-            default: break;
-        }
+        sceneDraw(&currentScene);
 
         C3D_FrameEnd(0);
     }
 
-    switch (currentScene)
-    {
-        case SCENE_MENU: menuExit(); break;
-        case SCENE_TEST: testExit(); break;
-        default: break;
-    }
+    sceneExit(&currentScene);
 
     /* CLEANUP */
 

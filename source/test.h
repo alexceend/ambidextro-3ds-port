@@ -7,7 +7,7 @@
 #include "scene.h"
 
 bool testInit(C3D_RenderTarget* target);
-Scene testUpdate(u32 kDown);
+void testUpdate(Scene* nextScene, u32 kDown);
 void testDraw(void);
 void testExit(void);
 
