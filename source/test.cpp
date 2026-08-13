@@ -9,6 +9,7 @@
 #include "texture.h"
 #include "physics.h"
 #include "scene.h"
+#include "test.h"
 
 #define SCREEN_WIDTH 400
 #define SCREEN_HEIGHT 240
@@ -17,13 +18,13 @@
 
 #define EMPTY_TILE -1
 
-static C3D_RenderTarget* top = NULL;
+static C3D_RenderTarget *top = NULL;
 
 static C2D_SpriteSheet atlas;
 
 static int level[GRID_ROWS][GRID_COLS];
 
-bool testInit(C3D_RenderTarget* target)
+bool testInit(C3D_RenderTarget *target)
 {
     top = target;
 
@@ -58,7 +59,7 @@ void testExit(void)
     top = NULL;
 }
 
-void testUpdate(Scene* nextScene, u32 kDown)
+void testUpdate(Scene *nextScene, u32 kDown)
 {
     if (kDown & KEY_B)
     {
@@ -66,13 +67,11 @@ void testUpdate(Scene* nextScene, u32 kDown)
     }
 }
 
-
 void testDraw()
 {
     C2D_TargetClear(
         top,
-        C2D_Color32(20, 20, 40, 255)
-    );
+        C2D_Color32(20, 20, 40, 255));
 
     C2D_SceneBegin(top);
 
@@ -80,7 +79,6 @@ void testDraw()
     {
         renderAtlasTexture(atlas, 2, i, 0);
     }
-    renderAtlasTexture(atlas, atlas_index, pos_x, pos_y);
 
     C2D_Flush();
 }
@@ -88,9 +86,9 @@ void testDraw()
 void loadPhysics()
 {
     b2Vec2 gravity(0.0f, 100.0f);
-    b2World* world = createWorld(gravity)
+    std::unique_ptr<b2World> world = createWorld(gravity);
 
-    for (int i = 0; i < SCREEN_WIDTH; i+=18)
+    for (int i = 0; i < SCREEN_WIDTH; i += 18)
     {
         loadGroundBox(i, 0, 18, 18);
     }

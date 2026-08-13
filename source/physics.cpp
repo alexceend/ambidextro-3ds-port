@@ -20,7 +20,7 @@ typedef struct
 
 std::unique_ptr<b2World> createWorld(b2Vec2 gravity)
 {
-    world = std::make_unique<b2World>(gravity);
+    return std::make_unique<b2World>(gravity);
 }
 
 static void loadGroundBox(int pos_x, int pos_y, int width, int height)

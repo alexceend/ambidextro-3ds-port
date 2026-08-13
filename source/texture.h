@@ -7,6 +7,16 @@
 #include <citro2d.h>
 #include <stdbool.h>
 
-bool renderAtlasTexture(C2D_SpriteSheet atlas, int atlas_index, int row, int col);
+#ifdef __cplusplus
+extern "C"
+{
+    #endif
+    bool renderAtlasTexture(C2D_SpriteSheet atlas, int atlas_index, int row, int col);
+    #ifdef __cplusplus
+}
+#endif
+
+
+
 
 #endif
