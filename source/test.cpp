@@ -20,18 +20,38 @@
 
 static C3D_RenderTarget *top = NULL;
 
-static C2D_SpriteSheet atlas;
+static C2D_SpriteSheet atlas_dungeon;
+static C2D_SpriteSheet atlas_wizard;
+
+Wizard w = {PURPLE, 0, 0, 10, NULL};
 
 static int level[GRID_ROWS][GRID_COLS];
+
+
+void loadPhysics()
+{
+    b2Vec2 gravity(0.0f, 100.0f);
+    world = createWorld(gravity);
+
+    for (int i = 0; i < SCREEN_WIDTH; i += 16)
+    {
+        loadGroundBox(i, 0, 16, 16);
+    }
+
+    loadWizardHitbox(w.pos_x, w.pos_y, &w);
+}
 
 bool testInit(C3D_RenderTarget *target)
 {
     top = target;
 
-    atlas =
+    atlas_dungeon =
         C2D_SpriteSheetLoad("romfs:/gfx/atlas.t3x");
 
-    if (!atlas)
+    atlas_wizard =
+        C2D_SpriteSheetLoad("romfs:/gfx/wizard_atlas.t3x");
+
+    if (!atlas_dungeon)
     {
         printf("ERROR: no se pudo cargar atlas.t3x\n");
         return false;
@@ -44,16 +64,19 @@ bool testInit(C3D_RenderTarget *target)
             level[row][col] = EMPTY_TILE;
         }
     }
+
+    loadPhysics();
+
     return true;
 }
 
 void testExit(void)
 {
 
-    if (atlas)
+    if (atlas_dungeon)
     {
-        C2D_SpriteSheetFree(atlas);
-        atlas = NULL;
+        C2D_SpriteSheetFree(atlas_dungeon);
+        atlas_dungeon = NULL;
     }
 
     top = NULL;
@@ -61,10 +84,15 @@ void testExit(void)
 
 void testUpdate(Scene *nextScene, u32 kDown)
 {
+    updatePhysics(&w);
+
     if (kDown & KEY_B)
     {
         *nextScene = SCENE_MENU;
     }
+
+    printf("Body Pos: %4.2f, %4.2f\nTouch to position Body!", w.pos_x, w.pos_y);
+
 }
 
 void testDraw()
@@ -77,19 +105,10 @@ void testDraw()
 
     for (int i = 0; i < 25; i++)
     {
-        renderAtlasTexture(atlas, 2, i, 14);
+        renderAtlasTexture(atlas_dungeon, 2, i, 14);
     }
+
+    renderAtlasTexture(atlas_wizard, 1, w.pos_x, w.pos_y);
 
     C2D_Flush();
-}
-
-void loadPhysics()
-{
-    b2Vec2 gravity(0.0f, 100.0f);
-    std::unique_ptr<b2World> world = createWorld(gravity);
-
-    for (int i = 0; i < SCREEN_WIDTH; i += 16)
-    {
-        loadGroundBox(i, 0, 16, 16);
-    }
 }
