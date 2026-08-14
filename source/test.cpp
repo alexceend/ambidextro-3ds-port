@@ -23,7 +23,7 @@ static C3D_RenderTarget *top = NULL;
 static C2D_SpriteSheet atlas_dungeon;
 static C2D_SpriteSheet atlas_wizard;
 
-Wizard w = {PURPLE, 0, 0, 10, NULL};
+Wizard w = {PURPLE, 2, 2, 10, NULL};
 
 static int level[GRID_ROWS][GRID_COLS];
 
@@ -32,13 +32,13 @@ void loadPhysics()
 {
     b2Vec2 gravity(0.0f, 100.0f);
     world = createWorld(gravity);
-
+    
     for (int i = 0; i < SCREEN_WIDTH; i += 16)
     {
-        loadGroundBox(i, 0, 16, 16);
+        loadGroundBox(i, SCREEN_HEIGHT, 16, 16);
     }
 
-    loadWizardHitbox(w.pos_x, w.pos_y, &w);
+    loadWizardHitbox(152.0f, 0.0f, &w);
 }
 
 bool testInit(C3D_RenderTarget *target)
@@ -66,6 +66,7 @@ bool testInit(C3D_RenderTarget *target)
     }
 
     loadPhysics();
+    printf("FIRST Body Pos: %4.2f, %4.2f\n", w.body->GetPosition().x, w.body->GetPosition().y);
 
     return true;
 }
@@ -91,7 +92,7 @@ void testUpdate(Scene *nextScene, u32 kDown)
         *nextScene = SCENE_MENU;
     }
 
-    printf("Body Pos: %4.2f, %4.2f\nTouch to position Body!", w.pos_x, w.pos_y);
+    printf("Body Pos: %4.2f, %4.2f\n", w.body->GetPosition().x, w.body->GetPosition().y);
 
 }
 
@@ -107,8 +108,7 @@ void testDraw()
     {
         renderAtlasTexture(atlas_dungeon, 2, i, 14);
     }
-
-    renderAtlasTexture(atlas_wizard, 1, w.pos_x, w.pos_y);
+    renderAtlasTexturePixel(atlas_wizard, 1, (float)w.body->GetPosition().x, (float)w.body->GetPosition().y);
 
     C2D_Flush();
 }

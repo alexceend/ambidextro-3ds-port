@@ -91,6 +91,7 @@ int main(int argc, char** argv)
 
     /* CLEANUP */
 
+    cfguExit();
     audioExit();
 
     C2D_Fini();

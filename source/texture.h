@@ -12,6 +12,7 @@ extern "C"
 {
     #endif
     bool renderAtlasTexture(C2D_SpriteSheet atlas, int atlas_index, int row, int col);
+    bool renderAtlasTexturePixel(C2D_SpriteSheet atlas, int atlas_index, float pos_x, float pos_y);
     #ifdef __cplusplus
 }
 #endif

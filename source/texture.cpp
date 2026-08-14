@@ -14,3 +14,16 @@ bool renderAtlasTexture(C2D_SpriteSheet atlas, int atlas_index, int row, int col
     return C2D_DrawImageAt(img, row * TILE_SIZE, col * TILE_SIZE, 0.0f, NULL, 1.0f, 1.0f);
 }
 
+bool renderAtlasTexturePixel(C2D_SpriteSheet atlas, int atlas_index, float pos_x, float pos_y)
+{
+    if (!atlas) return false;
+
+    size_t count = C2D_SpriteSheetCount(atlas);
+    if (atlas_index < 0 || atlas_index >= (int)count)
+        return false;
+    
+    C2D_Image img = C2D_SpriteSheetGetImage(atlas, atlas_index);
+
+    return C2D_DrawImageAt(img, pos_x, pos_y, 0.0f, NULL, 1.0f, 1.0f);
+}
+
