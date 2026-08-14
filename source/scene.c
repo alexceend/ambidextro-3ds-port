@@ -13,12 +13,12 @@ bool sceneInit(Scene* current, C3D_RenderTarget* target)
     return false;
 }
 
-void sceneUpdate(Scene* current, Scene* nextScene, u32 kDown)
+void sceneUpdate(Scene* current, Scene* nextScene, u32 kDown, u32 kHeld)
 {
     switch (*current)
     {
         case SCENE_MENU: *nextScene = menuUpdate(kDown); break;
-        case SCENE_TEST: testUpdate(nextScene, kDown); break;
+        case SCENE_TEST: testUpdate(nextScene, kDown, kHeld); break;
         default: break;
     }
 }

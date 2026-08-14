@@ -16,8 +16,8 @@ typedef enum
 typedef struct
 {
     WizardType wizard_type;
-    int pos_x;
-    int pos_y;
+    float pos_x;
+    float pos_y;
     float velocity;
     b2Body* body;
 } Wizard;

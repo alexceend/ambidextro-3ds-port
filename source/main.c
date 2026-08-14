@@ -72,11 +72,13 @@ int main(int argc, char** argv)
 
         u32 kDown = hidKeysDown();
 
+        u32 kHeld = hidKeysHeld();
+
         if (kDown & KEY_START) break;
 
         Scene nextScene = SCENE_NONE;
     
-        sceneUpdate(&currentScene, &nextScene, kDown);
+        sceneUpdate(&currentScene, &nextScene, kDown, kHeld);
 
         sceneChange(&currentScene, &nextScene, top);
 

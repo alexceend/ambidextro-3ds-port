@@ -10,6 +10,7 @@
 #include "physics.h"
 #include "scene.h"
 #include "test.h"
+#include "movement.h"
 
 #define SCREEN_WIDTH 400
 #define SCREEN_HEIGHT 240
@@ -23,7 +24,8 @@ static C3D_RenderTarget *top = NULL;
 static C2D_SpriteSheet atlas_dungeon;
 static C2D_SpriteSheet atlas_wizard;
 
-Wizard w = {PURPLE, 2, 2, 10, NULL};
+Wizard w = {PURPLE, 2, 2, 100, NULL};
+static MoveState moveState = MS_STOP;
 
 static int level[GRID_ROWS][GRID_COLS];
 
@@ -83,7 +85,7 @@ void testExit(void)
     top = NULL;
 }
 
-void testUpdate(Scene *nextScene, u32 kDown)
+void testUpdate(Scene *nextScene, u32 kDown, u32 kHeld)
 {
     updatePhysics(&w);
 
@@ -91,6 +93,8 @@ void testUpdate(Scene *nextScene, u32 kDown)
     {
         *nextScene = SCENE_MENU;
     }
+
+    move(&w, &moveState, kHeld);
 
     printf("Body Pos: %4.2f, %4.2f\n", w.body->GetPosition().x, w.body->GetPosition().y);
 
