@@ -136,8 +136,33 @@ static bool loadWav(
     return true;
 }
 
+static void stopCurrentMusic()
+{
+    ndspChnWaveBufClear(0);
+
+    while (musicBuf.status != NDSP_WBUF_DONE && musicBuf.status != NDSP_WBUF_FREE)
+    {
+        svcSleepThread(1000000);
+    }
+
+    if (musicData)
+    {
+        linearFree(musicData);
+        musicData = NULL;
+    }
+}
+
+bool audioChangeMusic(const char* path)
+{
+    stopCurrentMusic();
+    return audioPlayMusic(path);
+}
+
 bool audioPlayMusic(const char* path)
 {
+
+    stopCurrentMusic();
+    
     u32 sampleRate;
     u16 channels;
 

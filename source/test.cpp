@@ -11,6 +11,7 @@
 #include "scene.h"
 #include "test.h"
 #include "movement.h"
+#include "audio_core.h"
 
 #define SCREEN_WIDTH 400
 #define SCREEN_HEIGHT 240
@@ -45,6 +46,7 @@ void loadPhysics()
 
 bool testInit(C3D_RenderTarget *target)
 {
+    audioExit();
     top = target;
 
     atlas_dungeon =

@@ -9,13 +9,13 @@
 #ifdef __cplusplus
 extern "C"
 {
-    #endif
+#endif
     bool testInit(C3D_RenderTarget* target);
     void testUpdate(Scene* nextScene, u32 kDown, u32 kHeld);
     void testDraw(void);
     void testExit(void);
     
-    #ifdef __cplusplus
+#ifdef __cplusplus
 }
 #endif
 
