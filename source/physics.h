@@ -16,14 +16,22 @@ typedef enum
 typedef struct
 {
     WizardType wizard_type;
-    float pos_x;
-    float pos_y;
     float velocity;
     b2Body* body;
+    int numFootContacts;
 } Wizard;
 
 
+class ContactListener : public b2ContactListener
+{
+    public:
+        void BeginContact(b2Contact* contact) override;
+        void EndContact(b2Contact* contact) override;
+    private:
+        void checkFootSensor(b2Fixture* fixture, int delta);
+};
 
+extern ContactListener contactListener;
 extern std::unique_ptr<b2World> world;
 
 std::unique_ptr<b2World> createWorld(b2Vec2 gravity);

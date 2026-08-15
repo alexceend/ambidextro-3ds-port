@@ -16,6 +16,6 @@ typedef enum
 
 void move(Wizard* wizard, MoveState* moveState, u32 kHeld);
 
-
+void jump(Wizard* wizard, u32 kDown);
 #endif
 

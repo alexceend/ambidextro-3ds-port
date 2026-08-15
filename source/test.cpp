@@ -25,7 +25,7 @@ static C3D_RenderTarget *top = NULL;
 static C2D_SpriteSheet atlas_dungeon;
 static C2D_SpriteSheet atlas_wizard;
 
-Wizard w = {PURPLE, 2, 2, 100, NULL};
+Wizard w = {PURPLE, 100, NULL, 0};
 static MoveState moveState = MS_STOP;
 
 static int level[GRID_ROWS][GRID_COLS];
@@ -35,7 +35,9 @@ void loadPhysics()
 {
     b2Vec2 gravity(0.0f, 100.0f);
     world = createWorld(gravity);
-    
+    //TODO --> Check if this works
+     world->SetContactListener(&contactListener);
+
     for (int i = 0; i < SCREEN_WIDTH; i += 16)
     {
         loadGroundBox(i, SCREEN_HEIGHT, 16, 16);
@@ -97,8 +99,13 @@ void testUpdate(Scene *nextScene, u32 kDown, u32 kHeld)
     }
 
     move(&w, &moveState, kHeld);
-
-    printf("Body Pos: %4.2f, %4.2f\n", w.body->GetPosition().x, w.body->GetPosition().y);
+    if (w.numFootContacts >= 1)
+    {
+        jump(&w, kDown);
+    }
+    
+    // printf("Body Pos: %4.2f, %4.2f\n", w.body->GetPosition().x, w.body->GetPosition().y);
+    // printf("Can I jump here? %s\n", w.numFootContacts > 0 ? "yes" : "no");
 
 }
 

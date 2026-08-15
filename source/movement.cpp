@@ -20,3 +20,12 @@ void move(Wizard* wizard, MoveState* moveState, u32 kHeld)
 
     applyVelocity(moveState, wizard->body, wizard->velocity);
 }
+
+void jump(Wizard* wizard, u32 kDown)
+{
+    if (kDown & KEY_UP)
+    {
+        float impulse = wizard->body->GetMass() * 1000;
+        wizard->body->ApplyLinearImpulse( b2Vec2(0, -impulse), wizard->body->GetWorldCenter(), true );
+    }
+}
