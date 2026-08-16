@@ -36,10 +36,21 @@ void loadPhysics()
     b2Vec2 gravity(0.0f, 9.8);
     world = createWorld(gravity);
     world->SetContactListener(&contactListener);
+    C2D_Image* floorImage = getAtlasTexture(atlas_dungeon, 2);
 
-    loadGroundBox(SCREEN_WIDTH / 2, SCREEN_HEIGHT, SCREEN_WIDTH, 16);
+    for (int i = 0; i < SCREEN_WIDTH; i+=16)
+    {
+        Block block;
+        block.row = SCREEN_HEIGHT / TILE_SIZE;
+        block.col = i;
+        block.width = 16.0f;
+        block.height = 16.0f;
+        loadStaticObject(*floorImage, &block);
+    }
 
-    loadGroundBox(GRID_COLS * TILE_SIZE - TILE_SIZE / 2, SCREEN_HEIGHT / 2, TILE_SIZE, SCREEN_HEIGHT);
+    // loadGroundBox(SCREEN_WIDTH / 2, SCREEN_HEIGHT, SCREEN_WIDTH, 16);
+
+    // loadGroundBox(GRID_COLS * TILE_SIZE - TILE_SIZE / 2, SCREEN_HEIGHT / 2, TILE_SIZE, SCREEN_HEIGHT);
 
     loadWizardHitbox(152.0f, 0.0f, &w);
 }
@@ -116,6 +127,7 @@ void testDraw()
 
     C2D_SceneBegin(top);
 
+    /*
     for (int i = 0; i < 25; i++)
     {
         renderAtlasTexture(atlas_dungeon, 2, i, 14);
@@ -124,7 +136,8 @@ void testDraw()
     {
         renderAtlasTexture(atlas_dungeon, 2, GRID_COLS - 1, i);
     }
-    renderAtlasTexturePixel(atlas_wizard, 1, metersToPixels(playerPosition.x), metersToPixels(playerPosition.y));
+    */
+    renderTexturePixel(getAtlasTexture(atlas_wizard, 1), metersToPixels(playerPosition.x), metersToPixels(playerPosition.y));
 
     C2D_Flush();
 }

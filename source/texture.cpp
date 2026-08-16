@@ -1,29 +1,25 @@
 #include "texture.h"
 
 
-bool renderAtlasTexture(C2D_SpriteSheet atlas, int atlas_index, int row, int col)
+C2D_Image* getAtlasTexture(C2D_SpriteSheet atlas, int atlas_index)
 {
-    if (!atlas) return false;
+    if (!atlas) return NULL;
 
     size_t count = C2D_SpriteSheetCount(atlas);
     if (atlas_index < 0 || atlas_index >= (int)count)
-        return false;
+        return NULL;
+    C2D_Image image = C2D_SpriteSheetGetImage(atlas, atlas_index);
     
-    C2D_Image img = C2D_SpriteSheetGetImage(atlas, atlas_index);
-
-    return C2D_DrawImageAt(img, row * TILE_SIZE, col * TILE_SIZE, 0.0f, NULL, 1.0f, 1.0f);
+    return &image;
 }
 
-bool renderAtlasTexturePixel(C2D_SpriteSheet atlas, int atlas_index, float pos_x, float pos_y)
+
+bool renderTexture(C2D_Image* image, int row, int col)
 {
-    if (!atlas) return false;
-
-    size_t count = C2D_SpriteSheetCount(atlas);
-    if (atlas_index < 0 || atlas_index >= (int)count)
-        return false;
-    
-    C2D_Image img = C2D_SpriteSheetGetImage(atlas, atlas_index);
-
-    return C2D_DrawImageAt(img, pos_x, pos_y, 0.0f, NULL, 1.0f, 1.0f);
+    return C2D_DrawImageAt(*image, row * TILE_SIZE, col * TILE_SIZE, 0.0f, NULL, 1.0f, 1.0f);
 }
 
+bool renderTexturePixel(C2D_Image* image, float pos_x, float pos_y)
+{
+    return C2D_DrawImageAt(*image, pos_x, pos_y, 0.0f, NULL, 1.0f, 1.0f);
+}

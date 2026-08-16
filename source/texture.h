@@ -6,16 +6,19 @@
 
 #include <citro2d.h>
 #include <stdbool.h>
+    
 
 #ifdef __cplusplus
 extern "C"
 {
     #endif
-    bool renderAtlasTexture(C2D_SpriteSheet atlas, int atlas_index, int row, int col);
-    bool renderAtlasTexturePixel(C2D_SpriteSheet atlas, int atlas_index, float pos_x, float pos_y);
+    C2D_Image* getAtlasTexture(C2D_SpriteSheet atlas, int atlas_index);
+    bool renderTexture(C2D_Image* image, int row, int col);
+    bool renderTexturePixel(C2D_Image* image, float pos_x, float pos_y);
     #ifdef __cplusplus
 }
 #endif
+
 
 
 

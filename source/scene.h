@@ -11,10 +11,28 @@ typedef enum
     SCENE_TEST
 } Scene;
 
-bool sceneInit(Scene* current, C3D_RenderTarget* target);
-void sceneUpdate(Scene* current, Scene* nextScene, u32 kDown, u32 kHeld);
-void sceneDraw(Scene* current);
-void sceneExit(Scene* current);
-void sceneChange(Scene* current, Scene* nextScene, C3D_RenderTarget* target);
+typedef struct
+{
+    int row;
+    int col;
+    float width;
+    float height;
+} Block;
+
+#ifdef __cplusplus
+extern "C"
+{
+    #endif
+    bool sceneInit(Scene* current, C3D_RenderTarget* target);
+    void sceneUpdate(Scene* current, Scene* nextScene, u32 kDown, u32 kHeld);
+    void sceneDraw(Scene* current);
+    void sceneExit(Scene* current);
+    void sceneChange(Scene* current, Scene* nextScene, C3D_RenderTarget* target);
+
+#ifdef __cplusplus
+}
+#endif
+
+void loadStaticObject(C2D_Image img, Block* block);
 
 #endif

@@ -1,6 +1,8 @@
 #include "scene.h"
 #include "menu.h"
 #include "test.h"
+#include "texture.h"
+#include "physics.h"
 
 bool sceneInit(Scene* current, C3D_RenderTarget* target)
 {
@@ -58,4 +60,10 @@ void sceneChange(Scene* current, Scene* nextScene, C3D_RenderTarget* target)
             sceneExit(current);
             *current = *nextScene;
         }
+}
+
+void loadStaticObject(C2D_Image img, Block* block)
+{
+    loadGroundBox(block->row * TILE_SIZE, block->col * TILE_SIZE, block->width, block->height);
+    C2D_DrawImageAt(img, block->row * TILE_SIZE, block->col * TILE_SIZE, 0.0f, NULL, 1.0f, 1.0f);
 }

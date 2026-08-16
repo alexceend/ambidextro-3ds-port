@@ -5,10 +5,16 @@
 #ifndef MENU_H
 #define MENU_H
 
-
-bool menuInit(C3D_RenderTarget* target);
-Scene menuUpdate(u32 kDown);
-void menuDraw(void);
-void menuExit(void);
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+    bool menuInit(C3D_RenderTarget* target);
+    Scene menuUpdate(u32 kDown);
+    void menuDraw(void);
+    void menuExit(void);
+#ifdef __cplusplus
+}
+#endif
 
 #endif
