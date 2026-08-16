@@ -25,7 +25,7 @@ static C3D_RenderTarget *top = NULL;
 static C2D_SpriteSheet atlas_dungeon;
 static C2D_SpriteSheet atlas_wizard;
 
-Wizard w = {PURPLE, 100, NULL, 0};
+Wizard w = {PURPLE, 3, NULL, 0};
 static MoveState moveState = MS_STOP;
 
 static int level[GRID_ROWS][GRID_COLS];
@@ -33,15 +33,13 @@ static int level[GRID_ROWS][GRID_COLS];
 
 void loadPhysics()
 {
-    b2Vec2 gravity(0.0f, 100.0f);
+    b2Vec2 gravity(0.0f, 9.8);
     world = createWorld(gravity);
-    //TODO --> Check if this works
-     world->SetContactListener(&contactListener);
+    world->SetContactListener(&contactListener);
 
-    for (int i = 0; i < SCREEN_WIDTH; i += 16)
-    {
-        loadGroundBox(i, SCREEN_HEIGHT, 16, 16);
-    }
+    loadGroundBox(SCREEN_WIDTH / 2, SCREEN_HEIGHT, SCREEN_WIDTH, 16);
+
+    loadGroundBox(GRID_COLS * TILE_SIZE - TILE_SIZE / 2, SCREEN_HEIGHT / 2, TILE_SIZE, SCREEN_HEIGHT);
 
     loadWizardHitbox(152.0f, 0.0f, &w);
 }
@@ -111,6 +109,7 @@ void testUpdate(Scene *nextScene, u32 kDown, u32 kHeld)
 
 void testDraw()
 {
+    b2Vec2 playerPosition = w.body->GetPosition();
     C2D_TargetClear(
         top,
         C2D_Color32(20, 20, 40, 255));
@@ -121,7 +120,11 @@ void testDraw()
     {
         renderAtlasTexture(atlas_dungeon, 2, i, 14);
     }
-    renderAtlasTexturePixel(atlas_wizard, 1, (float)w.body->GetPosition().x, (float)w.body->GetPosition().y);
+    for (int i = 0; i < GRID_ROWS; i++)
+    {
+        renderAtlasTexture(atlas_dungeon, 2, GRID_COLS - 1, i);
+    }
+    renderAtlasTexturePixel(atlas_wizard, 1, metersToPixels(playerPosition.x), metersToPixels(playerPosition.y));
 
     C2D_Flush();
 }

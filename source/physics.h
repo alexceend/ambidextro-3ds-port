@@ -6,6 +6,8 @@
 #include <memory>
 #include <stdio.h>
 
+#define PIXELS_PER_METER 32.0f
+
 
 typedef enum
 {
@@ -36,6 +38,8 @@ extern std::unique_ptr<b2World> world;
 
 std::unique_ptr<b2World> createWorld(b2Vec2 gravity);
 
+float pixelsToMeters(float pixels);
+float metersToPixels(float meters);
 
 void loadGroundBox(int pos_x, int pos_y, int width, int height);
 void loadWizardHitbox(float pos_x, float pos_y, Wizard* wizard);
