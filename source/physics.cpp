@@ -23,32 +23,32 @@ std::unique_ptr<b2World> createWorld(b2Vec2 gravity)
 void loadGroundBox(int pos_x, int pos_y, int width, int height)
 {
     b2BodyDef groundBodyDef;
-    groundBodyDef.position.Set(pixelsToMeters(pos_x), pixelsToMeters(pos_y));
+    groundBodyDef.position.Set(pixelsToMeters(pos_x + width / 2), pixelsToMeters(pos_y + height / 2));
 
     b2Body *groundBody = world->CreateBody(&groundBodyDef);
     b2PolygonShape groundBox;
 
-    // groundBox.SetAsBox((width / PIXELS_PER_METER) / 2.0f, (height / PIXELS_PER_METER));
-
-    groundBox.SetAsBox(pixelsToMeters(width), pixelsToMeters(height));
+    groundBox.SetAsBox(pixelsToMeters(width / 2.0f), pixelsToMeters(height / 2.0f));
 
     groundBody->CreateFixture(&groundBox, 1.0f);
+    printf("Hitbox at x -> %.3f | y -> %.3f\n", metersToPixels(groundBody->GetPosition().x), metersToPixels(groundBody->GetPosition().y));
 }
 
 void loadWizardHitbox(float pos_x, float pos_y, Wizard *wizard)
 {
+    float width = (pixelsToMeters(12.0f));
+    float height = (pixelsToMeters(15.0f));
+    
     b2BodyDef bodyDef;
     bodyDef.type = b2_dynamicBody;
     bodyDef.fixedRotation = true;
-    bodyDef.position.Set(pixelsToMeters(pos_x), pixelsToMeters(pos_y));
+    bodyDef.position.Set(pixelsToMeters(pos_x + 6.0f), pixelsToMeters(pos_y + 7.5f));
     b2Body *body = world->CreateBody(&bodyDef);
     wizard->body = body;
 
     b2PolygonShape dynamicBox;
 
-    float width = (pixelsToMeters(12.0f));
-    float height = (pixelsToMeters(15.0f));
-    dynamicBox.SetAsBox(width, height);
+    dynamicBox.SetAsBox(width / 2, height / 2);
 
     b2FixtureDef fixtureDef;
     fixtureDef.shape = &dynamicBox;
@@ -57,7 +57,7 @@ void loadWizardHitbox(float pos_x, float pos_y, Wizard *wizard)
 
     body->CreateFixture(&fixtureDef);
 
-    dynamicBox.SetAsBox(pixelsToMeters(10.0f), pixelsToMeters(2.0f), b2Vec2(0, pixelsToMeters(15.0f)), 0);
+    dynamicBox.SetAsBox(pixelsToMeters(5.0f), pixelsToMeters(2.0f), b2Vec2(0, pixelsToMeters(7.5f)), 0);
     fixtureDef.isSensor = true;
     fixtureDef.userData.pointer = reinterpret_cast<uintptr_t>(wizard);
     b2Fixture *footSensorFixture = body->CreateFixture(&fixtureDef);

@@ -12,6 +12,7 @@
 #include "test.h"
 #include "movement.h"
 #include "audio_core.h"
+#include <list>
 
 #define SCREEN_WIDTH 400
 #define SCREEN_HEIGHT 240
@@ -26,7 +27,9 @@ static C2D_SpriteSheet atlas_dungeon;
 static C2D_SpriteSheet atlas_wizard;
 
 Wizard w = {PURPLE, 3, NULL, 0};
+C2D_Image floorImage;
 static MoveState moveState = MS_STOP;
+std::list<Block*> blockList;
 
 static int level[GRID_ROWS][GRID_COLS];
 
@@ -36,22 +39,18 @@ void loadPhysics()
     b2Vec2 gravity(0.0f, 9.8);
     world = createWorld(gravity);
     world->SetContactListener(&contactListener);
-    C2D_Image* floorImage = getAtlasTexture(atlas_dungeon, 2);
 
-    for (int i = 0; i < SCREEN_WIDTH; i+=16)
+    for (int i = 0; i < SCREEN_WIDTH / TILE_SIZE; i++)
     {
-        Block block;
-        block.row = SCREEN_HEIGHT / TILE_SIZE;
-        block.col = i;
-        block.width = 16.0f;
-        block.height = 16.0f;
-        loadStaticObject(*floorImage, &block);
+        // Delete? (memory)
+        Block* block = new Block;
+        block->row = (SCREEN_HEIGHT / TILE_SIZE) - 2;
+        block->col = i;
+        block->width = 16.0f;
+        block->height = 16.0f;
+        blockList.push_front(block);
+        loadStaticObject(floorImage, block);
     }
-
-    // loadGroundBox(SCREEN_WIDTH / 2, SCREEN_HEIGHT, SCREEN_WIDTH, 16);
-
-    // loadGroundBox(GRID_COLS * TILE_SIZE - TILE_SIZE / 2, SCREEN_HEIGHT / 2, TILE_SIZE, SCREEN_HEIGHT);
-
     loadWizardHitbox(152.0f, 0.0f, &w);
 }
 
@@ -79,6 +78,8 @@ bool testInit(C3D_RenderTarget *target)
             level[row][col] = EMPTY_TILE;
         }
     }
+
+    floorImage = getAtlasTexture(atlas_dungeon, 2);
 
     loadPhysics();
     printf("FIRST Body Pos: %4.2f, %4.2f\n", w.body->GetPosition().x, w.body->GetPosition().y);
@@ -112,10 +113,6 @@ void testUpdate(Scene *nextScene, u32 kDown, u32 kHeld)
     {
         jump(&w, kDown);
     }
-    
-    // printf("Body Pos: %4.2f, %4.2f\n", w.body->GetPosition().x, w.body->GetPosition().y);
-    // printf("Can I jump here? %s\n", w.numFootContacts > 0 ? "yes" : "no");
-
 }
 
 void testDraw()
@@ -126,17 +123,12 @@ void testDraw()
         C2D_Color32(20, 20, 40, 255));
 
     C2D_SceneBegin(top);
-
-    /*
-    for (int i = 0; i < 25; i++)
+    for (Block* block : blockList)
     {
-        renderAtlasTexture(atlas_dungeon, 2, i, 14);
+        // printf("Drawing at: x -> %.3f | y -> %.3f\n", (float)block->col * TILE_SIZE, (float)block->row*TILE_SIZE);
+        C2D_DrawImageAt(floorImage, (float)block->col * TILE_SIZE, (float)block->row * TILE_SIZE, 0.0f, NULL, 1.0f, 1.0f);
     }
-    for (int i = 0; i < GRID_ROWS; i++)
-    {
-        renderAtlasTexture(atlas_dungeon, 2, GRID_COLS - 1, i);
-    }
-    */
+    
     renderTexturePixel(getAtlasTexture(atlas_wizard, 1), metersToPixels(playerPosition.x), metersToPixels(playerPosition.y));
 
     C2D_Flush();
