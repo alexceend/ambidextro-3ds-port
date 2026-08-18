@@ -33,12 +33,16 @@ std::list<Block*> blockList;
 
 static int level[GRID_ROWS][GRID_COLS];
 
+FooDraw fooDrawInstance;
+
+
 
 void loadPhysics()
 {
     b2Vec2 gravity(0.0f, 9.8);
     world = createWorld(gravity);
     world->SetContactListener(&contactListener);
+    world->SetDebugDraw(&fooDrawInstance);
 
     for (int i = 0; i < SCREEN_WIDTH / TILE_SIZE; i++)
     {
@@ -115,6 +119,40 @@ void testUpdate(Scene *nextScene, u32 kDown, u32 kHeld)
     }
 }
 
+void FooDraw::DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
+{
+    u32 fillColor = C2D_Color32f(color.r, color.g, color.b, 0.5f);
+    u32 lineColor = C2D_Color32f(color.r, color.g, color.b, 1.0f);
+
+    b2Vec2 pixels[b2_maxPolygonVertices];
+    for (int32 i = 0; i < vertexCount; i++)
+    {
+        pixels[i].x = metersToPixels(vertices[i].x);
+        pixels[i].y = metersToPixels(vertices[i].y);
+    }
+
+    for (int32 i = 1; i < vertexCount - 1; i++)
+    {
+        C2D_DrawTriangle(
+            pixels[0].x, pixels[0].y, fillColor,
+            pixels[i].x, pixels[i].y, fillColor,
+            pixels[i + 1].x, pixels[i + 1].y, fillColor,
+            0.0f
+        );
+    }
+
+    for (int32 i = 0; i < vertexCount; i++)
+    {
+        const b2Vec2& a = pixels[i];
+        const b2Vec2 b = pixels[(i + 1) % vertexCount];
+        C2D_DrawLine(
+            a.x, a.y, lineColor,
+            b.x, b.y, lineColor,
+            1.0f, 0.0f
+        );
+    }
+}
+
 void testDraw()
 {
     b2Vec2 playerPosition = w.body->GetPosition();
@@ -130,6 +168,10 @@ void testDraw()
     }
     
     renderTexturePixel(getAtlasTexture(atlas_wizard, 1), metersToPixels(playerPosition.x), metersToPixels(playerPosition.y));
+
+    fooDrawInstance.SetFlags( b2Draw::e_shapeBit);
+
+    world->DebugDraw();
 
     C2D_Flush();
 }
