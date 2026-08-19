@@ -31,24 +31,23 @@ void loadGroundBox(int pos_x, int pos_y, int width, int height)
     groundBox.SetAsBox(pixelsToMeters(width / 2.0f), pixelsToMeters(height / 2.0f));
 
     groundBody->CreateFixture(&groundBox, 1.0f);
-    printf("Hitbox at x -> %.3f | y -> %.3f\n", metersToPixels(groundBody->GetPosition().x), metersToPixels(groundBody->GetPosition().y));
 }
 
 void loadWizardHitbox(float pos_x, float pos_y, Wizard *wizard)
-{
-    float width = (pixelsToMeters(12.0f));
-    float height = (pixelsToMeters(15.0f));
+{   
+    float footSensorX = wizard->width / 2;
+    float footSensorY = 2.0f;
     
     b2BodyDef bodyDef;
     bodyDef.type = b2_dynamicBody;
     bodyDef.fixedRotation = true;
-    bodyDef.position.Set(pixelsToMeters(pos_x + 6.0f), pixelsToMeters(pos_y + 7.5f));
+    bodyDef.position.Set(pixelsToMeters(pos_x), pixelsToMeters(pos_y));
     b2Body *body = world->CreateBody(&bodyDef);
     wizard->body = body;
 
     b2PolygonShape dynamicBox;
 
-    dynamicBox.SetAsBox(width / 2, height / 2);
+    dynamicBox.SetAsBox(pixelsToMeters(wizard->width / 2), pixelsToMeters(wizard->height / 2));
 
     b2FixtureDef fixtureDef;
     fixtureDef.shape = &dynamicBox;
@@ -57,14 +56,16 @@ void loadWizardHitbox(float pos_x, float pos_y, Wizard *wizard)
 
     body->CreateFixture(&fixtureDef);
 
-    dynamicBox.SetAsBox(pixelsToMeters(5.0f), pixelsToMeters(2.0f), b2Vec2(0, pixelsToMeters(7.5f)), 0);
+    dynamicBox.SetAsBox(
+        pixelsToMeters(footSensorX), 
+        pixelsToMeters(footSensorY), 
+        b2Vec2(0, pixelsToMeters((wizard->height / 2) - (footSensorY / 2))), 
+        0
+    );
+
     fixtureDef.isSensor = true;
     fixtureDef.userData.pointer = reinterpret_cast<uintptr_t>(wizard);
-    b2Fixture *footSensorFixture = body->CreateFixture(&fixtureDef);
-
-    printf("Wizard addr: %lu, sensor userData right after creation: %lu\n",
-       (unsigned long)wizard,
-       (unsigned long)footSensorFixture->GetUserData().pointer);
+    body->CreateFixture(&fixtureDef);
 }
 
 void updatePhysics(Wizard *wizard)
@@ -75,7 +76,6 @@ void updatePhysics(Wizard *wizard)
 void ContactListener::checkFootSensor(b2Fixture* fixture, int delta)
 {
     uintptr_t data = fixture->GetUserData().pointer;
-    printf("Fixture Data: %lu\n", (unsigned long)data);
     if (data != 0)
     {
         Wizard* wizard = reinterpret_cast<Wizard*>(data);

@@ -26,7 +26,7 @@ static C3D_RenderTarget *top = NULL;
 static C2D_SpriteSheet atlas_dungeon;
 static C2D_SpriteSheet atlas_wizard;
 
-Wizard w = {PURPLE, 3, NULL, 0};
+Wizard w = {PURPLE, 12.0f, 15.0f, 3, NULL, 0};
 C2D_Image floorImage;
 static MoveState moveState = MS_STOP;
 std::list<Block*> blockList;
@@ -55,7 +55,7 @@ void loadPhysics()
         blockList.push_front(block);
         loadStaticObject(floorImage, block);
     }
-    loadWizardHitbox(152.0f, 0.0f, &w);
+    loadWizardHitbox(150.0f, 0.0f, &w);
 }
 
 bool testInit(C3D_RenderTarget *target)
@@ -107,6 +107,8 @@ void testUpdate(Scene *nextScene, u32 kDown, u32 kHeld)
 {
     updatePhysics(&w);
 
+    printf(w.numFootContacts <= 0 ? "Cannot jump!\n" : "Jump available!\n");
+
     if (kDown & KEY_B)
     {
         *nextScene = SCENE_MENU;
@@ -156,6 +158,9 @@ void FooDraw::DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, const 
 void testDraw()
 {
     b2Vec2 playerPosition = w.body->GetPosition();
+    float pos_x = metersToPixels(playerPosition.x) - w.width / 2;
+    float pos_y = metersToPixels(playerPosition.y) - w.height / 2;
+    
     C2D_TargetClear(
         top,
         C2D_Color32(20, 20, 40, 255));
@@ -163,11 +168,10 @@ void testDraw()
     C2D_SceneBegin(top);
     for (Block* block : blockList)
     {
-        // printf("Drawing at: x -> %.3f | y -> %.3f\n", (float)block->col * TILE_SIZE, (float)block->row*TILE_SIZE);
         C2D_DrawImageAt(floorImage, (float)block->col * TILE_SIZE, (float)block->row * TILE_SIZE, 0.0f, NULL, 1.0f, 1.0f);
     }
     
-    renderTexturePixel(getAtlasTexture(atlas_wizard, 1), metersToPixels(playerPosition.x), metersToPixels(playerPosition.y));
+    renderTexturePixel(getAtlasTexture(atlas_wizard, 1), pos_x, pos_y);
 
     fooDrawInstance.SetFlags( b2Draw::e_shapeBit);
 
