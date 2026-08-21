@@ -8,7 +8,8 @@ typedef enum
 {
     SCENE_NONE = -1,
     SCENE_MENU,
-    SCENE_TEST
+    SCENE_TEST,
+    SCENE_LEVEL
 } Scene;
 
 typedef struct

@@ -10,6 +10,7 @@
 #include "test.h"
 #include "menu.h"
 #include "assets_loader.h"
+#include "game_manager.h"
 
 #define SCREEN_WIDTH 400
 #define SCREEN_HEIGHT 240
@@ -82,6 +83,8 @@ int main(int argc, char** argv)
         if (kDown & KEY_START) break;
 
         Scene nextScene = SCENE_NONE;
+
+        manage_game(kDown, kHeld);
     
         sceneUpdate(&currentScene, &nextScene, kDown, kHeld);
 

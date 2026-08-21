@@ -1,5 +1,15 @@
 #include <map>
 
+#define WIZARD_HEIGHT 15.0f
+#define WIZARD_WIDTH 12.0f
+#define WIZARD_SPEED 3.0f
+#define GRAVITY (0.0f, 9.8f)
+
+Wizard purpleWizard = {PURPLE, WIZARD_WIDTH, WIZARD_HEIGHT, WIZARD_SPEED, NULL, 0};
+Wizard yellowWizard = {YELLOW, WIZARD_WIDTH, WIZARD_HEIGHT, WIZARD_SPEED, NULL, 0};
+
+void manage_game(u32 kDown, u32 kHeld);
+
 typedef enum
 {
     WIN,
@@ -7,7 +17,8 @@ typedef enum
     DEATH,
     MOVE_RIGHT,
     MOVE_LEFT,
-    JUMP
+    JUMP,
+    EXIT
 } EventType;
 
 

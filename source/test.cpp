@@ -113,8 +113,7 @@ void testUpdate(Scene *nextScene, u32 kDown, u32 kHeld)
     {
         *nextScene = SCENE_MENU;
     }
-
-    move(&w, &moveState, kHeld);
+    
     if (w.numFootContacts >= 1)
     {
         jump(&w, kDown);

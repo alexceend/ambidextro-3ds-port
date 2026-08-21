@@ -6,9 +6,10 @@
 #include "scene.h"
 #include <list>
 #include <fstream>
-#include <string> 
+#include <string>
 #include <sstream>
 #include "assets_loader.h"
+#include "game_manager.h"
 
 #define SCREEN_WIDTH 400
 #define SCREEN_HEIGHT 240
@@ -18,8 +19,8 @@
 #define LEVEL_WIDTH 28
 #define LEVEL_HEIGHT 16
 
-#define OFFSET_X 4;
-#define OFFSET_Y 8;
+#define OFFSET_X 4
+#define OFFSET_Y 8
 
 
 #define EMPTY_TILE -1
@@ -27,6 +28,8 @@
 static C3D_RenderTarget* top = NULL;
 
 static C2D_SpriteSheet currentAtlas;
+
+FooDraw fooDrawInstance;
 
 typedef enum {
     TILE_EMPTY = -1,
@@ -44,21 +47,15 @@ typedef struct {
     Entity entities[2];
 } Level;
 
-Wizard purpleWizard = {PURPLE, 12.0f, 15.0f, 3, NULL, 0};
-Wizard yellowWizard = {YELLOW, 12.0f, 15.0f, 3, NULL, 0};
+std::list<Block*> blockList;
+Level level;
+uint8_t currentLevel;
 
-bool levelInit(C3D_RenderTarget* target, int levelIndex)
+bool levelInit(C3D_RenderTarget* target)
 {
-    audioExit();
     top = target;
 
-    atlas_dungeon =
-        C2D_SpriteSheetLoad("romfs:/gfx/atlas.t3x");
-
-    atlas_wizard =
-        C2D_SpriteSheetLoad("romfs:/gfx/wizard_atlas.t3x");
-
-    Level level;
+    
     loadLevelFromFile("romfs:/levels/level1.txt", level);
 
     // Set spawn points for entities
@@ -102,8 +99,8 @@ void loadPhysics()
         }
     }
 
-    loadWizardHitbox(level.entities[0], 0.0f, purpleWizard);
-    loadWizardHitbox(level.entities[1], 0.0f, yellowWizard);
+    loadWizardHitbox(level.entities[0].spawnX, level.entities[0].spawnY, &purpleWizard);
+    loadWizardHitbox(level.entities[1].spawnX, level.entities[1].spawnY, &yellowWizard);
 }
 
 
@@ -115,7 +112,10 @@ bool loadLevelFromFile(const std::string& filename, Level& level) {
         printf("ERROR: Could not open level file\n");
         return false;
     }
-    
+
+    int i = 0;
+    string line;
+
     while(getline(file, line) && i < LEVEL_HEIGHT){
         std::stringstream ss(line);
         int tile;
@@ -166,20 +166,6 @@ void levelCleanup() {
         world.reset();
     }
     top = NULL;
-}
-
-void levelUpdate(Scene* nextScene, u32 kDown, u32 kHeld) {
-    updatePhysics(&purpleWizard);
-    updatePhysics(&yellowWizard);
-
-    if(kDown & KEY_B) {
-        *nextScene = SCENE_MENU;
-    }
-
-    move(&purpleWizard, &moveState, kHeld);
-    if(purpleWizard.numFootContacts >= 1) {
-        jump(&purpleWizard, kDown);
-    }
 }
 
 
@@ -246,4 +232,21 @@ void levelDraw(){
     world->DebugDraw();
 
     C2D_Flush();
-}   
+}
+
+class LevelClass : public IObserver
+{
+    public:
+        void Update(EventType event, void* callback) override
+        {
+            switch (event)
+            {
+                case WIN: 
+                    
+                case PUASE: break;
+                case DEATH: break;
+            }
+        }
+    private:
+        ISubject& subject_;
+};

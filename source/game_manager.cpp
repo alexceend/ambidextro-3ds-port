@@ -7,22 +7,11 @@
 #include "game_manager.h"
 #include "movement.h"
 
-#define WIZARD_HEIGHT 15.0f
-#define WIZARD_WIDTH 12.0f
-#define WIZARD_SPEED 3.0f
-#define GRAVITY (0.0f, 9.8f)
-
-
-Wizard purpleWizard = {PURPLE, WIZARD_WIDTH, WIZARD_HEIGHT, WIZARD_SPEED, NULL, 0};
-Wizard yellowWizard = {YELLOW, WIZARD_WIDTH, WIZARD_HEIGHT, WIZARD_SPEED, NULL, 0};
-
 
 class Subject : public ISubject
 {
     public:
-        virtual ~Subject()
-        {
-        }
+        virtual ~Subject(){}
 
         void Subscribe(EventType event, IObserver* observer) override
         {
@@ -68,10 +57,16 @@ class Subject : public ISubject
     jumpLogger(kDown);
 }
 
+void manage_game(u32 kDown, u32 kHeld)
+{
+    keyLogger(kDown, kHeld);
+}
+
 void keyLogger(u32 kDown, u32 kHeld)
 {
     movementLogger(kHeld);
     jumpLogger(kDown);
+    exitLogger(kDown);
 }
 
 void movementLogger(u32 kHeld)
@@ -88,9 +83,17 @@ void movementLogger(u32 kHeld)
 
 void jumpLogger(u32 kDown)
 {
-    if (kDown & KEY_UP)
+    if (kDown & KEY_UP && purpleWizard.numFootContacts >= 1)
     {
         Notify(JUMP, &purpleWizard);
+    }
+}
+
+void exitLogger(u32 kDown)
+{
+    if (kDown & KEY_START)
+    {
+        Notify(EXIT, NULL);
     }
 }
     private:
