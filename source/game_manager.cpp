@@ -7,95 +7,92 @@
 #include "game_manager.h"
 #include "movement.h"
 
-
 class Subject : public ISubject
 {
-    public:
-        virtual ~Subject(){}
+public:
+    virtual ~Subject() {}
 
-        void Subscribe(EventType event, IObserver* observer) override
+    void Subscribe(EventType event, IObserver *observer) override
+    {
+        bool subscribed = false;
+        std::list<IObserver *>::iterator it = observers[event].begin();
+        while (it != observers[event].end())
         {
-            bool subscribed = false;
-            std::list<IObserver*>::iterator it = observers[event].begin();
-            while (it != observers[event].end())
+            if (*it == observer)
             {
-                if (*it == observer)
-                {
-                    subscribed = true;
-                    break;
-                }
-                else it++;
+                subscribed = true;
+                break;
             }
-            if (!subscribed) observers[event].push_back(observer);
+            else
+                it++;
         }
+        if (!subscribed)
+            observers[event].push_back(observer);
+    }
 
-        void Unsubscribe(EventType event, IObserver* observer) override
+    void Unsubscribe(EventType event, IObserver *observer) override
+    {
+        std::list<IObserver *>::iterator it = observers[event].begin();
+        while (it != observers[event].end())
         {
-            std::list<IObserver*>::iterator it = observers[event].begin();
-            while (it != observers[event].end())
+            if (*it == observer)
             {
-                if (*it == observer)
-                {
-                    it = observers[event].erase(it);
-                }
-                else it++;
+                it = observers[event].erase(it);
             }
+            else
+                it++;
         }
+    }
 
-        void Notify(EventType event, void* callback) override
+    void Notify(EventType event, void *callback) override
+    {
+        std::list<IObserver *>::iterator it = observers[event].begin();
+        while (it != observers[event].end())
         {
-            std::list<IObserver*>::iterator it = observers[event].begin();
-            while (it != observers[event].end())
-            {
-                (*it)->Update(event, callback);
-            }
+            (*it)->Update(event, callback);
         }
-
-        void keyLogger(u32 kDown, u32 kHeld)
-{
-    movementLogger(kHeld);
-    jumpLogger(kDown);
-}
-
-void manage_game(u32 kDown, u32 kHeld)
-{
-    keyLogger(kDown, kHeld);
-}
-
-void keyLogger(u32 kDown, u32 kHeld)
-{
-    movementLogger(kHeld);
-    jumpLogger(kDown);
-    exitLogger(kDown);
-}
-
-void movementLogger(u32 kHeld)
-{
-    if (kHeld & KEY_LEFT)
-    {
-        Notify(MOVE_LEFT, &purpleWizard);
     }
-    else if (kHeld & KEY_RIGHT)
-    {
-        Notify(MOVE_RIGHT, &purpleWizard);
-    }
-}
 
-void jumpLogger(u32 kDown)
-{
-    if (kDown & KEY_UP && purpleWizard.numFootContacts >= 1)
+    void manage_game(u32 kDown, u32 kHeld)
     {
-        Notify(JUMP, &purpleWizard);
+        keyLogger(kDown, kHeld);
     }
-}
 
-void exitLogger(u32 kDown)
-{
-    if (kDown & KEY_START)
+    void keyLogger(u32 kDown, u32 kHeld)
     {
-        Notify(EXIT, NULL);
+        movementLogger(kHeld);
+        jumpLogger(kDown);
+        exitLogger(kDown);
     }
-}
-    private:
-        std::map<EventType, std::list<IObserver*>> observers;
+
+    void movementLogger(u32 kHeld)
+    {
+        if (kHeld & KEY_LEFT)
+        {
+            Notify(MOVE_LEFT, &purpleWizard);
+        }
+        else if (kHeld & KEY_RIGHT)
+        {
+            Notify(MOVE_RIGHT, &purpleWizard);
+        }
+    }
+
+    void jumpLogger(u32 kDown)
+    {
+        if (kDown & KEY_UP && purpleWizard.numFootContacts >= 1)
+        {
+            Notify(JUMP, &purpleWizard);
+        }
+    }
+
+    void exitLogger(u32 kDown)
+    {
+        if (kDown & KEY_START)
+        {
+            Notify(EXIT, NULL);
+        }
+    }
+
+private:
+    std::map<EventType, std::list<IObserver *>> observers;
 };
