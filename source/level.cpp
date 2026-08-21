@@ -10,6 +10,7 @@
 #include <sstream>
 #include "assets_loader.h"
 #include "game_manager.h"
+#include <iostream>
 
 #define SCREEN_WIDTH 400
 #define SCREEN_HEIGHT 240
@@ -51,13 +52,51 @@ std::list<Block*> blockList;
 Level level;
 uint8_t currentLevel;
 
+using namespace std;
+
+bool loadLevelFromFile(ifstream* file, Level& level) {
+
+    if(!file){
+        printf("ERROR: Could not open level file\n");
+        return false;
+    }
+
+    int i = 0;
+    string line;
+
+    while(getline(*file, line) && i < LEVEL_HEIGHT){
+        std::stringstream ss(line);
+        int tile;
+        int j = 0;
+        while(ss >> tile && j < LEVEL_WIDTH){
+            switch (tile){
+                case -1:
+                    level.tiles[i][j] = TILE_EMPTY;
+                    break;
+                case 0:
+                    level.tiles[i][j] = TILE_FLOOR_SLAB;
+                    break;
+                case 15:
+                    level.tiles[i][j] = TILE_WALL;
+                    break;
+                default:
+                    level.tiles[i][j] = TILE_EMPTY;
+                    break;
+            }
+            j++;
+        }
+    }
+}
+
 bool levelInit(C3D_RenderTarget* target)
 {
     top = target;
 
-    
-    loadLevelFromFile("romfs:/levels/level1.txt", level);
+    ifstream file("romfs:/levels/level" + to_string(currentLevel) + ".txt");
 
+    loadLevelFromFile(&file, level);
+
+    string line;
     // Set spawn points for entities
     while (getline(file, line)) {
         int x, y;
@@ -103,42 +142,6 @@ void loadPhysics()
     loadWizardHitbox(level.entities[1].spawnX, level.entities[1].spawnY, &yellowWizard);
 }
 
-
-bool loadLevelFromFile(const std::string& filename, Level& level) {
-
-    ifstream file("romfs:/levels/level" + to_string(levelIndex) + ".txt");
-
-    if(!file){
-        printf("ERROR: Could not open level file\n");
-        return false;
-    }
-
-    int i = 0;
-    string line;
-
-    while(getline(file, line) && i < LEVEL_HEIGHT){
-        std::stringstream ss(line);
-        int tile;
-        int j = 0;
-        while(ss >> tile && j < LEVEL_WIDTH){
-            switch (tile){
-                case -1:
-                    level.tiles[i][j] = TILE_EMPTY;
-                    break;
-                case 0:
-                    level.tiles[i][j] = TILE_FLOOR_SLAB;
-                    break;
-                case 15:
-                    level.tiles[i][j] = TILE_WALL;
-                    break;
-                default:
-                    level.tiles[i][j] = TILE_EMPTY;
-                    break;
-            }
-            j++;
-        }
-    }
-}
 
 void levelCleanup() {
     if(atlas_dungeon) {
@@ -228,7 +231,7 @@ void levelDraw(){
     renderTexturePixel(getAtlasTexture(atlas_wizard, 1), wizardPurplePos[0], wizardPurplePos[1]);
     renderTexturePixel(getAtlasTexture(atlas_wizard, 1), wizardYellowPos[0], wizardYellowPos[1]);
 
-    fooDrawInstance.setFlags(b2Draw::e_shapeBit);
+    fooDrawInstance.SetFlags(b2Draw::e_shapeBit);
     world->DebugDraw();
 
     C2D_Flush();
@@ -241,8 +244,7 @@ class LevelClass : public IObserver
         {
             switch (event)
             {
-                case WIN: 
-                    
+                case WIN: break;
                 case PUASE: break;
                 case DEATH: break;
             }

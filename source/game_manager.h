@@ -1,4 +1,5 @@
 #include <map>
+#include "physics.h"
 
 #define WIZARD_HEIGHT 15.0f
 #define WIZARD_WIDTH 12.0f

@@ -116,7 +116,7 @@ void testUpdate(Scene *nextScene, u32 kDown, u32 kHeld)
     
     if (w.numFootContacts >= 1)
     {
-        jump(&w, kDown);
+        jump(w.body);
     }
 }
 
