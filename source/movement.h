@@ -14,8 +14,6 @@ typedef enum
     MS_RIGHT
 } MoveState;
 
-void move(Wizard* wizard, MoveState* moveState, u32 kHeld);
-
-void jump(Wizard* wizard, u32 kDown);
+void jump(b2Body* body);
 #endif
 

@@ -3,44 +3,32 @@
 #include <string>
 #include <map>
 #include <list>
+#include "physics.h"
+#include "game_manager.h"
+#include "movement.h"
 
-enum struct EventType
-{
-    WIN,
-    PUASE,
-    DEATH,
-    TIME_OUT
-};
+#define WIZARD_HEIGHT 15.0f
+#define WIZARD_WIDTH 12.0f
+#define WIZARD_SPEED 3.0f
+#define GRAVITY (0.0f, 9.8f)
 
-class IObserver
-{
-    public:
-        virtual ~IObserver(){};
-        virtual void Update(const std::string &message_from_subject) = 0;
-};
 
-class ISubject
-{
-    public:
-        virtual ~ISubject(){};
-        virtual void Subscribe(EventType eventType, IObserver* observer) = 0;
-        virtual void Unsubscribe(EventType eventType, IObserver* observer) = 0;
-        virtual void Notify(EventType eventType) = 0;
-};
+Wizard purpleWizard = {PURPLE, WIZARD_WIDTH, WIZARD_HEIGHT, WIZARD_SPEED, NULL, 0};
+Wizard yellowWizard = {YELLOW, WIZARD_WIDTH, WIZARD_HEIGHT, WIZARD_SPEED, NULL, 0};
+
 
 class Subject : public ISubject
 {
     public:
         virtual ~Subject()
         {
-            std::cout << "Test Subject";
         }
 
-        void Subscribe(EventType _EventType, IObserver* observer) override
+        void Subscribe(EventType event, IObserver* observer) override
         {
             bool subscribed = false;
-            std::list<IObserver*>::iterator it = observers[_EventType].begin();
-            while (it != observers[_EventType].end())
+            std::list<IObserver*>::iterator it = observers[event].begin();
+            while (it != observers[event].end())
             {
                 if (*it == observer)
                 {
@@ -49,30 +37,62 @@ class Subject : public ISubject
                 }
                 else it++;
             }
-            if (!subscribed) observers[_EventType].push_back(observer);
+            if (!subscribed) observers[event].push_back(observer);
         }
 
-        void Unsubscribe(EventType _eventType, IObserver* observer) override
+        void Unsubscribe(EventType event, IObserver* observer) override
         {
-            std::list<IObserver*>::iterator it = observers[_eventType].begin();
-            while (it != observers[_eventType].end())
+            std::list<IObserver*>::iterator it = observers[event].begin();
+            while (it != observers[event].end())
             {
                 if (*it == observer)
                 {
-                    it = observers[_eventType].erase(it);
+                    it = observers[event].erase(it);
                 }
                 else it++;
             }
         }
 
-        void Notify(EventType _eventType) override
+        void Notify(EventType event, void* callback) override
         {
-            std::list<IObserver*>::iterator it = observers[_eventType].begin();
-            while (it != observers[_eventType].end())
+            std::list<IObserver*>::iterator it = observers[event].begin();
+            while (it != observers[event].end())
             {
-                Notify(_eventType);
+                (*it)->Update(event, callback);
             }
         }
+
+        void keyLogger(u32 kDown, u32 kHeld)
+{
+    movementLogger(kHeld);
+    jumpLogger(kDown);
+}
+
+void keyLogger(u32 kDown, u32 kHeld)
+{
+    movementLogger(kHeld);
+    jumpLogger(kDown);
+}
+
+void movementLogger(u32 kHeld)
+{
+    if (kHeld & KEY_LEFT)
+    {
+        Notify(MOVE_LEFT, &purpleWizard);
+    }
+    else if (kHeld & KEY_RIGHT)
+    {
+        Notify(MOVE_RIGHT, &purpleWizard);
+    }
+}
+
+void jumpLogger(u32 kDown)
+{
+    if (kDown & KEY_UP)
+    {
+        Notify(JUMP, &purpleWizard);
+    }
+}
     private:
         std::map<EventType, std::list<IObserver*>> observers;
 };

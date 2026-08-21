@@ -1,9 +1,10 @@
 #include "movement.h"
+#include "game_manager.h"
 
-void applyVelocity(MoveState* moveState, b2Body* body, float speed)
+void applyVelocity(MoveState moveState, b2Body* body, float speed)
 {
     b2Vec2 vel = body->GetLinearVelocity();
-    switch (*moveState)
+    switch (moveState)
     {
         case MS_LEFT:   vel.x = -speed; break;
         case MS_RIGHT:  vel.x =  speed; break;     
@@ -12,20 +13,43 @@ void applyVelocity(MoveState* moveState, b2Body* body, float speed)
     body->SetLinearVelocity(vel);
 }
 
-void move(Wizard* wizard, MoveState* moveState, u32 kHeld)
-{
-    if (kHeld & KEY_LEFT) *moveState = MS_LEFT;
-    else if (kHeld & KEY_RIGHT) *moveState = MS_RIGHT;
-    else *moveState = MS_STOP;
 
-    applyVelocity(moveState, wizard->body, wizard->velocity);
+void jump(b2Body* body)
+{
+    float impulse = body->GetMass() * 4;
+    body->ApplyLinearImpulse( b2Vec2(0, -impulse), body->GetWorldCenter(), true);
 }
 
-void jump(Wizard* wizard, u32 kDown)
+class Movement : public IObserver
 {
-    if (kDown & KEY_UP)
-    {
-        float impulse = wizard->body->GetMass() * 4;
-        wizard->body->ApplyLinearImpulse( b2Vec2(0, -impulse), wizard->body->GetWorldCenter(), true);
-    }
-}
+    public:
+        Movement(ISubject &subject) : subject_(subject)
+        {
+            this->subject_.Subscribe(MOVE_RIGHT, this);
+            this->subject_.Subscribe(MOVE_LEFT, this);
+            this->subject_.Subscribe(JUMP, this);
+        }
+        virtual ~Movement(){}
+
+        void Update(EventType event, void* callback) override
+        {
+            switch (event)
+            {
+                Wizard* wizard;
+                case MOVE_RIGHT:
+                    wizard = (Wizard*)callback;
+                    applyVelocity(MS_RIGHT, wizard->body, wizard->velocity);
+                    break;
+                case MOVE_LEFT:
+                    wizard = (Wizard*)callback;
+                    applyVelocity(MS_LEFT, wizard->body, wizard->velocity);
+                    break;
+                case JUMP:
+                    wizard = (Wizard*)callback;
+                    jump(wizard->body);
+                    break;
+            }
+        }
+    private:
+        ISubject& subject_;
+};
