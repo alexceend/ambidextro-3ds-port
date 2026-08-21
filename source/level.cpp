@@ -64,13 +64,12 @@ bool levelInit(C3D_RenderTarget* target, int levelIndex)
 
     // Set spawn points for entities
     while (getline(file, line)) {
+        int x, y;
         if (line.find("spawnPurple") != string::npos) {
-            int x, y;
             sscanf(line.c_str(), "spawnPurple %d %d", &x, &y);
             level.entities[0].spawnX = x;
             level.entities[0].spawnY = y;
         }else if (line.find("spawnYellow") != string::npos) {
-            int x, y;
             sscanf(line.c_str(), "spawnYellow %d %d", &x, &y);
             level.entities[1].spawnX = x;
             level.entities[1].spawnY = y;
@@ -94,8 +93,8 @@ void loadPhysics()
             if (level.tiles[i][j] != TILE_EMPTY)
             {
                 Block* block = new Block;
-                block->row = i + OFFSET_Y;
-                block->col = j + OFFSET_X;
+                block->row = i;
+                block->col = j;
                 block->width = 14.0f;
                 block->height = 14.0f;
                 blockList.push_front(block);
@@ -230,13 +229,15 @@ void levelDraw(){
     C2D_SceneBegin(top);
 
     for(Block* block : blockList) {
-        C2D_DrawImageAt(
-            getAtlasTexture(atlas_dungeon, 
-                level.tiles[block->row - OFFSET_Y][block->col - OFFSET_X]), 
-                block->col * TILE_SIZE, 
-                block->row * TILE_SIZE, 
-                0.0f, NULL,
-                1.0f, 1.0f);
+        if(level.tiles[block->row][block->col] != TILE_EMPTY){
+            C2D_DrawImageAt(
+                getAtlasTexture(atlas_dungeon, 
+                    level.tiles[block->row][block->col]), 
+                    block->col * TILE_SIZE + OFFSET_X, 
+                    block->row * TILE_SIZE + OFFSET_Y, 
+                    0.0f, NULL,
+                    1.0f, 1.0f);
+        }
     }
 
     renderTexturePixel(getAtlasTexture(atlas_wizard, 1), wizardPurplePos[0], wizardPurplePos[1]);
