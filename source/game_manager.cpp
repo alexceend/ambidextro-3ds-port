@@ -7,96 +7,90 @@
 #include "game_manager.h"
 #include "movement.h"
 
-
 Wizard purpleWizard = {PURPLE, WIZARD_WIDTH, WIZARD_HEIGHT, WIZARD_SPEED, NULL, 0};
 Wizard yellowWizard = {YELLOW, WIZARD_WIDTH, WIZARD_HEIGHT, WIZARD_SPEED, NULL, 0};
 
-class Subject : public ISubject
+
+Subject::~Subject(){
+
+}
+
+void Subject::Subscribe(EventType event, IObserver *observer)
 {
-public:
-    virtual ~Subject() {}
-
-    void Subscribe(EventType event, IObserver *observer) override
+    bool subscribed = false;
+    std::list<IObserver *>::iterator it = observers[event].begin();
+    while (it != observers[event].end())
     {
-        bool subscribed = false;
-        std::list<IObserver *>::iterator it = observers[event].begin();
-        while (it != observers[event].end())
+        if (*it == observer)
         {
-            if (*it == observer)
-            {
-                subscribed = true;
-                break;
-            }
-            else
-                it++;
+            subscribed = true;
+            break;
         }
-        if (!subscribed)
-            observers[event].push_back(observer);
+        else
+            it++;
     }
+    if (!subscribed)
+        observers[event].push_back(observer);
+}
 
-    void Unsubscribe(EventType event, IObserver *observer) override
+void Subject::Unsubscribe(EventType event, IObserver *observer)
+{
+    std::list<IObserver *>::iterator it = observers[event].begin();
+    while (it != observers[event].end())
     {
-        std::list<IObserver *>::iterator it = observers[event].begin();
-        while (it != observers[event].end())
+        if (*it == observer)
         {
-            if (*it == observer)
-            {
-                it = observers[event].erase(it);
-            }
-            else
-                it++;
+            it = observers[event].erase(it);
         }
+        else
+            it++;
     }
+}
 
-    void Notify(EventType event, void *callback) override
+void Subject::Notify(EventType event, void *callback)
+{
+    std::list<IObserver *>::iterator it = observers[event].begin();
+    while (it != observers[event].end())
     {
-        std::list<IObserver *>::iterator it = observers[event].begin();
-        while (it != observers[event].end())
-        {
-            (*it)->Update(event, callback);
-        }
+        (*it)->Update(event, callback);
     }
+}
+void Subject::ManageGame(u32 kDown, u32 kHeld)
+{
+    keyLogger(kDown, kHeld);
+}
 
-    void manage_game(u32 kDown, u32 kHeld)
+void Subject::keyLogger(u32 kDown, u32 kHeld)
+{
+    movementLogger(kHeld);
+    jumpLogger(kDown);
+    exitLogger(kDown);
+}
+
+void Subject::movementLogger(u32 kHeld)
+{
+    if (kHeld & KEY_LEFT)
     {
-        keyLogger(kDown, kHeld);
+        Notify(MOVE_LEFT, &purpleWizard);
     }
-
-    void keyLogger(u32 kDown, u32 kHeld)
+    else if (kHeld & KEY_RIGHT)
     {
-        movementLogger(kHeld);
-        jumpLogger(kDown);
-        exitLogger(kDown);
+        Notify(MOVE_RIGHT, &purpleWizard);
     }
+}
 
-    void movementLogger(u32 kHeld)
+void Subject::jumpLogger(u32 kDown)
+{
+    if (kDown & KEY_UP && purpleWizard.numFootContacts >= 1)
     {
-        if (kHeld & KEY_LEFT)
-        {
-            Notify(MOVE_LEFT, &purpleWizard);
-        }
-        else if (kHeld & KEY_RIGHT)
-        {
-            Notify(MOVE_RIGHT, &purpleWizard);
-        }
+        Notify(JUMP, &purpleWizard);
     }
+}
 
-    void jumpLogger(u32 kDown)
+void Subject::exitLogger(u32 kDown)
+{
+    if (kDown & KEY_START)
     {
-        if (kDown & KEY_UP && purpleWizard.numFootContacts >= 1)
-        {
-            Notify(JUMP, &purpleWizard);
-        }
+        Notify(EXIT, NULL);
     }
-
-    void exitLogger(u32 kDown)
-    {
-        if (kDown & KEY_START)
-        {
-            Notify(EXIT, NULL);
-        }
-    }
-
-private:
-    std::map<EventType, std::list<IObserver *>> observers;
-};
+}

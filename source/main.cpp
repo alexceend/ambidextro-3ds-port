@@ -70,6 +70,7 @@ int main(int argc, char** argv)
         return -1;
     }
 
+    Subject gameManager;
 
     while (aptMainLoop())
     {
@@ -83,7 +84,7 @@ int main(int argc, char** argv)
 
         Scene nextScene = SCENE_NONE;
 
-        manage_game(kDown, kHeld);
+        gameManager.ManageGame(kDown, kHeld);
     
         sceneUpdate(&currentScene, &nextScene, kDown, kHeld);
 

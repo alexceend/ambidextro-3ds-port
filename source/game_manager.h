@@ -1,5 +1,12 @@
+#ifndef GAME_MANAGER_H
+
+#define GAME_MANAGER_H
+
 #include <map>
 #include "physics.h"
+#include <list>
+#include <string>
+#include <map>
 
 #define WIZARD_HEIGHT 15.0f
 #define WIZARD_WIDTH 12.0f
@@ -8,8 +15,6 @@
 
 extern Wizard purpleWizard;
 extern Wizard yellowWizard;
-
-void manage_game(u32 kDown, u32 kHeld);
 
 typedef enum
 {
@@ -24,16 +29,36 @@ typedef enum
 
 class IObserver
 {
-    public:
-        virtual ~IObserver(){};
-        virtual void Update(EventType event, void* callback) = 0;
+public:
+    virtual ~IObserver() {};
+    virtual void Update(EventType event, void *callback) = 0;
+    virtual void ManageGame(u32 kDown, u32 kHeld);
 };
 
 class ISubject
 {
-    public:
-        virtual ~ISubject(){};
-        virtual void Subscribe(EventType event, IObserver* observer) = 0;
-        virtual void Unsubscribe(EventType event, IObserver* observer) = 0;
-        virtual void Notify(EventType event, void* callback) = 0;
+public:
+    virtual ~ISubject() {};
+    virtual void Subscribe(EventType event, IObserver *observer) = 0;
+    virtual void Unsubscribe(EventType event, IObserver *observer) = 0;
+    virtual void Notify(EventType event, void *callback) = 0;
 };
+
+class Subject : public ISubject
+{
+public:
+    ~Subject();
+    void Subscribe(EventType event, IObserver *observer);
+    void Unsubscribe(EventType event, IObserver *observer);
+    void Notify(EventType event, void *callback);
+    void ManageGame(u32 kDown, u32 kHeld);
+    void keyLogger(u32 kDown, u32 kHeld);
+    void movementLogger(u32 kHeld);
+    void jumpLogger(u32 kDown);
+    void exitLogger(u32 kDown);
+
+private:
+    std::map<EventType, std::list<IObserver *>> observers;
+};
+
+#endif
