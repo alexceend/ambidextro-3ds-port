@@ -10,6 +10,8 @@
 #include "menu.h"
 #include "assets_loader.h"
 #include "game_manager.h"
+#include "movement.h"
+#include "level.h"
 
 #define SCREEN_WIDTH 400
 #define SCREEN_HEIGHT 240
@@ -69,7 +71,9 @@ int main(int argc, char** argv)
     }
 
     Subject gameManager;
-
+    Movement* movement = new Movement(gameManager);
+    LevelClass* levelObject = new LevelClass(gameManager);
+    
     while (aptMainLoop())
     {
         hidScanInput();

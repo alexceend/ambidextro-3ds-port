@@ -6,6 +6,7 @@
 #include <memory>
 #include <stdio.h>
 #include "physics.h"
+#include "game_manager.h"
 
 typedef enum
 {
@@ -15,5 +16,17 @@ typedef enum
 } MoveState;
 
 void jump(b2Body* body);
+
+class Movement : public IObserver
+{
+    public:
+        Movement(ISubject &subject);
+        virtual ~Movement();
+
+        void Update(EventType event, void* callback);
+    private:
+        ISubject& subject_;
+};
 #endif
+
 

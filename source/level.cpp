@@ -9,8 +9,8 @@
 #include <string>
 #include <sstream>
 #include "assets_loader.h"
-#include "game_manager.h"
 #include <iostream>
+#include "level.h"
 
 #define SCREEN_WIDTH 400
 #define SCREEN_HEIGHT 240
@@ -23,40 +23,44 @@
 #define OFFSET_X 4
 #define OFFSET_Y 8
 
-
 #define EMPTY_TILE -1
 
-static C3D_RenderTarget* top = NULL;
+static C3D_RenderTarget *top = NULL;
 
 static C2D_SpriteSheet currentAtlas;
 
 FooDraw fooDrawInstance;
 
-typedef enum {
+typedef enum
+{
     TILE_EMPTY = -1,
     TILE_FLOOR_SLAB = 0,
     TILE_WALL = 15,
 } TileType;
 
-typedef struct {
+typedef struct
+{
     int spawnX;
     int spawnY;
 } Entity;
 
-typedef struct {
+typedef struct
+{
     int8_t tiles[LEVEL_HEIGHT][LEVEL_WIDTH];
     Entity entities[2];
 } Level;
 
-std::list<Block*> blockList;
+std::list<Block *> blockList;
 Level level;
 int8_t currentLevel;
 
 using namespace std;
 
-bool loadLevelFromFile(ifstream* file, Level& level) {
+bool loadLevelFromFile(ifstream *file, Level &level)
+{
 
-    if(!file){
+    if (!file)
+    {
         printf("ERROR: Could not open level file\n");
         return false;
     }
@@ -64,24 +68,27 @@ bool loadLevelFromFile(ifstream* file, Level& level) {
     int i = 0;
     string line;
 
-    while(getline(*file, line) && i < LEVEL_HEIGHT){
+    while (getline(*file, line) && i < LEVEL_HEIGHT)
+    {
         std::stringstream ss(line);
         int tile;
         int j = 0;
-        while(ss >> tile && j < LEVEL_WIDTH){
-            switch (tile){
-                case -1:
-                    level.tiles[i][j] = TILE_EMPTY;
-                    break;
-                case 0:
-                    level.tiles[i][j] = TILE_FLOOR_SLAB;
-                    break;
-                case 15:
-                    level.tiles[i][j] = TILE_WALL;
-                    break;
-                default:
-                    level.tiles[i][j] = TILE_EMPTY;
-                    break;
+        while (ss >> tile && j < LEVEL_WIDTH)
+        {
+            switch (tile)
+            {
+            case -1:
+                level.tiles[i][j] = TILE_EMPTY;
+                break;
+            case 0:
+                level.tiles[i][j] = TILE_FLOOR_SLAB;
+                break;
+            case 15:
+                level.tiles[i][j] = TILE_WALL;
+                break;
+            default:
+                level.tiles[i][j] = TILE_EMPTY;
+                break;
             }
             j++;
         }
@@ -90,7 +97,7 @@ bool loadLevelFromFile(ifstream* file, Level& level) {
     return i == LEVEL_HEIGHT;
 }
 
-bool levelInit(C3D_RenderTarget* target)
+bool levelInit(C3D_RenderTarget *target)
 {
     top = target;
 
@@ -100,13 +107,17 @@ bool levelInit(C3D_RenderTarget* target)
 
     string line;
     // Set spawn points for entities
-    while (getline(file, line)) {
+    while (getline(file, line))
+    {
         int x, y;
-        if (line.find("spawnPurple") != string::npos) {
+        if (line.find("spawnPurple") != string::npos)
+        {
             sscanf(line.c_str(), "spawnPurple %d %d", &x, &y);
             level.entities[0].spawnX = x;
             level.entities[0].spawnY = y;
-        }else if (line.find("spawnYellow") != string::npos) {
+        }
+        else if (line.find("spawnYellow") != string::npos)
+        {
             sscanf(line.c_str(), "spawnYellow %d %d", &x, &y);
             level.entities[1].spawnX = x;
             level.entities[1].spawnY = y;
@@ -129,7 +140,7 @@ void loadPhysics()
         {
             if (level.tiles[i][j] != TILE_EMPTY)
             {
-                Block* block = new Block;
+                Block *block = new Block;
                 block->row = i;
                 block->col = j;
                 block->width = 14.0f;
@@ -144,37 +155,42 @@ void loadPhysics()
     loadWizardHitbox(level.entities[1].spawnX, level.entities[1].spawnY, &yellowWizard);
 }
 
-
-void levelCleanup() {
-    if(atlas_dungeon) {
+void levelCleanup()
+{
+    if (atlas_dungeon)
+    {
         C2D_SpriteSheetFree(atlas_dungeon);
         atlas_dungeon = NULL;
     }
-    if(atlas_wizard) {
+    if (atlas_wizard)
+    {
         C2D_SpriteSheetFree(atlas_wizard);
         atlas_wizard = NULL;
     }
-    for (Block* block : blockList) {
+    for (Block *block : blockList)
+    {
         delete block;
     }
     blockList.clear();
 
-    if (purpleWizard.body) {
+    if (purpleWizard.body)
+    {
         world->DestroyBody(purpleWizard.body);
         purpleWizard.body = NULL;
     }
-    if (yellowWizard.body) {
+    if (yellowWizard.body)
+    {
         world->DestroyBody(yellowWizard.body);
         yellowWizard.body = NULL;
     }
-    if (world) {
+    if (world)
+    {
         world.reset();
     }
     top = NULL;
 }
 
-
-void FooDraw::DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
+void FooDraw::DrawSolidPolygon(const b2Vec2 *vertices, int32 vertexCount, const b2Color &color)
 {
     u32 fillColor = C2D_Color32f(color.r, color.g, color.b, 0.5f);
     u32 lineColor = C2D_Color32f(color.r, color.g, color.b, 1.0f);
@@ -192,41 +208,42 @@ void FooDraw::DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, const 
             pixels[0].x, pixels[0].y, fillColor,
             pixels[i].x, pixels[i].y, fillColor,
             pixels[i + 1].x, pixels[i + 1].y, fillColor,
-            0.0f
-        );
+            0.0f);
     }
 
     for (int32 i = 0; i < vertexCount; i++)
     {
-        const b2Vec2& a = pixels[i];
+        const b2Vec2 &a = pixels[i];
         const b2Vec2 b = pixels[(i + 1) % vertexCount];
         C2D_DrawLine(
             a.x, a.y, lineColor,
             b.x, b.y, lineColor,
-            1.0f, 0.0f
-        );
+            1.0f, 0.0f);
     }
 }
 
-void levelDraw(){
+void levelDraw()
+{
     b2Vec2 wizardPurple = purpleWizard.body->GetPosition();
     b2Vec2 wizardYellow = yellowWizard.body->GetPosition();
 
     float wizardPurplePos[2] = {metersToPixels(wizardPurple.x), metersToPixels(wizardPurple.y)};
     float wizardYellowPos[2] = {metersToPixels(wizardYellow.x), metersToPixels(wizardYellow.y)};
 
-    C2D_TargetClear(top, C2D_Color32(20,20,40,255));
+    C2D_TargetClear(top, C2D_Color32(20, 20, 40, 255));
     C2D_SceneBegin(top);
 
-    for(Block* block : blockList) {
-        if(level.tiles[block->row][block->col] != TILE_EMPTY){
+    for (Block *block : blockList)
+    {
+        if (level.tiles[block->row][block->col] != TILE_EMPTY)
+        {
             C2D_DrawImageAt(
-                getAtlasTexture(atlas_dungeon, 
-                    level.tiles[block->row][block->col]), 
-                    block->col * TILE_SIZE + OFFSET_X, 
-                    block->row * TILE_SIZE + OFFSET_Y, 
-                    0.0f, NULL,
-                    1.0f, 1.0f);
+                getAtlasTexture(atlas_dungeon,
+                                level.tiles[block->row][block->col]),
+                block->col * TILE_SIZE + OFFSET_X,
+                block->row * TILE_SIZE + OFFSET_Y,
+                0.0f, NULL,
+                1.0f, 1.0f);
         }
     }
 
@@ -239,18 +256,23 @@ void levelDraw(){
     C2D_Flush();
 }
 
-class LevelClass : public IObserver
+LevelClass::LevelClass(ISubject &subject) : subject_(subject)
 {
-    public:
-        void Update(EventType event, void* callback) override
-        {
-            switch (event)
-            {
-                case WIN: break;
-                case PUASE: break;
-                case DEATH: break;
-            }
-        }
-    private:
-        ISubject& subject_;
-};
+    subject.Subscribe(WIN, this);
+    subject.Subscribe(PUASE, this);
+    subject.Subscribe(DEATH, this);
+}
+
+void LevelClass::Update(EventType event, void* callback)
+{
+    switch (event)
+    {
+    case WIN:
+        break;
+    case PUASE:
+        break;
+    case DEATH:
+        break;
+    default: break;
+    }
+}
