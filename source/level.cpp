@@ -44,13 +44,13 @@ typedef struct {
 } Entity;
 
 typedef struct {
-    uint8_t tiles[LEVEL_HEIGHT][LEVEL_WIDTH];
+    int8_t tiles[LEVEL_HEIGHT][LEVEL_WIDTH];
     Entity entities[2];
 } Level;
 
 std::list<Block*> blockList;
 Level level;
-uint8_t currentLevel;
+int8_t currentLevel;
 
 using namespace std;
 
@@ -85,7 +85,9 @@ bool loadLevelFromFile(ifstream* file, Level& level) {
             }
             j++;
         }
+        i++;
     }
+    return i == LEVEL_HEIGHT;
 }
 
 bool levelInit(C3D_RenderTarget* target)
@@ -121,9 +123,9 @@ void loadPhysics()
     world->SetContactListener(&contactListener);
     world->SetDebugDraw(&fooDrawInstance);
 
-    for (int i = 0; i < GRID_ROWS; i++)
+    for (int i = 0; i < LEVEL_HEIGHT; i++)
     {
-        for (int j = 0; j < GRID_COLS; j++)
+        for (int j = 0; j < LEVEL_WIDTH; j++)
         {
             if (level.tiles[i][j] != TILE_EMPTY)
             {
