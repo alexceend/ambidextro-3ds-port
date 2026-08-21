@@ -8,6 +8,7 @@
 #include <fstream>
 #include <string> 
 #include <sstream>
+#include "assets_loader.h"
 
 #define SCREEN_WIDTH 400
 #define SCREEN_HEIGHT 240
@@ -26,8 +27,6 @@
 static C3D_RenderTarget* top = NULL;
 
 static C2D_SpriteSheet currentAtlas;
-static C2D_SpriteSheet atlas_purple_wizard;
-static C2D_SpriteSheet atlas_yellow_wizard;
 
 typedef enum {
     TILE_EMPTY = -1,

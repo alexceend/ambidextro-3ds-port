@@ -9,6 +9,7 @@
 #include "audio_core.h"
 #include "test.h"
 #include "menu.h"
+#include "assets_loader.h"
 
 #define SCREEN_WIDTH 400
 #define SCREEN_HEIGHT 240
@@ -46,6 +47,10 @@ int main(int argc, char** argv)
     {
         printf("ERROR: no se pudo reproducir romfs:/audio/menu.wav\n");
     }
+
+    /* ASSETS LOADER */
+
+    init();
 
     /* MENU */
 
