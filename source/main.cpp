@@ -70,6 +70,13 @@ int main(int argc, char** argv)
         return -1;
     }
 
+    /* TEXTURES */
+    if (!loadAssets())
+    {
+        printf("Failed to load assets!\n");
+        return -1;
+    }
+
     Subject gameManager;
     Movement* movement = new Movement(gameManager);
     LevelClass* levelObject = new LevelClass(gameManager);

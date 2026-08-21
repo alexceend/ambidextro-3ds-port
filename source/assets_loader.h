@@ -6,5 +6,6 @@
 extern C2D_SpriteSheet atlas_dungeon;
 extern C2D_SpriteSheet atlas_wizard;
 
+bool loadAssets();
 
 #endif

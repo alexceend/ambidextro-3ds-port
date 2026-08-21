@@ -225,7 +225,6 @@ void FooDraw::DrawSolidPolygon(const b2Vec2 *vertices, int32 vertexCount, const 
 
 void levelDraw()
 {
-    printf("Level draw called\n");
     b2Vec2 wizardPurple = purpleWizard.body->GetPosition();
     b2Vec2 wizardYellow = yellowWizard.body->GetPosition();
 
