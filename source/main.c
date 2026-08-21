@@ -50,7 +50,7 @@ int main(int argc, char** argv)
 
     /* ASSETS LOADER */
 
-    init();
+    init_assets();
 
     /* MENU */
 
