@@ -11,9 +11,7 @@ Wizard purpleWizard = {PURPLE, WIZARD_WIDTH, WIZARD_HEIGHT, WIZARD_SPEED, NULL, 
 Wizard yellowWizard = {YELLOW, WIZARD_WIDTH, WIZARD_HEIGHT, WIZARD_SPEED, NULL, 0};
 
 
-Subject::~Subject(){
-
-}
+Subject::~Subject(){}
 
 void Subject::Subscribe(EventType event, IObserver *observer)
 {

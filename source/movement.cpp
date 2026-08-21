@@ -3,6 +3,7 @@
 
 void applyVelocity(MoveState moveState, b2Body* body, float speed)
 {
+    printf("Mi CV \n");
     b2Vec2 vel = body->GetLinearVelocity();
     switch (moveState)
     {

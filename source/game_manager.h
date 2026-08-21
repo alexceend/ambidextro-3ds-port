@@ -32,7 +32,7 @@ class IObserver
 public:
     virtual ~IObserver() {};
     virtual void Update(EventType event, void *callback) = 0;
-    virtual void ManageGame(u32 kDown, u32 kHeld);
+    // virtual void ManageGame(u32 kDown, u32 kHeld);
 };
 
 class ISubject

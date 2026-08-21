@@ -48,9 +48,7 @@ int main(int argc, char** argv)
         printf("ERROR: no se pudo reproducir romfs:/audio/menu.wav\n");
     }
 
-    /* ASSETS LOADER */
-
-    init_assets();
+    
 
     /* MENU */
 
