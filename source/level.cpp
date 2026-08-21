@@ -14,6 +14,12 @@
 #define GRID_COLS (SCREEN_WIDTH / TILE_SIZE)
 #define GRID_ROWS (SCREEN_HEIGHT / TILE_SIZE)
 
+#define LEVEL_WIDTH 28
+#define LEVEL_HEIGHT 16
+
+#define OFFSET_X 4;
+#define OFFSET_Y 8;
+
 
 #define EMPTY_TILE -1
 
@@ -35,7 +41,7 @@ typedef struct {
 } Entity;
 
 typedef struct {
-    uint8_t tiles[16][28];
+    uint8_t tiles[LEVEL_HEIGHT][LEVEL_WIDTH];
     Entity entities[2];
 } Level;
 
@@ -88,8 +94,8 @@ void loadPhysics()
             if (level.tiles[i][j] != TILE_EMPTY)
             {
                 Block* block = new Block;
-                block->row = i;
-                block->col = j;
+                block->row = i + OFFSET_Y;
+                block->col = j + OFFSET_X;
                 block->width = 14.0f;
                 block->height = 14.0f;
                 blockList.push_front(block);
@@ -112,11 +118,11 @@ bool loadLevelFromFile(const std::string& filename, Level& level) {
         return false;
     }
     
-    while(getline(file, line) && i < 16){
+    while(getline(file, line) && i < LEVEL_HEIGHT){
         std::stringstream ss(line);
         int tile;
         int j = 0;
-        while(ss >> tile && j < 28){
+        while(ss >> tile && j < LEVEL_WIDTH){
             switch (tile){
                 case -1:
                     level.tiles[i][j] = TILE_EMPTY;
@@ -135,3 +141,109 @@ bool loadLevelFromFile(const std::string& filename, Level& level) {
         }
     }
 }
+
+void levelCleanup() {
+    if(atlas_dungeon) {
+        C2D_SpriteSheetFree(atlas_dungeon);
+        atlas_dungeon = NULL;
+    }
+    if(atlas_wizard) {
+        C2D_SpriteSheetFree(atlas_wizard);
+        atlas_wizard = NULL;
+    }
+    for (Block* block : blockList) {
+        delete block;
+    }
+    blockList.clear();
+
+    if (purpleWizard.body) {
+        world->DestroyBody(purpleWizard.body);
+        purpleWizard.body = NULL;
+    }
+    if (yellowWizard.body) {
+        world->DestroyBody(yellowWizard.body);
+        yellowWizard.body = NULL;
+    }
+    if (world) {
+        world.reset();
+    }
+    top = NULL;
+}
+
+void levelUpdate(Scene* nextScene, u32 kDown, u32 kHeld) {
+    updatePhysics(&purpleWizard);
+    updatePhysics(&yellowWizard);
+
+    if(kDown & KEY_B) {
+        *nextScene = SCENE_MENU;
+    }
+
+    move(&purpleWizard, &moveState, kHeld);
+    if(purpleWizard.numFootContacts >= 1) {
+        jump(&purpleWizard, kDown);
+    }
+}
+
+
+void FooDraw::DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
+{
+    u32 fillColor = C2D_Color32f(color.r, color.g, color.b, 0.5f);
+    u32 lineColor = C2D_Color32f(color.r, color.g, color.b, 1.0f);
+
+    b2Vec2 pixels[b2_maxPolygonVertices];
+    for (int32 i = 0; i < vertexCount; i++)
+    {
+        pixels[i].x = metersToPixels(vertices[i].x);
+        pixels[i].y = metersToPixels(vertices[i].y);
+    }
+
+    for (int32 i = 1; i < vertexCount - 1; i++)
+    {
+        C2D_DrawTriangle(
+            pixels[0].x, pixels[0].y, fillColor,
+            pixels[i].x, pixels[i].y, fillColor,
+            pixels[i + 1].x, pixels[i + 1].y, fillColor,
+            0.0f
+        );
+    }
+
+    for (int32 i = 0; i < vertexCount; i++)
+    {
+        const b2Vec2& a = pixels[i];
+        const b2Vec2 b = pixels[(i + 1) % vertexCount];
+        C2D_DrawLine(
+            a.x, a.y, lineColor,
+            b.x, b.y, lineColor,
+            1.0f, 0.0f
+        );
+    }
+}
+
+void levelDraw(){
+    b2Vec2 wizardPurple = purpleWizard.body->GetPosition();
+    b2Vec2 wizardYellow = yellowWizard.body->GetPosition();
+
+    float wizardPurplePos[2] = {metersToPixels(wizardPurple.x), metersToPixels(wizardPurple.y)};
+    float wizardYellowPos[2] = {metersToPixels(wizardYellow.x), metersToPixels(wizardYellow.y)};
+
+    C2D_TargetClear(top, C2D_Color32(20,20,40,255));
+    C2D_SceneBegin(top);
+
+    for(Block* block : blockList) {
+        C2D_DrawImageAt(
+            getAtlasTexture(atlas_dungeon, 
+                level.tiles[block->row - OFFSET_Y][block->col - OFFSET_X]), 
+                block->col * TILE_SIZE, 
+                block->row * TILE_SIZE, 
+                0.0f, NULL,
+                1.0f, 1.0f);
+    }
+
+    renderTexturePixel(getAtlasTexture(atlas_wizard, 1), wizardPurplePos[0], wizardPurplePos[1]);
+    renderTexturePixel(getAtlasTexture(atlas_wizard, 1), wizardYellowPos[0], wizardYellowPos[1]);
+
+    fooDrawInstance.setFlags(b2Draw::e_shapeBit);
+    world->DebugDraw();
+
+    C2D_Flush();
+}   
