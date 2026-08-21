@@ -7,6 +7,10 @@
 #include "game_manager.h"
 #include "movement.h"
 
+
+Wizard purpleWizard = {PURPLE, WIZARD_WIDTH, WIZARD_HEIGHT, WIZARD_SPEED, NULL, 0};
+Wizard yellowWizard = {YELLOW, WIZARD_WIDTH, WIZARD_HEIGHT, WIZARD_SPEED, NULL, 0};
+
 class Subject : public ISubject
 {
 public:

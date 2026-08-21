@@ -7,7 +7,6 @@
 #include <time.h>
 #include "sprites.h"
 #include "audio_core.h"
-#include "test.h"
 #include "menu.h"
 #include "assets_loader.h"
 #include "game_manager.h"

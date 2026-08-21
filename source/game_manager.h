@@ -6,8 +6,8 @@
 #define WIZARD_SPEED 3.0f
 #define GRAVITY (0.0f, 9.8f)
 
-Wizard purpleWizard = {PURPLE, WIZARD_WIDTH, WIZARD_HEIGHT, WIZARD_SPEED, NULL, 0};
-Wizard yellowWizard = {YELLOW, WIZARD_WIDTH, WIZARD_HEIGHT, WIZARD_SPEED, NULL, 0};
+extern Wizard purpleWizard;
+extern Wizard yellowWizard;
 
 void manage_game(u32 kDown, u32 kHeld);
 
