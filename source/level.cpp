@@ -97,36 +97,6 @@ bool loadLevelFromFile(ifstream *file, Level &level)
     return i == LEVEL_HEIGHT;
 }
 
-bool levelInit(C3D_RenderTarget *target)
-{
-    top = target;
-
-    ifstream file("romfs:/levels/level" + to_string(currentLevel) + ".txt");
-
-    loadLevelFromFile(&file, level);
-
-    string line;
-    // Set spawn points for entities
-    while (getline(file, line))
-    {
-        int x, y;
-        if (line.find("spawnPurple") != string::npos)
-        {
-            sscanf(line.c_str(), "spawnPurple %d %d", &x, &y);
-            level.entities[0].spawnX = x;
-            level.entities[0].spawnY = y;
-        }
-        else if (line.find("spawnYellow") != string::npos)
-        {
-            sscanf(line.c_str(), "spawnYellow %d %d", &x, &y);
-            level.entities[1].spawnX = x;
-            level.entities[1].spawnY = y;
-        }
-    }
-
-    return true;
-}
-
 void loadPhysics()
 {
     b2Vec2 gravity(0.0f, 9.8);
@@ -153,6 +123,37 @@ void loadPhysics()
 
     loadWizardHitbox(level.entities[0].spawnX, level.entities[0].spawnY, &purpleWizard);
     loadWizardHitbox(level.entities[1].spawnX, level.entities[1].spawnY, &yellowWizard);
+}
+
+bool levelInit(C3D_RenderTarget *target)
+{
+    top = target;
+    
+    ifstream file("romfs:/levels/level" + to_string(currentLevel) + ".txt");
+    loadLevelFromFile(&file, level);
+
+    // Set spawn points for entities
+    string line;
+    while (getline(file, line))
+    {
+        int x, y;
+        if (line.find("spawnPurple") != string::npos)
+        {
+            sscanf(line.c_str(), "spawnPurple %d %d", &x, &y);
+            level.entities[0].spawnX = x;
+            level.entities[0].spawnY = y;
+        }
+        else if (line.find("spawnYellow") != string::npos)
+        {
+            sscanf(line.c_str(), "spawnYellow %d %d", &x, &y);
+            level.entities[1].spawnX = x;
+            level.entities[1].spawnY = y;
+        }
+    }
+
+    loadPhysics();
+
+    return true;
 }
 
 void levelCleanup()
@@ -224,6 +225,7 @@ void FooDraw::DrawSolidPolygon(const b2Vec2 *vertices, int32 vertexCount, const 
 
 void levelDraw()
 {
+    printf("Level draw called\n");
     b2Vec2 wizardPurple = purpleWizard.body->GetPosition();
     b2Vec2 wizardYellow = yellowWizard.body->GetPosition();
 
