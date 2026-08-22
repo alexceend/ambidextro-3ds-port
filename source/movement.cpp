@@ -1,4 +1,5 @@
 #include "movement.h"
+#include <iostream>
 
 void applyVelocity(MoveState moveState, b2Body *body, float speed)
 {
@@ -30,6 +31,7 @@ Movement::Movement(ISubject &subject) : subject_(subject)
 {
     this->subject_.Subscribe(MOVE_RIGHT, this);
     this->subject_.Subscribe(MOVE_LEFT, this);
+    this->subject_.Subscribe(MOVE_STOP, this);
     this->subject_.Subscribe(JUMP, this);
 }
 Movement::~Movement() {}
@@ -38,7 +40,7 @@ void Movement::Update(EventType event, void *callback)
 {
     switch (event)
     {
-        Wizard *wizard;
+    Wizard *wizard;
     case MOVE_RIGHT:
         wizard = (Wizard *)callback;
         applyVelocity(MS_RIGHT, wizard->body, wizard->velocity);
@@ -46,6 +48,10 @@ void Movement::Update(EventType event, void *callback)
     case MOVE_LEFT:
         wizard = (Wizard *)callback;
         applyVelocity(MS_LEFT, wizard->body, wizard->velocity);
+        break;
+    case MOVE_STOP:
+        wizard = (Wizard *) callback;
+        applyVelocity(MS_STOP, wizard->body, wizard->velocity);
         break;
     case JUMP:
         wizard = (Wizard *)callback;

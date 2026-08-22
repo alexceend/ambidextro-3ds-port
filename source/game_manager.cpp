@@ -47,25 +47,24 @@ void Subject::Unsubscribe(EventType event, IObserver *observer)
 
 void Subject::Notify(EventType event, void *callback)
 {
-    std::list<IObserver *>::iterator it = observers[event].begin();
-    while (it != observers[event].end())
+    for (IObserver* observer : observers[event])
     {
-        (*it)->Update(event, callback);
+        observer->Update(event, callback);
     }
 }
-void Subject::ManageGame(u32 kDown, u32 kHeld)
+void Subject::ManageGame(u32 kDown, u32 kHeld, u32 kUp)
 {
-    keyLogger(kDown, kHeld);
+    keyLogger(kDown, kHeld, kUp);
 }
 
-void Subject::keyLogger(u32 kDown, u32 kHeld)
+void Subject::keyLogger(u32 kDown, u32 kHeld, u32 kUp)
 {
-    movementLogger(kHeld);
+    movementLogger(kHeld, kUp);
     jumpLogger(kDown);
     exitLogger(kDown);
 }
 
-void Subject::movementLogger(u32 kHeld)
+void Subject::movementLogger(u32 kHeld, u32 kUp)
 {
     if (kHeld & KEY_LEFT)
     {
@@ -74,6 +73,10 @@ void Subject::movementLogger(u32 kHeld)
     else if (kHeld & KEY_RIGHT)
     {
         Notify(MOVE_RIGHT, &purpleWizard);
+    }
+    else if (kUp & KEY_RIGHT || kUp & KEY_LEFT)
+    {
+        Notify(MOVE_STOP, &purpleWizard);
     }
 }
 

@@ -23,6 +23,7 @@ typedef enum
     DEATH,
     MOVE_RIGHT,
     MOVE_LEFT,
+    MOVE_STOP,
     JUMP,
     EXIT
 } EventType;
@@ -51,9 +52,9 @@ public:
     void Subscribe(EventType event, IObserver *observer);
     void Unsubscribe(EventType event, IObserver *observer);
     void Notify(EventType event, void *callback);
-    void ManageGame(u32 kDown, u32 kHeld);
-    void keyLogger(u32 kDown, u32 kHeld);
-    void movementLogger(u32 kHeld);
+    void ManageGame(u32 kDown, u32 kHeld, u32 kUp);
+    void keyLogger(u32 kDown, u32 kHeld, u32 kUp);
+    void movementLogger(u32 kHeld, u32 kUp);
     void jumpLogger(u32 kDown);
     void exitLogger(u32 kDown);
 

@@ -35,7 +35,7 @@ void loadGroundBox(int pos_x, int pos_y, int width, int height)
 
 void loadWizardHitbox(float pos_x, float pos_y, Wizard *wizard)
 {   
-    float footSensorX = wizard->width / 2;
+    float footSensorX = wizard->width / 4;
     float footSensorY = 2.0f;
     
     b2BodyDef bodyDef;
@@ -59,7 +59,7 @@ void loadWizardHitbox(float pos_x, float pos_y, Wizard *wizard)
     dynamicBox.SetAsBox(
         pixelsToMeters(footSensorX), 
         pixelsToMeters(footSensorY), 
-        b2Vec2(0, pixelsToMeters((wizard->height / 2) - (footSensorY / 2))), 
+        b2Vec2(0, pixelsToMeters((wizard->height / 2) - footSensorY)), 
         0
     );
 

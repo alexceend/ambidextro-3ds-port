@@ -154,6 +154,7 @@ bool levelInit(C3D_RenderTarget *target)
 
     loadPhysics();
 
+
     return true;
 }
 
