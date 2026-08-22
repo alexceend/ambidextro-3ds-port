@@ -20,16 +20,16 @@ std::unique_ptr<b2World> createWorld(b2Vec2 gravity)
     return std::make_unique<b2World>(gravity);
 }
 
-void loadGroundBox(int pos_x, int pos_y, int width, int height)
+void loadGroundBox(int pos_x, int pos_y, int width, int height, int offset_x, int offset_y)
 {
     b2BodyDef groundBodyDef;
-    groundBodyDef.position.Set(pixelsToMeters(pos_x + width / 2), pixelsToMeters(pos_y + height / 2));
+    groundBodyDef.position.Set(pixelsToMeters((pos_x + width / 2) + offset_x), pixelsToMeters((pos_y + height / 2) + offset_y));
 
     b2Body *groundBody = world->CreateBody(&groundBodyDef);
     b2PolygonShape groundBox;
 
     groundBox.SetAsBox(pixelsToMeters(width / 2.0f), pixelsToMeters(height / 2.0f));
-
+    
     groundBody->CreateFixture(&groundBox, 1.0f);
 }
 

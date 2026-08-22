@@ -1,6 +1,5 @@
 #include <stdio.h>
 
-#include "sprites.h"
 #include "physics.h"
 #include "texture.h"
 #include "scene.h"
@@ -12,6 +11,7 @@
 #include <iostream>
 #include "level.h"
 #include <filesystem>
+#include <array>
 
 #define SCREEN_WIDTH 400
 #define SCREEN_HEIGHT 240
@@ -35,6 +35,11 @@ typedef enum
     TILE_FLOOR_SLAB = 0,
     TILE_WALL = 15,
 } TileType;
+
+std::map<TileType, std::array<int, 4>> tile = {
+    {TILE_WALL, {14, 14, 0, 0}},
+    {TILE_FLOOR_SLAB, {14, 3, 0, 14}}
+};
 
 typedef struct
 {
@@ -112,10 +117,16 @@ void loadPhysics()
                 Block *block = new Block;
                 block->row = i;
                 block->col = j;
-                block->width = 14.0f;
-                block->height = 14.0f;
+                TileType type = static_cast<TileType>(level.tiles[i][j]);
+                block->width = tile.at(type).at(0);
+                block->height = tile.at(type).at(1);
                 blockList.push_front(block);
-                loadStaticObject(getAtlasTexture(atlas_dungeon, level.tiles[i][j]), block);
+                loadStaticObject(getAtlasTexture
+                    (atlas_dungeon, level.tiles[i][j]),
+                    block,
+                    tile.at(type).at(2),
+                    tile.at(type).at(3)
+                );
             }
         }
     }

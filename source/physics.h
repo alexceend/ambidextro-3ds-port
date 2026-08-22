@@ -55,7 +55,7 @@ std::unique_ptr<b2World> createWorld(b2Vec2 gravity);
 float pixelsToMeters(float pixels);
 float metersToPixels(float meters);
 
-void loadGroundBox(int pos_x, int pos_y, int width, int height);
+void loadGroundBox(int pos_x, int pos_y, int width, int height, int offset_x, int offset_y);
 void loadWizardHitbox(float pos_x, float pos_y, Wizard* wizard);
 
 void updatePhysics();

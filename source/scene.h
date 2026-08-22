@@ -37,6 +37,6 @@ extern "C"
 }
 #endif
 
-void loadStaticObject(C2D_Image img, Block* block);
+void loadStaticObject(C2D_Image img, Block* block, int offset_x, int offset_y);
 
 #endif
