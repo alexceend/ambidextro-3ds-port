@@ -38,15 +38,13 @@ Movement::~Movement() {}
 
 void Movement::Update(EventType event, void *callback)
 {
+    Wizard* wizard = static_cast<Wizard *>(callback);
     switch (event)
     {
-    Wizard *wizard;
     case MOVE_RIGHT:
-        wizard = (Wizard *)callback;
         applyVelocity(MS_RIGHT, wizard->body, wizard->velocity);
         break;
     case MOVE_LEFT:
-        wizard = (Wizard *)callback;
         applyVelocity(MS_LEFT, wizard->body, wizard->velocity);
         break;
     case MOVE_STOP:
@@ -54,7 +52,6 @@ void Movement::Update(EventType event, void *callback)
         applyVelocity(MS_STOP, wizard->body, wizard->velocity);
         break;
     case JUMP:
-        wizard = (Wizard *)callback;
         jump(wizard->body);
         break;
     default: break;
