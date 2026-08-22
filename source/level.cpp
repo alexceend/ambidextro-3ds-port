@@ -66,7 +66,7 @@ bool loadLevelFromFile(ifstream *file, Level* level)
     int i = 0;
     string line;
 
-    while (getline(*file, line) && i < LEVEL_HEIGHT)
+    while (getline(*file, line) && i < LEVEL_HEIGHT - 1)
     {
         std::stringstream ss(line);
         int tile;
