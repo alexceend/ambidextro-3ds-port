@@ -192,6 +192,11 @@ void levelCleanup()
     top = NULL;
 }
 
+void levelUpdate()
+{
+    updatePhysics();
+}
+
 void FooDraw::DrawSolidPolygon(const b2Vec2 *vertices, int32 vertexCount, const b2Color &color)
 {
     u32 fillColor = C2D_Color32f(color.r, color.g, color.b, 0.5f);

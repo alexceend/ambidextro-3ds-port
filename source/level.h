@@ -9,6 +9,7 @@
 
 bool levelInit(C3D_RenderTarget *target);
 void levelDraw(void);
+void levelUpdate(void);
 void levelCleanup(void);
 
 class LevelClass : public IObserver

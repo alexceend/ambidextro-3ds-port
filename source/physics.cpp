@@ -68,7 +68,7 @@ void loadWizardHitbox(float pos_x, float pos_y, Wizard *wizard)
     body->CreateFixture(&fixtureDef);
 }
 
-void updatePhysics(Wizard *wizard)
+void updatePhysics()
 {
     world->Step(timeStep, 6, 2);
 }
