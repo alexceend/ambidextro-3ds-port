@@ -79,6 +79,18 @@ void Subject::movementLogger(u32 kHeld, u32 kUp)
     {
         Notify(MOVE_STOP, &purpleWizard);
     }
+    else if (kHeld & KEY_A)
+    {
+        Notify(MOVE_RIGHT, &yellowWizard);
+    }
+    else if(kHeld & KEY_Y)
+    {
+        Notify(MOVE_LEFT, &yellowWizard);
+    }
+    else if(kUp & KEY_A || kUp & KEY_Y)
+    {
+        Notify(MOVE_STOP, &yellowWizard);
+    }
 }
 
 void Subject::jumpLogger(u32 kDown)
@@ -86,6 +98,10 @@ void Subject::jumpLogger(u32 kDown)
     if (kDown & KEY_UP && purpleWizard.numFootContacts >= 1)
     {
         Notify(JUMP, &purpleWizard);
+    }
+    else if(kDown & KEY_X && yellowWizard.numFootContacts >= 1)
+    {
+        Notify(JUMP, &yellowWizard);
     }
 }
 
