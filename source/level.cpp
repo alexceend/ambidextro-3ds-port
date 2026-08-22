@@ -54,7 +54,7 @@ int8_t currentLevel = 1;
 
 using namespace std;
 
-bool loadLevelFromFile(ifstream *file, Level level)
+bool loadLevelFromFile(ifstream *file, Level* level)
 {
 
     if (!file)
@@ -68,7 +68,6 @@ bool loadLevelFromFile(ifstream *file, Level level)
 
     while (getline(*file, line) && i < LEVEL_HEIGHT)
     {
-        printf("Porfi\n");
         std::stringstream ss(line);
         int tile;
         int j = 0;
@@ -77,16 +76,16 @@ bool loadLevelFromFile(ifstream *file, Level level)
             switch (tile)
             {
             case -1:
-                level.tiles[i][j] = TILE_EMPTY;
+                level->tiles[i][j] = TILE_EMPTY;
                 break;
             case 0:
-                level.tiles[i][j] = TILE_FLOOR_SLAB;
+                level->tiles[i][j] = TILE_FLOOR_SLAB;
                 break;
             case 15:
-                level.tiles[i][j] = TILE_WALL;
+                level->tiles[i][j] = TILE_WALL;
                 break;
             default:
-                level.tiles[i][j] = TILE_EMPTY;
+                level->tiles[i][j] = TILE_EMPTY;
                 break;
             }
             j++;
@@ -132,7 +131,7 @@ bool levelInit(C3D_RenderTarget *target)
    
     ifstream file(filePath);
 
-    loadLevelFromFile(&file, level);
+    loadLevelFromFile(&file, &level);
 
     // Set spawn points for entities
     string line;
