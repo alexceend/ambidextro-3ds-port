@@ -64,5 +64,5 @@ void sceneChange(Scene* current, Scene* nextScene, C3D_RenderTarget* target)
 
 void loadStaticObject(C2D_Image img, Block* block)
 {
-    loadGroundBox(block->col * TILE_SIZE, block->row * TILE_SIZE, block->width, block->height);
+    loadGroundBox(block->col * TILE_SIZE + OFFSET_X, block->row * TILE_SIZE + OFFSET_Y, block->width, block->height);
 }

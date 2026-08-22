@@ -4,6 +4,10 @@
 #include <3ds.h>
 #include <citro2d.h>
 #include <stdbool.h>
+
+#define OFFSET_X 4
+#define OFFSET_Y 8
+
 typedef enum
 {
     SCENE_NONE = -1,

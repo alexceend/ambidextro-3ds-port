@@ -11,6 +11,7 @@
 #include "assets_loader.h"
 #include <iostream>
 #include "level.h"
+#include <filesystem>
 
 #define SCREEN_WIDTH 400
 #define SCREEN_HEIGHT 240
@@ -19,9 +20,6 @@
 
 #define LEVEL_WIDTH 28
 #define LEVEL_HEIGHT 16
-
-#define OFFSET_X 4
-#define OFFSET_Y 8
 
 #define EMPTY_TILE -1
 
@@ -52,11 +50,11 @@ typedef struct
 
 std::list<Block *> blockList;
 Level level;
-int8_t currentLevel;
+int8_t currentLevel = 1;
 
 using namespace std;
 
-bool loadLevelFromFile(ifstream *file, Level &level)
+bool loadLevelFromFile(ifstream *file, Level level)
 {
 
     if (!file)
@@ -70,6 +68,7 @@ bool loadLevelFromFile(ifstream *file, Level &level)
 
     while (getline(*file, line) && i < LEVEL_HEIGHT)
     {
+        printf("Porfi\n");
         std::stringstream ss(line);
         int tile;
         int j = 0;
@@ -128,8 +127,11 @@ void loadPhysics()
 bool levelInit(C3D_RenderTarget *target)
 {
     top = target;
-    
-    ifstream file("romfs:/levels/level" + to_string(currentLevel) + ".txt");
+
+    string filePath = "romfs:levels/level" + to_string(currentLevel) + ".txt";
+   
+    ifstream file(filePath);
+
     loadLevelFromFile(&file, level);
 
     // Set spawn points for entities
