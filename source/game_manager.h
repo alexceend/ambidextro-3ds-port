@@ -25,7 +25,8 @@ typedef enum
     MOVE_LEFT,
     MOVE_STOP,
     JUMP,
-    EXIT
+    EXIT,
+    DEBUG
 } EventType;
 
 class IObserver
@@ -57,6 +58,7 @@ public:
     void movementLogger(u32 kHeld, u32 kUp);
     void jumpLogger(u32 kDown);
     void exitLogger(u32 kDown);
+    void debugLogger(u32 kDown);
 
 private:
     std::map<EventType, std::list<IObserver *>> observers;

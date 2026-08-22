@@ -51,6 +51,7 @@ typedef struct
 std::list<Block *> blockList;
 Level level;
 int8_t currentLevel = 1;
+bool showDebug = true;
 
 using namespace std;
 
@@ -165,10 +166,20 @@ void levelCleanup()
         C2D_SpriteSheetFree(atlas_dungeon);
         atlas_dungeon = NULL;
     }
-    if (atlas_wizard)
+    if (atlas_purple_wizard)
     {
-        C2D_SpriteSheetFree(atlas_wizard);
-        atlas_wizard = NULL;
+        C2D_SpriteSheetFree(atlas_purple_wizard);
+        atlas_purple_wizard = NULL;
+    }
+    if (atlas_yellow_wizard)
+    {
+        C2D_SpriteSheetFree(atlas_yellow_wizard);
+        atlas_yellow_wizard = NULL;
+    }
+    if (atlas_staff)
+    {
+        C2D_SpriteSheetFree(atlas_staff);
+        atlas_staff = NULL;
     }
     for (Block *block : blockList)
     {
@@ -255,12 +266,15 @@ void levelDraw()
         }
     }
 
-    renderTexturePixel(getAtlasTexture(atlas_wizard, 1), wizardPurplePos[0], wizardPurplePos[1]);
-    renderTexturePixel(getAtlasTexture(atlas_wizard, 1), wizardYellowPos[0], wizardYellowPos[1]);
+    renderTexturePixel(getAtlasTexture(atlas_purple_wizard, 0), wizardPurplePos[0], wizardPurplePos[1]);
+    renderTexturePixel(getAtlasTexture(atlas_yellow_wizard, 0), wizardYellowPos[0], wizardYellowPos[1]);
 
     fooDrawInstance.SetFlags(b2Draw::e_shapeBit);
-    world->DebugDraw();
-
+    if (showDebug)
+    {
+        world->DebugDraw();
+    }
+    
     C2D_Flush();
 }
 
@@ -269,6 +283,7 @@ LevelClass::LevelClass(ISubject &subject) : subject_(subject)
     subject.Subscribe(WIN, this);
     subject.Subscribe(PUASE, this);
     subject.Subscribe(DEATH, this);
+    subject.Subscribe(DEBUG, this);
 }
 
 void LevelClass::Update(EventType event, void* callback)
@@ -281,6 +296,8 @@ void LevelClass::Update(EventType event, void* callback)
         break;
     case DEATH:
         break;
+    case DEBUG:
+        showDebug == true ? showDebug = false : showDebug = true;
     default: break;
     }
 }

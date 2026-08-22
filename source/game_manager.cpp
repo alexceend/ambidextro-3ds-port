@@ -62,6 +62,7 @@ void Subject::keyLogger(u32 kDown, u32 kHeld, u32 kUp)
     movementLogger(kHeld, kUp);
     jumpLogger(kDown);
     exitLogger(kDown);
+    debugLogger(kDown);
 }
 
 void Subject::movementLogger(u32 kHeld, u32 kUp)
@@ -93,5 +94,13 @@ void Subject::exitLogger(u32 kDown)
     if (kDown & KEY_START)
     {
         Notify(EXIT, NULL);
+    }
+}
+
+void Subject::debugLogger(u32 kDown)
+{
+    if (kDown & KEY_DOWN)
+    {
+        Notify(DEBUG, NULL);
     }
 }
