@@ -6,7 +6,7 @@
 
 #include <citro2d.h>
 #include <stdbool.h>
-    
+#include "game_manager.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -18,9 +18,15 @@ extern "C"
     #ifdef __cplusplus
 }
 #endif
+template <size_t imageCount> void renderAnimation(const std::array<C2D_Image, imageCount>& images, float pos_x, float pos_y);
 
-
-
-
+class Texture : public IObserver
+{
+    public:
+        Texture(ISubject& subject);
+        void Update(EventType event, void* callback);
+    private:
+        ISubject& subject_;
+};
 
 #endif

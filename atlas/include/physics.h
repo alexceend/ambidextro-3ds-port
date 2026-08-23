@@ -23,6 +23,13 @@ typedef struct
     float velocity;
     b2Body* body;
     int numFootContacts;
+    size_t move_frames = 5;
+    size_t jump_frames = 6;
+    size_t current_step = 0;
+    float pos[2] = {
+        metersToPixels(body->GetPosition().x) - width / 2 ,
+        metersToPixels(body->GetPosition().y) - height / 2
+    };
 } Wizard;
 
 
