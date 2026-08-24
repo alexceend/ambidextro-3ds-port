@@ -1,7 +1,6 @@
 #ifndef OBJECTS_H
 #define OBJECTS_H
 
-#include "physics.h"
 #include "sprite_animation_manager.h"
 #include "assets_loader.h"
 #include "physics.h"
@@ -22,11 +21,10 @@ typedef struct Wizard
     float velocity;
     b2Body* body;
     int numFootContacts;
-    uint64_t sprite_refresh_ms_time = 20;
+    uint64_t sprite_refresh_ms_time;
     float pos[2];
     object_2d_t* object;
-    C2D_SpriteSheet spriteSheets[MAX_SPRITES] = {atlas_purple_wizard_static, atlas_purple_wizard_jump};
-    char* filePaths[MAX_SPRITE_SHEETS];
+    C2D_SpriteSheet spriteSheets[MAX_SPRITES];
 } Wizard;
 
 #endif

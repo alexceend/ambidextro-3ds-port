@@ -9,9 +9,29 @@
 #include "sprite_animation_manager.h"
 #include "objects.h"
 
-Wizard purpleWizard = {PURPLE, WIZARD_WIDTH, WIZARD_HEIGHT, WIZARD_SPEED, NULL, 0, NULL};
-Wizard yellowWizard = {YELLOW, WIZARD_WIDTH, WIZARD_HEIGHT, WIZARD_SPEED, NULL, 0, NULL};
-
+Wizard purpleWizard = {PURPLE, 
+    WIZARD_WIDTH, 
+    WIZARD_HEIGHT,
+    WIZARD_SPEED, 
+    NULL, 
+    0, 
+    20,
+    {0.0f, 0.0f},
+    NULL,
+    {atlas_purple_wizard_static, atlas_purple_wizard_jump}
+};
+Wizard yellowWizard = {
+    YELLOW, 
+    WIZARD_WIDTH, 
+    WIZARD_HEIGHT, 
+    WIZARD_SPEED, 
+    NULL, 
+    0, 
+    20,
+    {0.0f, 0.0f},
+    NULL,
+    {atlas_yellow_wizard_static, atlas_yellow_wizard_jump}
+};
 
 
 

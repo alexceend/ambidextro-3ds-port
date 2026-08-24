@@ -7,6 +7,7 @@
 #include <citro2d.h>
 #include <stdbool.h>
 #include "event_system.h"
+#include "objects.h"
 
 #ifdef __cplusplus
 extern "C"

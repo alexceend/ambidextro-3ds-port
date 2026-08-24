@@ -1,4 +1,5 @@
 #include "physics.h"
+#include "objects.h"
 #include <memory>
 
 std::unique_ptr<b2World> world = NULL;

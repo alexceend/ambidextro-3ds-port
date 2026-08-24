@@ -77,6 +77,9 @@ int main(int argc, char** argv)
         return -1;
     }
 
+    /* BUCLE PRINCIPAL */
+
+
     Subject gameManager;
     Movement* movement = new Movement(gameManager);
     LevelClass* levelObject = new LevelClass(gameManager);

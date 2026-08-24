@@ -2,8 +2,10 @@
 #include "assets_loader.h"
 
 C2D_SpriteSheet atlas_dungeon = NULL;
-C2D_SpriteSheet atlas_purple_wizard = NULL;
-C2D_SpriteSheet atlas_yellow_wizard = NULL;
+C2D_SpriteSheet atlas_purple_wizard_static = NULL;
+C2D_SpriteSheet atlas_purple_wizard_jump = NULL;
+C2D_SpriteSheet atlas_yellow_wizard_static = NULL;
+C2D_SpriteSheet atlas_yellow_wizard_jump = NULL;
 C2D_SpriteSheet atlas_staff = NULL;
 
 bool loadAssets()
