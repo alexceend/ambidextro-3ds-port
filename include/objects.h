@@ -4,6 +4,7 @@
 #include "physics.h"
 #include "sprite_animation_manager.h"
 #include "assets_loader.h"
+#include "physics.h"
 
 #define MAX_SPRITES 15
 
@@ -13,7 +14,7 @@ typedef enum
     YELLOW,
 } WizardType;
 
-typedef struct
+typedef struct Wizard
 {
     WizardType wizard_type;
     float width;
@@ -22,12 +23,10 @@ typedef struct
     b2Body* body;
     int numFootContacts;
     uint64_t sprite_refresh_ms_time = 20;
-    float pos[2] = {
-        metersToPixels(body->GetPosition().x) - width / 2 ,
-        metersToPixels(body->GetPosition().y) - height / 2
-    };
+    float pos[2];
     object_2d_t* object;
     C2D_SpriteSheet spriteSheets[MAX_SPRITES] = {atlas_purple_wizard_static, atlas_purple_wizard_jump};
+    char* filePaths[MAX_SPRITE_SHEETS];
 } Wizard;
 
 #endif

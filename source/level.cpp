@@ -171,7 +171,12 @@ bool levelInit(C3D_RenderTarget *target)
 
     loadPhysics();
 
-    initialize_object(&purpleWizard.object, purpleWizard.)
+    C2D_SpriteSheet sheets[MAX_SPRITE_SHEETS] = {atlas_purple_wizard_static, atlas_purple_wizard_jump};
+
+    initialize_object(
+        purpleWizard.object, purpleWizard.object->object_sprite,
+        2, sheets
+    );
     return true;
 }
 

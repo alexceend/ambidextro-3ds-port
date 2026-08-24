@@ -51,9 +51,7 @@ typedef struct object_2d
 } object_2d_t;
 
 void initialize_object(
-    object_2d_t* object, C2D_Sprite* sprites, size_t num_sprite_sheets, const char* filename,
-    const sprite_pivot_t pivot, const sprite_position_t position, const float rotation,
-    uint64_t animation_refesh_time, bool loop_once
+    object_2d_t* object, C2D_Sprite* sprites, size_t num_sprite_sheets, const C2D_SpriteSheet[MAX_SPRITE_SHEETS]
 );
 
 void deinitialize_object(object_2d_t* object);
