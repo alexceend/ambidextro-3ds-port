@@ -1,26 +1,24 @@
 #include "sprite_animation_manager.h"
 
 void initialize_object(
-    object_2d_t* object, C2D_Sprite* sprites, size_t num_sprite_sheets, const char* filenames[MAX_SPRITE_SHEETS],
-    const sprite_pivot_t pivot, const float rotation,
-    uint64_t animation_refesh_time, bool loop_once
+    object_2d_t* object, C2D_Sprite* sprites, size_t num_sprite_sheets, const C2D_SpriteSheet spriteSheets[MAX_SPRITE_SHEETS]
 )
 {
     for (size_t sprite_sheet_index = 0; sprite_sheet_index < num_sprite_sheets; sprite_sheet_index++)
     {
-        object->animations[sprite_sheet_index].sprite_sheet = C2D_SpriteSheetLoad(filenames[sprite_sheet_index]);
+        object->animations[sprite_sheet_index].sprite_sheet = spriteSheets[sprite_sheet_index];
         object->animations[sprite_sheet_index].frame_info.num_of_sprites = C2D_SpriteSheetCount(object->animations[sprite_sheet_index].sprite_sheet);
 
         object->animations[sprite_sheet_index].frame_info.current_frame_index = 0;
 
         object->animations[sprite_sheet_index].rotation_velocity = 0.0f;
+        
+        object->animations[sprite_sheet_index].pivot.x = 0.0f;
+        object->animations[sprite_sheet_index].pivot.y = 0.0f;
 
-        object->animations[sprite_sheet_index].pivot.x = pivot.x;
-        object->animations[sprite_sheet_index].pivot.y = pivot.y;
+        object->animations[sprite_sheet_index].rotation = 0.0f;
 
-        object->animations[sprite_sheet_index].rotation = rotation;
-
-        object->animations[sprite_sheet_index].frame_info.loop_once = loop_once;
+        object->animations[sprite_sheet_index].frame_info.loop_once = false;
 
         for (size_t sprite_index = 0; sprite_index < object->animations[sprite_sheet_index].frame_info.num_of_sprites; sprite_index++)
         {
@@ -34,7 +32,7 @@ void initialize_object(
         object->animations[sprite_sheet_index].refresh_info.start = osGetTime();
         object->animations[sprite_sheet_index].refresh_info.elapsed = 0;
 
-        object->animations[sprite_sheet_index].refresh_info.refresh_time = animation_refesh_time;
+        object->animations[sprite_sheet_index].refresh_info.refresh_time = 20;
     }
 
     object->object_sprite = sprites;

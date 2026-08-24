@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #include "scene.h"
 #include "game_manager.h"
+#include "sprite_animation_manager.h"
 
 bool levelInit(C3D_RenderTarget *target);
 void levelDraw(void);
