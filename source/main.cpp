@@ -99,6 +99,7 @@ int main(int argc, char** argv)
     
     while (aptMainLoop())
     {
+        printf("Helo!\n");
         hidScanInput();
 
         u32 kDown = hidKeysDown();
@@ -113,15 +114,19 @@ int main(int argc, char** argv)
 
         if (currentScene == SCENE_LEVEL)
         {
+            printf("Called manage game!\n");
             gameManager.ManageGame(kDown, kHeld, kUp);
         }
         else
         {
-            gameManager.~Subject();
+            //printf("Calling destructor of gamemanager\n");
+            //gameManager.~Subject();
         }
         
+        printf("Before update!\n");
         sceneUpdate(&currentScene, &nextScene, kDown, kHeld);
-
+        printf("After update!\n");
+    
         sceneChange(&currentScene, &nextScene, top);
 
         C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
