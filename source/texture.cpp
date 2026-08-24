@@ -29,6 +29,9 @@ bool renderWizard(Wizard* wizard)
 
 }
 
+/*
+// Dejando aquí codigo muerto para ayudar a la limpieza del código. #CleanCode, #PositiveMindset
+
 template <size_t imageCount> void renderAnimation(const std::array<C2D_Image, imageCount>& images, float pos_x, float pos_y)
 {
     for (const C2D_Image& image : images)
@@ -37,6 +40,7 @@ template <size_t imageCount> void renderAnimation(const std::array<C2D_Image, im
         C2D_DrawSprite
     }
 }
+*/
 
 Texture::Texture(ISubject& subject) : subject_(subject)
 {
