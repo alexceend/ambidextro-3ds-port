@@ -13,6 +13,8 @@
 #include "movement.h"
 #include "level.h"
 
+#include "log.h"
+
 #define SCREEN_WIDTH 400
 #define SCREEN_HEIGHT 240
 
@@ -20,6 +22,8 @@
 
 int main(int argc, char** argv)
 {
+    log_message("-- BEGIN LOG --");
+
     romfsInit();
     gfxInitDefault();
     consoleInit(GFX_BOTTOM, NULL);
@@ -40,6 +44,8 @@ int main(int argc, char** argv)
         return -1;
     }
 
+    log_message("[INFO]: C2D, and top prepared and initialized");
+
     /* AUDIO */
 
     if (!audioInit())
@@ -49,6 +55,8 @@ int main(int argc, char** argv)
     {
         printf("ERROR: no se pudo reproducir romfs:/audio/menu.wav\n");
     }
+
+    log_message("[INFO]: Audio initialized");
 
     
 
@@ -70,6 +78,8 @@ int main(int argc, char** argv)
         return -1;
     }
 
+    log_message("[INFO]: Menu initialized");
+
     /* TEXTURES */
     if (!loadAssets())
     {
@@ -83,6 +93,8 @@ int main(int argc, char** argv)
     Subject gameManager;
     Movement* movement = new Movement(gameManager);
     LevelClass* levelObject = new LevelClass(gameManager);
+
+    log_message("[INFO]: Starting main while...");
     
     
     while (aptMainLoop())
