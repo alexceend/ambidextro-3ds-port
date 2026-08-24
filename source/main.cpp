@@ -81,6 +81,7 @@ int main(int argc, char** argv)
     Movement* movement = new Movement(gameManager);
     LevelClass* levelObject = new LevelClass(gameManager);
     
+    
     while (aptMainLoop())
     {
         hidScanInput();
@@ -95,8 +96,15 @@ int main(int argc, char** argv)
 
         Scene nextScene = SCENE_NONE;
 
-        gameManager.ManageGame(kDown, kHeld, kUp);
-    
+        if (currentScene == SCENE_LEVEL)
+        {
+            gameManager.ManageGame(kDown, kHeld, kUp);
+        }
+        else
+        {
+            gameManager.~Subject();
+        }
+        
         sceneUpdate(&currentScene, &nextScene, kDown, kHeld);
 
         sceneChange(&currentScene, &nextScene, top);

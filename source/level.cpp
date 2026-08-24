@@ -171,7 +171,7 @@ bool levelInit(C3D_RenderTarget *target)
 
     loadPhysics();
 
-
+    initialize_object(&purpleWizard.object, purpleWizard.)
     return true;
 }
 
@@ -182,15 +182,25 @@ void levelCleanup()
         C2D_SpriteSheetFree(atlas_dungeon);
         atlas_dungeon = NULL;
     }
-    if (atlas_purple_wizard)
+    if (atlas_purple_wizard_static)
     {
-        C2D_SpriteSheetFree(atlas_purple_wizard);
-        atlas_purple_wizard = NULL;
+        C2D_SpriteSheetFree(atlas_purple_wizard_static);
+        atlas_purple_wizard_static = NULL;
     }
-    if (atlas_yellow_wizard)
+    if (atlas_purple_wizard_jump)
     {
-        C2D_SpriteSheetFree(atlas_yellow_wizard);
-        atlas_yellow_wizard = NULL;
+        C2D_SpriteSheetFree(atlas_purple_wizard_jump);
+        atlas_purple_wizard_jump = NULL;
+    }
+    if (atlas_yellow_wizard_static)
+    {
+        C2D_SpriteSheetFree(atlas_yellow_wizard_static);
+        atlas_yellow_wizard_static = NULL;
+    }
+    if (atlas_yellow_wizard_jump)
+    {
+        C2D_SpriteSheetFree(atlas_yellow_wizard_jump);
+        atlas_yellow_wizard_jump = NULL;
     }
     if (atlas_staff)
     {
@@ -282,8 +292,8 @@ void levelDraw()
         }
     }
 
-    renderTexturePixel(getAtlasTexture(atlas_purple_wizard, 0), wizardPurplePos[0], wizardPurplePos[1]);
-    renderTexturePixel(getAtlasTexture(atlas_yellow_wizard, 0), wizardYellowPos[0], wizardYellowPos[1]);
+    // renderTexturePixel(getAtlasTexture(atlas_purple_wizard, 0), wizardPurplePos[0], wizardPurplePos[1]);
+    // renderTexturePixel(getAtlasTexture(atlas_yellow_wizard, 0), wizardYellowPos[0], wizardYellowPos[1]);
 
     fooDrawInstance.SetFlags(b2Draw::e_shapeBit);
     if (showDebug)

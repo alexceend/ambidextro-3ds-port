@@ -6,9 +6,13 @@
 #include "physics.h"
 #include "game_manager.h"
 #include "movement.h"
+#include "sprite_animation_manager.h"
 
-Wizard purpleWizard = {PURPLE, WIZARD_WIDTH, WIZARD_HEIGHT, WIZARD_SPEED, NULL, 0};
-Wizard yellowWizard = {YELLOW, WIZARD_WIDTH, WIZARD_HEIGHT, WIZARD_SPEED, NULL, 0};
+Wizard purpleWizard = {PURPLE, WIZARD_WIDTH, WIZARD_HEIGHT, WIZARD_SPEED, NULL, 0, NULL};
+Wizard yellowWizard = {YELLOW, WIZARD_WIDTH, WIZARD_HEIGHT, WIZARD_SPEED, NULL, 0, NULL};
+
+
+
 
 
 Subject::~Subject(){}

@@ -49,6 +49,5 @@ Texture::Texture(ISubject& subject) : subject_(subject)
 
  void Texture::Update(EventType event, void* callback)
 {
-    Wizard* wizard = (Wizard*)callback;
     
 }

@@ -5,32 +5,9 @@
 #include <box2d/box2d.h>
 #include <memory>
 #include <stdio.h>
+#include "objects.h"
 
 #define PIXELS_PER_METER 32.0f
-
-
-typedef enum
-{
-    PURPLE,
-    YELLOW,
-} WizardType;
-
-typedef struct
-{
-    WizardType wizard_type;
-    float width;
-    float height;
-    float velocity;
-    b2Body* body;
-    int numFootContacts;
-    size_t move_frames = 5;
-    size_t jump_frames = 6;
-    size_t current_step = 0;
-    float pos[2] = {
-        metersToPixels(body->GetPosition().x) - width / 2 ,
-        metersToPixels(body->GetPosition().y) - height / 2
-    };
-} Wizard;
 
 
 class ContactListener : public b2ContactListener
