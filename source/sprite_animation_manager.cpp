@@ -6,17 +6,18 @@ void initialize_object(
     size_t num_sprite_sheets,
     const C2D_SpriteSheet spriteSheets[MAX_SPRITE_SHEETS],
     const uint64_t refresh_times[MAX_SPRITE_SHEETS],
-    float pos_x, float pos_y
-)
+    float pos_x, float pos_y,
+    C2D_Image static_animation)
 {
     object->position.x = pos_x;
     object->position.y = pos_y;
     object->rotation = 0.0f;
     object->rotation_velocity = 0.0f;
+    object->static_animation = static_animation;
 
     for (size_t animation_index = 0; animation_index < num_sprite_sheets; animation_index++)
     {
-        animation_t& animation = object->animations[animation_index];
+        animation_t &animation = object->animations[animation_index];
         animation.sprite_sheet = spriteSheets[animation_index];
         animation.frame_info.num_of_sprites = C2D_SpriteSheetCount(animation.sprite_sheet);
         animation.frame_info.current_frame_index = 0;
@@ -64,7 +65,6 @@ void update_object(object_2d_t *object)
     }
 }
 
-
 void draw_sprite_animation(object_2d_t *object, size_t animation_index)
 {
     animation_t &animation = object->animations[animation_index];
@@ -94,19 +94,23 @@ void draw_sprite_animation(object_2d_t *object, size_t animation_index)
     }
 }
 
-void draw_sprite(object_2d* object, bool is_static)
+void draw_sprite_static(object_2d_t *object)
 {
-    if (is_static)
+    C2D_DrawImageAt(
+        object->static_animation,
+        object->position.x, object->position.y,
+        0.0f, NULL, 1.0f, 1.0f);
+}
+
+void draw_sprite(object_2d_t* object, size_t animation_index = NULL)
+{
+    if (animation_index != NULL)
     {
-        C2D_DrawImageAt(
-            object->static_animation,
-            object->position.x, object->position.y,
-            1.0f, NULL, 1.0f, 1.0f
-        );
+        draw_sprite_animation(object, animation_index);
     }
     else
     {
-        draw_sprite_animation(object, object->animations->frame_info.current_frame_index);
+        draw_sprite_static(object);
     }
 }
 

@@ -5,6 +5,7 @@
 #include "assets_loader.h"
 #include "game_constants.h"
 #include <physics.h>
+#include <map>
 
 typedef enum
 {
@@ -27,6 +28,7 @@ typedef struct sprite_info
     uint64_t animations_refresh_ms_time[MAX_SPRITE_SHEETS];
 } sprite_info_t;
 
+
 typedef struct body_properties
 {
     float width;
@@ -42,6 +44,7 @@ typedef struct Wizard
     b2Body* body;
     sprite_info_t sprite_info;
     object_2d_t* object;
+    std::map<AnimationType, size_t> animation_map;
 } Wizard;
 
 #endif

@@ -63,14 +63,19 @@ void initialize_object(
     size_t num_sprite_sheets,
     const C2D_SpriteSheet spriteSheets[MAX_SPRITE_SHEETS],
     const uint64_t refresh_times[MAX_SPRITE_SHEETS],
-    float pos_x, float pos_y
+    float pos_x, float pos_y,
+    C2D_Image static_animation
 );
 
 void deinitialize_object(object_2d_t* object);
 
 void update_object(object_2d_t* object);
 
-void draw_sprite(object_2d_t* object, bool is_static);
+void draw_sprite_static(object_2d_t* object);
+
+void draw_sprite_animation(object_2d_t *object, size_t animation_index);
+
+void draw_sprite(object_2d_t* object, size_t animation_index = NULL);
 
 class SpriteAnimation : public IObserver
 {

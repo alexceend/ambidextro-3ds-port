@@ -31,7 +31,8 @@ Subject::Subject()
             {atlas_purple_wizard_static, atlas_purple_wizard_jump},
             {20, 20}
         },  
-        new object_2d_t{}
+        new object_2d_t{},
+        {{STATIC_ANIMATION, NULL}, {MOVE_ANIMATION, 0}, {JUMP_ANIMATION, 1}}
     };
     yellowWizard = {
         YELLOW, 
@@ -48,18 +49,21 @@ Subject::Subject()
             {atlas_yellow_wizard_static, atlas_yellow_wizard_jump},
             {20, 20}
         },
-        new object_2d_t{}
+        new object_2d_t{},
+        {{STATIC_ANIMATION, NULL}, {MOVE_ANIMATION, 0}, {JUMP_ANIMATION, 1}}
     };
 
     initialize_object(
         purpleWizard.object, purpleWizard.sprite_info.num_animations,
         purpleWizard.sprite_info.spriteSheets, purpleWizard.sprite_info.animations_refresh_ms_time,
-        purpleWizard.object->position.x, purpleWizard.object->position.y
+        purpleWizard.object->position.x, purpleWizard.object->position.y,
+        getAtlasTexture(atlas_purple_wizard_static, 0)
     );
     initialize_object(
         yellowWizard.object, yellowWizard.sprite_info.num_animations,
         yellowWizard.sprite_info.spriteSheets, yellowWizard.sprite_info.animations_refresh_ms_time,
-        yellowWizard.object->position.x, yellowWizard.object->position.y
+        yellowWizard.object->position.x, yellowWizard.object->position.y,
+        getAtlasTexture(atlas_yellow_wizard_static, 0)
     );
 }
 
