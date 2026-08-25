@@ -5,10 +5,12 @@ void initialize_object(
     object_2d_t *object,
     size_t num_sprite_sheets,
     const C2D_SpriteSheet spriteSheets[MAX_SPRITE_SHEETS],
-    const uint64_t refresh_times[MAX_SPRITE_SHEETS])
+    const uint64_t refresh_times[MAX_SPRITE_SHEETS],
+    float pos_x, float pos_y
+)
 {
-    object->position.x = 0.0f;
-    object->position.y = 0.0f;
+    object->position.x = pos_x;
+    object->position.y = pos_y;
     object->rotation = 0.0f;
     object->rotation_velocity = 0.0f;
 
@@ -62,6 +64,7 @@ void update_object(object_2d_t *object)
     }
 }
 
+
 void draw_sprite_animation(object_2d_t *object, size_t animation_index)
 {
     animation_t &animation = object->animations[animation_index];
@@ -91,6 +94,22 @@ void draw_sprite_animation(object_2d_t *object, size_t animation_index)
     }
 }
 
+void draw_sprite(object_2d* object, bool is_static)
+{
+    if (is_static)
+    {
+        C2D_DrawImageAt(
+            object->static_animation,
+            object->position.x, object->position.y,
+            1.0f, NULL, 1.0f, 1.0f
+        );
+    }
+    else
+    {
+        draw_sprite_animation(object, object->animations->frame_info.current_frame_index);
+    }
+}
+
 SpriteAnimation::SpriteAnimation(ISubject &subject) : subject_(subject)
 {
     this->subject_.Subscribe(MOVE_STOP, this);
@@ -105,26 +124,20 @@ void SpriteAnimation::Update(EventType event, void *callback)
 {
     Wizard *wizard = (Wizard *)callback;
     object_2d_t *object = wizard->object;
+    update_object(object);
     switch (event)
     {
     case MOVE_LEFT:
-        draw_sprite_animation(object, 0);
+        wizard->sprite_info.currentAnimation = MOVE_ANIMATION;
         break;
     case MOVE_RIGHT:
-        draw_sprite_animation(object, 0);
+        wizard->sprite_info.currentAnimation = MOVE_ANIMATION;
         break;
     case JUMP:
-        draw_sprite_animation(object, 1);
+        wizard->sprite_info.currentAnimation = JUMP_ANIMATION;
         break;
     case MOVE_STOP:
-        C2D_DrawImageAt(
-            wizard->sprite_info.static_animation,
-            wizard->body_properties.pos[0],
-            wizard->body_properties.pos[1],
-            0.0f,
-            NULL,
-            1.0f,
-            1.0f);
+        wizard->sprite_info.currentAnimation = STATIC_ANIMATION;
         break;
     default:
         break;

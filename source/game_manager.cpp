@@ -13,8 +13,6 @@
 Wizard yellowWizard;
 Wizard purpleWizard;
 
-// static C2D_Sprite purple_wizard_sprite[MAX_SPRITES];
-// static C2D_Sprite yellow_wizard_sprite[MAX_SPRITES];
 
 Subject::Subject()
 {
@@ -24,18 +22,16 @@ Subject::Subject()
             WIZARD_WIDTH, 
             WIZARD_HEIGHT,
             WIZARD_SPEED,
-            0,
-            {0.0f, 0.0f}
+            0
         },
         NULL,
         {
             STATIC_ANIMATION,
-            C2D_SpriteSheetGetImage(atlas_purple_wizard_static, 0),
             2,
             {atlas_purple_wizard_static, atlas_purple_wizard_jump},
             {20, 20}
         },  
-        NULL
+        new object_2d_t{}
     };
     yellowWizard = {
         YELLOW, 
@@ -43,27 +39,27 @@ Subject::Subject()
             WIZARD_WIDTH, 
             WIZARD_HEIGHT,
             WIZARD_SPEED,
-            0,
-            {0.0f, 0.0f}
+            0
         },
         NULL,
         {
             STATIC_ANIMATION,
-            C2D_SpriteSheetGetImage(atlas_yellow_wizard_static, 0),
             2,
             {atlas_yellow_wizard_static, atlas_yellow_wizard_jump},
             {20, 20}
         },
-        NULL
+        new object_2d_t{}
     };
 
     initialize_object(
         purpleWizard.object, purpleWizard.sprite_info.num_animations,
-        purpleWizard.sprite_info.spriteSheets, purpleWizard.sprite_info.animations_refresh_ms_time
+        purpleWizard.sprite_info.spriteSheets, purpleWizard.sprite_info.animations_refresh_ms_time,
+        purpleWizard.object->position.x, purpleWizard.object->position.y
     );
     initialize_object(
         yellowWizard.object, yellowWizard.sprite_info.num_animations,
-        yellowWizard.sprite_info.spriteSheets, yellowWizard.sprite_info.animations_refresh_ms_time
+        yellowWizard.sprite_info.spriteSheets, yellowWizard.sprite_info.animations_refresh_ms_time,
+        yellowWizard.object->position.x, yellowWizard.object->position.y
     );
 }
 

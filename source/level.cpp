@@ -291,8 +291,10 @@ void levelDraw()
         }
     }
 
-    // renderTexturePixel(getAtlasTexture(atlas_purple_wizard, 0), wizardPurplePos[0], wizardPurplePos[1]);
-    // renderTexturePixel(getAtlasTexture(atlas_yellow_wizard, 0), wizardYellowPos[0], wizardYellowPos[1]);
+    draw_sprite(
+        purpleWizard.object, 
+        purpleWizard.sprite_info.currentAnimation == STATIC_ANIMATION
+    );
 
     fooDrawInstance.SetFlags(b2Draw::e_shapeBit);
     if (showDebug)

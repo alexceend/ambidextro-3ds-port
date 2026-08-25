@@ -55,20 +55,22 @@ typedef struct object_2d
     float rotation_velocity;
 
     animation_t animations[MAX_SPRITE_SHEETS];
+    C2D_Image static_animation;
 } object_2d_t;
 
 void initialize_object(
     object_2d_t *object,
     size_t num_sprite_sheets,
     const C2D_SpriteSheet spriteSheets[MAX_SPRITE_SHEETS],
-    const uint64_t refresh_times[MAX_SPRITE_SHEETS]
+    const uint64_t refresh_times[MAX_SPRITE_SHEETS],
+    float pos_x, float pos_y
 );
 
 void deinitialize_object(object_2d_t* object);
 
 void update_object(object_2d_t* object);
 
-void draw_sprite_animation(object_2d_t* object);
+void draw_sprite(object_2d_t* object, bool is_static);
 
 class SpriteAnimation : public IObserver
 {

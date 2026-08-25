@@ -22,7 +22,6 @@ typedef enum
 typedef struct sprite_info
 {
     AnimationType currentAnimation;
-    C2D_Image static_animation;
     size_t num_animations;
     C2D_SpriteSheet spriteSheets[MAX_SPRITE_SHEETS];
     uint64_t animations_refresh_ms_time[MAX_SPRITE_SHEETS];
@@ -34,7 +33,6 @@ typedef struct body_properties
     float height;
     float velocity;
     int num_foot_contacts;
-    float pos[2];
 } body_properties_t;
 
 typedef struct Wizard
