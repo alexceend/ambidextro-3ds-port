@@ -1,7 +1,8 @@
 #include "sprite_animation_manager.h"
 
+
 void initialize_object(
-    object_2d_t* object, C2D_Sprite* sprites, size_t num_sprite_sheets, const C2D_SpriteSheet spriteSheets[MAX_SPRITE_SHEETS]
+    object_2d_t* object, C2D_Sprite* sprites, size_t num_sprite_sheets, const C2D_SpriteSheet spriteSheets[MAX_SPRITE_SHEETS], const uint64_t refresh_times[MAX_SPRITE_SHEETS]
 )
 {
     for (size_t sprite_sheet_index = 0; sprite_sheet_index < num_sprite_sheets; sprite_sheet_index++)
@@ -32,7 +33,7 @@ void initialize_object(
         object->animations[sprite_sheet_index].refresh_info.start = osGetTime();
         object->animations[sprite_sheet_index].refresh_info.elapsed = 0;
 
-        object->animations[sprite_sheet_index].refresh_info.refresh_time = 20;
+        object->animations[sprite_sheet_index].refresh_info.refresh_time = refresh_times[sprite_sheet_index];
     }
 
     object->object_sprite = sprites;
@@ -86,5 +87,31 @@ void draw_sprite_animation(object_2d_t* object, size_t animation_index)
     else
     {
         C2D_DrawSprite(&object->object_sprite[animation.frame_info.current_frame_index]);
+    }
+}
+
+SpriteAnimation::SpriteAnimation(ISubject &subject) : subject_(subject)
+{
+    this->subject_.Subscribe(MOVE_STOP, this);
+    this->subject_.Subscribe(MOVE_RIGHT, this);
+    this->subject_.Subscribe(MOVE_LEFT, this);
+    this->subject_.Subscribe(JUMP, this);
+}
+
+SpriteAnimation::~SpriteAnimation() {}
+
+void SpriteAnimation::Update(EventType event, void* callback)
+{
+    object_2d_t* object = (object_2d_t*)callback;
+    
+    switch(event)
+    {
+        case MOVE_LEFT || MOVE_RIGHT:
+            draw_sprite_animation(object, 0);
+        case JUMP:
+            draw_sprite_animation(object, 1);
+        case MOVE_STOP:
+            break;
+        default: break;
     }
 }

@@ -38,10 +38,12 @@ public:
 class Subject : public ISubject
 {
 public:
+    Subject();
     ~Subject();
     void Subscribe(EventType event, IObserver *observer);
     void Unsubscribe(EventType event, IObserver *observer);
     void Notify(EventType event, void *callback);
+    void Erase();
     void ManageGame(u32 kDown, u32 kHeld, u32 kUp);
     void keyLogger(u32 kDown, u32 kHeld, u32 kUp);
     void movementLogger(u32 kHeld, u32 kUp);

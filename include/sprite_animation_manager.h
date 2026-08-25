@@ -4,6 +4,7 @@
 #include <citro2d.h>
 #include <3ds.h>
 #include <stdbool.h>
+#include "event_system.h"
 
 #define MAX_SPRITE_SHEETS 10
 
@@ -51,7 +52,7 @@ typedef struct object_2d
 } object_2d_t;
 
 void initialize_object(
-    object_2d_t* object, C2D_Sprite* sprites, size_t num_sprite_sheets, const C2D_SpriteSheet spriteSheets[MAX_SPRITE_SHEETS]
+    object_2d_t* object, C2D_Sprite* sprites, size_t num_sprite_sheets, const C2D_SpriteSheet spriteSheets[MAX_SPRITE_SHEETS], const uint64_t refresh_times[MAX_SPRITE_SHEETS]
 );
 
 void deinitialize_object(object_2d_t* object);
@@ -59,5 +60,15 @@ void deinitialize_object(object_2d_t* object);
 void update_object(object_2d_t* object);
 
 void draw_sprite_animation(object_2d_t* object);
+
+class SpriteAnimation : public IObserver
+{
+    private:
+        ISubject& subject_;
+    public:
+        SpriteAnimation(ISubject& subject);
+        virtual ~SpriteAnimation();
+        void Update(EventType event, void* callback);
+};
 
 #endif

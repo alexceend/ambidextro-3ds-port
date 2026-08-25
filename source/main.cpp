@@ -93,13 +93,10 @@ int main(int argc, char** argv)
     Subject gameManager;
     Movement* movement = new Movement(gameManager);
     LevelClass* levelObject = new LevelClass(gameManager);
-
-    log_message("[INFO]: Starting main while...");
     
     
     while (aptMainLoop())
     {
-        printf("Helo!\n");
         hidScanInput();
 
         u32 kDown = hidKeysDown();
@@ -114,18 +111,10 @@ int main(int argc, char** argv)
 
         if (currentScene == SCENE_LEVEL)
         {
-            printf("Called manage game!\n");
             gameManager.ManageGame(kDown, kHeld, kUp);
         }
-        else
-        {
-            //printf("Calling destructor of gamemanager\n");
-            //gameManager.~Subject();
-        }
         
-        printf("Before update!\n");
         sceneUpdate(&currentScene, &nextScene, kDown, kHeld);
-        printf("After update!\n");
     
         sceneChange(&currentScene, &nextScene, top);
 

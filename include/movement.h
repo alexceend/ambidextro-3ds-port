@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include "physics.h"
 #include "game_manager.h"
+#include "event_system.h"
 
 typedef enum
 {

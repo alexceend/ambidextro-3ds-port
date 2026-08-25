@@ -42,14 +42,14 @@ void Movement::Update(EventType event, void *callback)
     switch (event)
     {
     case MOVE_RIGHT:
-        applyVelocity(MS_RIGHT, wizard->body, wizard->velocity);
+        applyVelocity(MS_RIGHT, wizard->body, wizard->body_properties.velocity);
         break;
     case MOVE_LEFT:
-        applyVelocity(MS_LEFT, wizard->body, wizard->velocity);
+        applyVelocity(MS_LEFT, wizard->body, wizard->body_properties.velocity);
         break;
     case MOVE_STOP:
         wizard = (Wizard *) callback;
-        applyVelocity(MS_STOP, wizard->body, wizard->velocity);
+        applyVelocity(MS_STOP, wizard->body, wizard->body_properties.velocity);
         break;
     case JUMP:
         jump(wizard->body);

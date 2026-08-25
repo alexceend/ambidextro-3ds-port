@@ -36,7 +36,7 @@ void loadGroundBox(int pos_x, int pos_y, int width, int height, int offset_x, in
 
 void loadWizardHitbox(float pos_x, float pos_y, Wizard *wizard)
 {   
-    float footSensorX = wizard->width / 4;
+    float footSensorX = wizard->body_properties.width / 4;
     float footSensorY = 2.0f;
     
     b2BodyDef bodyDef;
@@ -48,7 +48,7 @@ void loadWizardHitbox(float pos_x, float pos_y, Wizard *wizard)
 
     b2PolygonShape dynamicBox;
 
-    dynamicBox.SetAsBox(pixelsToMeters(wizard->width / 2), pixelsToMeters(wizard->height / 2));
+    dynamicBox.SetAsBox(pixelsToMeters(wizard->body_properties.width / 2), pixelsToMeters(wizard->body_properties.height / 2));
 
     b2FixtureDef fixtureDef;
     fixtureDef.shape = &dynamicBox;
@@ -60,7 +60,7 @@ void loadWizardHitbox(float pos_x, float pos_y, Wizard *wizard)
     dynamicBox.SetAsBox(
         pixelsToMeters(footSensorX), 
         pixelsToMeters(footSensorY), 
-        b2Vec2(0, pixelsToMeters((wizard->height / 2) - footSensorY)), 
+        b2Vec2(0, pixelsToMeters((wizard->body_properties.height / 2) - footSensorY)), 
         0
     );
 
@@ -80,7 +80,7 @@ void ContactListener::checkFootSensor(b2Fixture* fixture, int delta)
     if (data != 0)
     {
         Wizard* wizard = reinterpret_cast<Wizard*>(data);
-        wizard->numFootContacts += delta;
+        wizard->body_properties.num_foot_contacts += delta;
     }
 }
 

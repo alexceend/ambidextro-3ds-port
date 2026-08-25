@@ -9,32 +9,63 @@
 #include "sprite_animation_manager.h"
 #include "objects.h"
 
-Wizard purpleWizard = {PURPLE, 
-    WIZARD_WIDTH, 
-    WIZARD_HEIGHT,
-    WIZARD_SPEED, 
-    NULL, 
-    0, 
-    20,
-    {0.0f, 0.0f},
-    NULL,
-    {atlas_purple_wizard_static, atlas_purple_wizard_jump}
-};
-Wizard yellowWizard = {
-    YELLOW, 
-    WIZARD_WIDTH, 
-    WIZARD_HEIGHT, 
-    WIZARD_SPEED, 
-    NULL, 
-    0, 
-    20,
-    {0.0f, 0.0f},
-    NULL,
-    {atlas_yellow_wizard_static, atlas_yellow_wizard_jump}
-};
 
+Wizard yellowWizard;
+Wizard purpleWizard;
 
+static C2D_Sprite purple_wizard_sprite[MAX_SPRITES];
+static C2D_Sprite yellow_wizard_sprite[MAX_SPRITES];
 
+Subject::Subject()
+{
+    purpleWizard = {
+        PURPLE,
+        {
+            WIZARD_WIDTH, 
+            WIZARD_HEIGHT,
+            WIZARD_SPEED,
+            0,
+            {0.0f, 0.0f}
+        },
+        NULL,
+        {
+            STATIC_ANIMATION,
+            C2D_SpriteSheetGetImage(atlas_purple_wizard_static, 0),
+            2,
+            {atlas_purple_wizard_static, atlas_purple_wizard_jump},
+            {20, 20}
+        },  
+        NULL
+    };
+    yellowWizard = {
+        YELLOW, 
+        {
+            WIZARD_WIDTH, 
+            WIZARD_HEIGHT,
+            WIZARD_SPEED,
+            0,
+            {0.0f, 0.0f}
+        },
+        NULL,
+        {
+            STATIC_ANIMATION,
+            C2D_SpriteSheetGetImage(atlas_yellow_wizard_static, 0),
+            2,
+            {atlas_yellow_wizard_static, atlas_yellow_wizard_jump},
+            {20, 20}
+        },
+        NULL
+    };
+
+    initialize_object(
+        purpleWizard.object, purple_wizard_sprite, purpleWizard.sprite_info.num_animations,
+        purpleWizard.sprite_info.spriteSheets, purpleWizard.sprite_info.animations_refresh_ms_time
+    );
+    initialize_object(
+        yellowWizard.object, yellow_wizard_sprite, yellowWizard.sprite_info.num_animations,
+        yellowWizard.sprite_info.spriteSheets, yellowWizard.sprite_info.animations_refresh_ms_time
+    );
+}
 
 Subject::~Subject(){}
 
@@ -76,6 +107,15 @@ void Subject::Notify(EventType event, void *callback)
     {
         observer->Update(event, callback);
     }
+}
+
+void Subject::Erase()
+{
+    for (auto& [event, observerList] : observers)
+    {
+        observerList.clear();
+    }
+    observers.clear();
 }
 void Subject::ManageGame(u32 kDown, u32 kHeld, u32 kUp)
 {
@@ -120,11 +160,11 @@ void Subject::movementLogger(u32 kHeld, u32 kUp)
 
 void Subject::jumpLogger(u32 kDown)
 {
-    if (kDown & KEY_UP && purpleWizard.numFootContacts >= 1)
+    if (kDown & KEY_UP && purpleWizard.body_properties.num_foot_contacts >= 1)
     {
         Notify(JUMP, &purpleWizard);
     }
-    else if(kDown & KEY_X && yellowWizard.numFootContacts >= 1)
+    else if(kDown & KEY_X && yellowWizard.body_properties.num_foot_contacts >= 1)
     {
         Notify(JUMP, &yellowWizard);
     }

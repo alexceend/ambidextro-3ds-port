@@ -24,11 +24,6 @@ bool renderTexturePixel(C2D_Image image, float pos_x, float pos_y)
     return C2D_DrawImageAt(image, pos_x, pos_y, 0.0f, NULL, 1.0f, 1.0f);
 }
 
-bool renderWizard(Wizard* wizard)
-{
-
-}
-
 /*
 // Dejando aquí codigo muerto para ayudar a la limpieza del código. #CleanCode, #PositiveMindset
 

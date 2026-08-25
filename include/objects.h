@@ -5,26 +5,47 @@
 #include "assets_loader.h"
 #include "physics.h"
 
+#define MAX_SPRITES_SHEETS 5
 #define MAX_SPRITES 15
 
 typedef enum
 {
     PURPLE,
-    YELLOW,
+    YELLOW
 } WizardType;
+
+typedef enum
+{
+    STATIC_ANIMATION,
+    MOVE_ANIMATION,
+    JUMP_ANIMATION
+} AnimationType;
+
+typedef struct sprite_info
+{
+    AnimationType currentAnimation;
+    C2D_Image static_animation;
+    size_t num_animations;
+    C2D_SpriteSheet spriteSheets[MAX_SPRITE_SHEETS];
+    uint64_t animations_refresh_ms_time[MAX_SPRITE_SHEETS];
+} sprite_info_t;
+
+typedef struct body_properties
+{
+    float width;
+    float height;
+    float velocity;
+    int num_foot_contacts;
+    float pos[2];
+} body_properties_t;
 
 typedef struct Wizard
 {
     WizardType wizard_type;
-    float width;
-    float height;
-    float velocity;
+    body_properties_t body_properties;
     b2Body* body;
-    int numFootContacts;
-    uint64_t sprite_refresh_ms_time;
-    float pos[2];
+    sprite_info_t sprite_info;
     object_2d_t* object;
-    C2D_SpriteSheet spriteSheets[MAX_SPRITES];
 } Wizard;
 
 #endif
