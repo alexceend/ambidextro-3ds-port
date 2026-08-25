@@ -93,6 +93,7 @@ int main(int argc, char** argv)
     Subject gameManager;
     Movement* movement = new Movement(gameManager);
     LevelClass* levelObject = new LevelClass(gameManager);
+    SpriteAnimation* spriteAnimation = new SpriteAnimation(gameManager);
     
     
     while (aptMainLoop())

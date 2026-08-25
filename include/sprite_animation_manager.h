@@ -5,8 +5,7 @@
 #include <3ds.h>
 #include <stdbool.h>
 #include "event_system.h"
-
-#define MAX_SPRITE_SHEETS 10
+#include "game_constants.h"
 
 typedef struct sprite_pivot
 {
@@ -30,7 +29,7 @@ typedef struct sprite_refresh_info
 
 typedef struct sprite_frame_info
 {
-    int current_frame_index;
+    size_t current_frame_index;
     size_t num_of_sprites;
     bool loop_once;
 } sprite_frame_info_t;
@@ -38,16 +37,23 @@ typedef struct sprite_frame_info
 typedef struct animation
 {
     C2D_SpriteSheet sprite_sheet;
+
+    C2D_Sprite sprites[MAX_SPRITES];
+
     sprite_refresh_info_t refresh_info;
     sprite_frame_info_t frame_info;
+
     sprite_pivot_t pivot;
-    float rotation;
-    float rotation_velocity;
+
 } animation_t;
 
 typedef struct object_2d
 {
-    C2D_Sprite* object_sprite;
+    sprite_position_t position;
+
+    float rotation;
+    float rotation_velocity;
+
     animation_t animations[MAX_SPRITE_SHEETS];
 } object_2d_t;
 

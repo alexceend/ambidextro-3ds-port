@@ -3,10 +3,8 @@
 
 #include "sprite_animation_manager.h"
 #include "assets_loader.h"
-#include "physics.h"
-
-#define MAX_SPRITES_SHEETS 5
-#define MAX_SPRITES 15
+#include "game_constants.h"
+#include <physics.h>
 
 typedef enum
 {

@@ -25,8 +25,6 @@
 
 static C3D_RenderTarget *top = NULL;
 
-static C2D_SpriteSheet currentAtlas;
-
 FooDraw fooDrawInstance;
 
 typedef enum
@@ -170,10 +168,7 @@ bool levelInit(C3D_RenderTarget *target)
     }
 
     loadPhysics();
-
-    C2D_SpriteSheet sheets[MAX_SPRITE_SHEETS] = {atlas_purple_wizard_static, atlas_purple_wizard_jump};
-    
-
+  
     return true;
 }
 
@@ -234,6 +229,13 @@ void levelCleanup()
 
 void levelUpdate()
 {
+    b2Vec2 wizardPurple = purpleWizard.body->GetPosition();
+    b2Vec2 wizardYellow = yellowWizard.body->GetPosition();
+
+    purpleWizard.object->position.x = metersToPixels(wizardPurple.x) - purpleWizard.body_properties.width / 2;
+    purpleWizard.object->position.y = metersToPixels(wizardPurple.y) - purpleWizard.body_properties.height / 2;
+    yellowWizard.object->position.x = metersToPixels(wizardYellow.x)- yellowWizard.body_properties.width / 2;
+    yellowWizard.object->position.y = metersToPixels(wizardYellow.y)- yellowWizard.body_properties.height / 2;
     updatePhysics();
 }
 
@@ -271,11 +273,6 @@ void FooDraw::DrawSolidPolygon(const b2Vec2 *vertices, int32 vertexCount, const 
 
 void levelDraw()
 {
-    b2Vec2 wizardPurple = purpleWizard.body->GetPosition();
-    b2Vec2 wizardYellow = yellowWizard.body->GetPosition();
-
-    float wizardPurplePos[2] = {metersToPixels(wizardPurple.x) - purpleWizard.body_properties.width / 2 , metersToPixels(wizardPurple.y) - purpleWizard.body_properties.height / 2};
-    float wizardYellowPos[2] = {metersToPixels(wizardYellow.x) - yellowWizard.body_properties.width / 2, metersToPixels(wizardYellow.y) - yellowWizard.body_properties.height /2 };
 
     C2D_TargetClear(top, C2D_Color32(20, 20, 40, 255));
     C2D_SceneBegin(top);

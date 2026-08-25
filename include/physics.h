@@ -5,11 +5,11 @@
 #include <box2d/box2d.h>
 #include <memory>
 #include <stdio.h>
+#include "objects.h"
 
 #define PIXELS_PER_METER 32.0f
 
 struct Wizard;
-
 
 class ContactListener : public b2ContactListener
 {
