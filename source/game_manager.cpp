@@ -13,8 +13,8 @@
 Wizard yellowWizard;
 Wizard purpleWizard;
 
-static C2D_Sprite purple_wizard_sprite[MAX_SPRITES];
-static C2D_Sprite yellow_wizard_sprite[MAX_SPRITES];
+// static C2D_Sprite purple_wizard_sprite[MAX_SPRITES];
+// static C2D_Sprite yellow_wizard_sprite[MAX_SPRITES];
 
 Subject::Subject()
 {
@@ -58,11 +58,11 @@ Subject::Subject()
     };
 
     initialize_object(
-        purpleWizard.object, purple_wizard_sprite, purpleWizard.sprite_info.num_animations,
+        purpleWizard.object, purpleWizard.sprite_info.num_animations,
         purpleWizard.sprite_info.spriteSheets, purpleWizard.sprite_info.animations_refresh_ms_time
     );
     initialize_object(
-        yellowWizard.object, yellow_wizard_sprite, yellowWizard.sprite_info.num_animations,
+        yellowWizard.object, yellowWizard.sprite_info.num_animations,
         yellowWizard.sprite_info.spriteSheets, yellowWizard.sprite_info.animations_refresh_ms_time
     );
 }

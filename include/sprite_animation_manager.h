@@ -58,7 +58,10 @@ typedef struct object_2d
 } object_2d_t;
 
 void initialize_object(
-    object_2d_t* object, C2D_Sprite* sprites, size_t num_sprite_sheets, const C2D_SpriteSheet spriteSheets[MAX_SPRITE_SHEETS], const uint64_t refresh_times[MAX_SPRITE_SHEETS]
+    object_2d_t *object,
+    size_t num_sprite_sheets,
+    const C2D_SpriteSheet spriteSheets[MAX_SPRITE_SHEETS],
+    const uint64_t refresh_times[MAX_SPRITE_SHEETS]
 );
 
 void deinitialize_object(object_2d_t* object);

@@ -125,6 +125,7 @@ void SpriteAnimation::Update(EventType event, void *callback)
             NULL,
             1.0f,
             1.0f);
+        break;
     default:
         break;
     }
