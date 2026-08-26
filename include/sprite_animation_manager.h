@@ -75,7 +75,7 @@ void draw_sprite_static(object_2d_t* object);
 
 void draw_sprite_animation(object_2d_t *object, size_t animation_index);
 
-void draw_sprite(object_2d_t* object, size_t animation_index = NULL);
+void draw_sprite(object_2d_t* object, size_t* animation_index = NULL);
 
 class SpriteAnimation : public IObserver
 {

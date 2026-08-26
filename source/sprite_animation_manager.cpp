@@ -102,11 +102,11 @@ void draw_sprite_static(object_2d_t *object)
         0.0f, NULL, 1.0f, 1.0f);
 }
 
-void draw_sprite(object_2d_t* object, size_t animation_index = NULL)
+void draw_sprite(object_2d_t* object, size_t* animation_index)
 {
     if (animation_index != NULL)
     {
-        draw_sprite_animation(object, animation_index);
+        draw_sprite_animation(object, *animation_index);
     }
     else
     {
