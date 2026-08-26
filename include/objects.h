@@ -4,6 +4,7 @@
 #include "sprite_animation_manager.h"
 #include "assets_loader.h"
 #include "game_constants.h"
+#include "animation_types.h"
 #include <physics.h>
 #include <map>
 
@@ -13,16 +14,10 @@ typedef enum
     YELLOW
 } WizardType;
 
-typedef enum
-{
-    STATIC_ANIMATION,
-    MOVE_ANIMATION,
-    JUMP_ANIMATION
-} AnimationType;
 
 typedef struct sprite_info
 {
-    AnimationType currentAnimation;
+    AnimationType currentAnimationType;
     size_t num_animations;
     C2D_SpriteSheet spriteSheets[MAX_SPRITE_SHEETS];
     uint64_t animations_refresh_ms_time[MAX_SPRITE_SHEETS];

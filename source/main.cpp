@@ -114,7 +114,6 @@ int main(int argc, char** argv)
         {
             gameManager.ManageGame(kDown, kHeld, kUp);
         }
-        
         sceneUpdate(&currentScene, &nextScene, kDown, kHeld);
     
         sceneChange(&currentScene, &nextScene, top);

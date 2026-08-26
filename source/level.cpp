@@ -236,6 +236,9 @@ void levelUpdate()
     purpleWizard.object->position.y = metersToPixels(wizardPurple.y) - purpleWizard.body_properties.height / 2;
     yellowWizard.object->position.x = metersToPixels(wizardYellow.x)- yellowWizard.body_properties.width / 2;
     yellowWizard.object->position.y = metersToPixels(wizardYellow.y)- yellowWizard.body_properties.height / 2;
+
+    update_object(purpleWizard.object, purpleWizard.animation_map[purpleWizard.sprite_info.currentAnimationType]);
+    update_object(yellowWizard.object, yellowWizard.animation_map[yellowWizard.sprite_info.currentAnimationType]);
     updatePhysics();
 }
 
@@ -273,7 +276,6 @@ void FooDraw::DrawSolidPolygon(const b2Vec2 *vertices, int32 vertexCount, const 
 
 void levelDraw()
 {
-
     C2D_TargetClear(top, C2D_Color32(20, 20, 40, 255));
     C2D_SceneBegin(top);
 
@@ -291,8 +293,8 @@ void levelDraw()
         }
     }
 
-    draw_sprite(purpleWizard.object, purpleWizard.animation_map[purpleWizard.sprite_info.currentAnimation]);
-    draw_sprite(yellowWizard.object, yellowWizard.animation_map[yellowWizard.sprite_info.currentAnimation]);
+    draw_sprite(purpleWizard.object, purpleWizard.animation_map[purpleWizard.sprite_info.currentAnimationType]);
+    draw_sprite(yellowWizard.object, yellowWizard.animation_map[yellowWizard.sprite_info.currentAnimationType]);
 
     fooDrawInstance.SetFlags(b2Draw::e_shapeBit);
     if (showDebug)

@@ -14,6 +14,7 @@ typedef enum
     MOVE_LEFT,
     MOVE_STOP,
     JUMP,
+    AIRBORN,
     EXIT,
     DEBUG
 } EventType;
@@ -48,6 +49,7 @@ public:
     void keyLogger(u32 kDown, u32 kHeld, u32 kUp);
     void movementLogger(u32 kHeld, u32 kUp);
     void jumpLogger(u32 kDown);
+    void airbornLogger();
     void exitLogger(u32 kDown);
     void debugLogger(u32 kDown);
 

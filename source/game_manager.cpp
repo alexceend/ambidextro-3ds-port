@@ -9,65 +9,55 @@
 #include "sprite_animation_manager.h"
 #include "objects.h"
 
-
 Wizard yellowWizard;
 Wizard purpleWizard;
 
-
+C2D_Sprite purple_sprite;
+C2D_Sprite yellow_sprite;
 Subject::Subject()
 {
     purpleWizard = {
         PURPLE,
-        {
-            WIZARD_WIDTH, 
-            WIZARD_HEIGHT,
-            WIZARD_SPEED,
-            0
-        },
+        {WIZARD_WIDTH,
+         WIZARD_HEIGHT,
+         WIZARD_SPEED,
+         0},
         NULL,
-        {
-            STATIC_ANIMATION,
-            2,
-            {atlas_purple_wizard_static, atlas_purple_wizard_jump},
-            {20, 20}
-        },  
+        {STATIC_ANIMATION,
+         2,
+         {atlas_purple_wizard_static, atlas_purple_wizard_jump},
+         {20, 20}},
         new object_2d_t{},
-        {{STATIC_ANIMATION, MAX_SPRITE_SHEETS}, {MOVE_ANIMATION, 0}, {JUMP_ANIMATION, 1}}
-    };
+        {{STATIC_ANIMATION, MAX_SPRITE_SHEETS}, {MOVE_ANIMATION, MAX_SPRITE_SHEETS}, {JUMP_ANIMATION, 1}}};
     yellowWizard = {
-        YELLOW, 
-        {
-            WIZARD_WIDTH, 
-            WIZARD_HEIGHT,
-            WIZARD_SPEED,
-            0
-        },
+        YELLOW,
+        {WIZARD_WIDTH,
+         WIZARD_HEIGHT,
+         WIZARD_SPEED,
+         0},
         NULL,
-        {
-            STATIC_ANIMATION,
-            2,
-            {atlas_yellow_wizard_static, atlas_yellow_wizard_jump},
-            {20, 20}
-        },
+        {STATIC_ANIMATION,
+         2,
+         {atlas_yellow_wizard_static, atlas_yellow_wizard_jump},
+         {20, 20}},
         new object_2d_t{},
-        {{STATIC_ANIMATION, NULL}, {MOVE_ANIMATION, 0}, {JUMP_ANIMATION, 1}}
-    };
+        {{STATIC_ANIMATION, 0}, {MOVE_ANIMATION, 0}, {JUMP_ANIMATION, 1}}};
 
     initialize_object(
         purpleWizard.object, purpleWizard.sprite_info.num_animations,
         purpleWizard.sprite_info.spriteSheets, purpleWizard.sprite_info.animations_refresh_ms_time,
-        purpleWizard.object->position.x, purpleWizard.object->position.y,
-        getAtlasTexture(atlas_purple_wizard_static, 0)
+        metersToPixels(purpleWizard.body->GetPosition().x) - purpleWizard.body_properties.width / 2,
+        metersToPixels(purpleWizard.body->GetPosition().y) - purpleWizard.body_properties.height / 2
     );
     initialize_object(
         yellowWizard.object, yellowWizard.sprite_info.num_animations,
         yellowWizard.sprite_info.spriteSheets, yellowWizard.sprite_info.animations_refresh_ms_time,
-        yellowWizard.object->position.x, yellowWizard.object->position.y,
-        getAtlasTexture(atlas_yellow_wizard_static, 0)
+        metersToPixels(yellowWizard.body->GetPosition().x) - yellowWizard.body_properties.width / 2,
+        metersToPixels(yellowWizard.body->GetPosition().y) - yellowWizard.body_properties.height / 2
     );
 }
 
-Subject::~Subject(){}
+Subject::~Subject() {}
 
 void Subject::Subscribe(EventType event, IObserver *observer)
 {
@@ -103,7 +93,7 @@ void Subject::Unsubscribe(EventType event, IObserver *observer)
 
 void Subject::Notify(EventType event, void *callback)
 {
-    for (IObserver* observer : observers[event])
+    for (IObserver *observer : observers[event])
     {
         observer->Update(event, callback);
     }
@@ -111,7 +101,7 @@ void Subject::Notify(EventType event, void *callback)
 
 void Subject::Erase()
 {
-    for (auto& [event, observerList] : observers)
+    for (auto &[event, observerList] : observers)
     {
         observerList.clear();
     }
@@ -120,6 +110,7 @@ void Subject::Erase()
 void Subject::ManageGame(u32 kDown, u32 kHeld, u32 kUp)
 {
     keyLogger(kDown, kHeld, kUp);
+    airbornLogger();
 }
 
 void Subject::keyLogger(u32 kDown, u32 kHeld, u32 kUp)
@@ -132,6 +123,7 @@ void Subject::keyLogger(u32 kDown, u32 kHeld, u32 kUp)
 
 void Subject::movementLogger(u32 kHeld, u32 kUp)
 {
+
     if (kHeld & KEY_LEFT)
     {
         Notify(MOVE_LEFT, &purpleWizard);
@@ -148,11 +140,11 @@ void Subject::movementLogger(u32 kHeld, u32 kUp)
     {
         Notify(MOVE_RIGHT, &yellowWizard);
     }
-    else if(kHeld & KEY_Y)
+    else if (kHeld & KEY_Y)
     {
         Notify(MOVE_LEFT, &yellowWizard);
     }
-    else if(kUp & KEY_A || kUp & KEY_Y)
+    else if (kUp & KEY_A || kUp & KEY_Y)
     {
         Notify(MOVE_STOP, &yellowWizard);
     }
@@ -164,9 +156,29 @@ void Subject::jumpLogger(u32 kDown)
     {
         Notify(JUMP, &purpleWizard);
     }
-    else if(kDown & KEY_X && yellowWizard.body_properties.num_foot_contacts >= 1)
+    if (kDown & KEY_X && yellowWizard.body_properties.num_foot_contacts >= 1)
     {
         Notify(JUMP, &yellowWizard);
+    }
+}
+
+void Subject::airbornLogger()
+{
+    if (purpleWizard.body_properties.num_foot_contacts < 1)
+    {
+        Notify(AIRBORN, &purpleWizard);
+    }
+    else
+    {
+        Notify(MOVE_STOP, &purpleWizard);
+    }
+    if (yellowWizard.body_properties.num_foot_contacts < 1)
+    {
+        Notify(AIRBORN, &yellowWizard);
+    }
+    else
+    {
+        Notify(MOVE_STOP, &yellowWizard);
     }
 }
 

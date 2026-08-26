@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #include "event_system.h"
 #include "game_constants.h"
+#include "animation_types.h"
 
 typedef struct sprite_pivot
 {
@@ -55,25 +56,21 @@ typedef struct object_2d
     float rotation_velocity;
 
     animation_t animations[MAX_SPRITE_SHEETS];
-    C2D_Image static_animation;
+    C2D_Sprite static_animation;
+    animation_t* current_animation;
 } object_2d_t;
 
 void initialize_object(
-    object_2d_t *object,
+    object_2d_t* object,
     size_t num_sprite_sheets,
     const C2D_SpriteSheet spriteSheets[MAX_SPRITE_SHEETS],
     const uint64_t refresh_times[MAX_SPRITE_SHEETS],
-    float pos_x, float pos_y,
-    C2D_Image static_animation
+    float pos_x, float pos_y
 );
 
 void deinitialize_object(object_2d_t* object);
 
-void update_object(object_2d_t* object);
-
-void draw_sprite_static(object_2d_t* object);
-
-void draw_sprite_animation(object_2d_t *object, size_t animation_index);
+void update_object(object_2d_t* object, size_t animation_index);
 
 void draw_sprite(object_2d_t* object, size_t animation_index);
 
