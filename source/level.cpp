@@ -291,8 +291,8 @@ void levelDraw()
         }
     }
 
-    draw_sprite(purpleWizard.object, &(purpleWizard.animation_map[purpleWizard.sprite_info.currentAnimation]));
-    draw_sprite(yellowWizard.object, &(yellowWizard.animation_map[yellowWizard.sprite_info.currentAnimation]));
+    draw_sprite(purpleWizard.object, purpleWizard.animation_map[purpleWizard.sprite_info.currentAnimation]);
+    draw_sprite(yellowWizard.object, yellowWizard.animation_map[yellowWizard.sprite_info.currentAnimation]);
 
     fooDrawInstance.SetFlags(b2Draw::e_shapeBit);
     if (showDebug)

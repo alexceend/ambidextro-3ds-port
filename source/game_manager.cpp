@@ -32,7 +32,7 @@ Subject::Subject()
             {20, 20}
         },  
         new object_2d_t{},
-        {{STATIC_ANIMATION, NULL}, {MOVE_ANIMATION, 0}, {JUMP_ANIMATION, 1}}
+        {{STATIC_ANIMATION, MAX_SPRITE_SHEETS}, {MOVE_ANIMATION, 0}, {JUMP_ANIMATION, 1}}
     };
     yellowWizard = {
         YELLOW, 
