@@ -145,7 +145,7 @@ void Subject::movementLogger(u32 kHeld, u32 kUp)
     {
         Notify(MOVE_LEFT, &purpleWizard);
     }
-    else if (kHeld & KEY_RIGHT && purpleWizard.body->GetLinearVelocity().x == 0)
+    else if (kHeld & KEY_RIGHT)
     {
         Notify(MOVE_RIGHT, &purpleWizard);
     }
@@ -153,11 +153,11 @@ void Subject::movementLogger(u32 kHeld, u32 kUp)
     {
         Notify(MOVE_STOP, &purpleWizard);
     }
-    else if (kHeld & KEY_A && yellowWizard.body->GetLinearVelocity().x == 0)
+    else if (kHeld & KEY_A)
     {
         Notify(MOVE_RIGHT, &yellowWizard);
     }
-    else if (kHeld & KEY_Y && (yellowWizard.body->GetLinearVelocity().x == 0))
+    else if (kHeld & KEY_Y)
     {
         Notify(MOVE_LEFT, &yellowWizard);
     }
