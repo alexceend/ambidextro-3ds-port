@@ -12,6 +12,11 @@
 Wizard yellowWizard;
 Wizard purpleWizard;
 
+bool purple_prev_air;
+bool purple_current_air;
+bool yellow_prev_air;
+bool yellow_current_air;
+
 C2D_Sprite purple_sprite;
 C2D_Sprite yellow_sprite;
 Subject::Subject()
@@ -28,7 +33,7 @@ Subject::Subject()
          {atlas_purple_wizard_static, atlas_purple_wizard_jump},
          {20, 20}},
         new object_2d_t{},
-        {{STATIC_ANIMATION, MAX_SPRITE_SHEETS}, {MOVE_ANIMATION, MAX_SPRITE_SHEETS}, {JUMP_ANIMATION, 1}}};
+        {{STATIC_ANIMATION, MAX_SPRITE_SHEETS}, {MOVE_ANIMATION, 0}, {JUMP_ANIMATION, 1}}};
     yellowWizard = {
         YELLOW,
         {WIZARD_WIDTH,
@@ -41,7 +46,7 @@ Subject::Subject()
          {atlas_yellow_wizard_static, atlas_yellow_wizard_jump},
          {20, 20}},
         new object_2d_t{},
-        {{STATIC_ANIMATION, 0}, {MOVE_ANIMATION, 0}, {JUMP_ANIMATION, 1}}};
+        {{STATIC_ANIMATION, MAX_SPRITE_SHEETS}, {MOVE_ANIMATION, 0}, {JUMP_ANIMATION, 1}}};
 
     initialize_object(
         purpleWizard.object, purpleWizard.sprite_info.num_animations,
@@ -55,6 +60,11 @@ Subject::Subject()
         metersToPixels(yellowWizard.body->GetPosition().x) - yellowWizard.body_properties.width / 2,
         metersToPixels(yellowWizard.body->GetPosition().y) - yellowWizard.body_properties.height / 2
     );
+    purple_current_air = purpleWizard.body_properties.num_foot_contacts < 1;
+    yellow_current_air = yellowWizard.body_properties.num_foot_contacts < 1;
+
+    purple_prev_air = purple_current_air == true ? false : true;
+    yellow_prev_air = yellow_current_air == true ? false : true;
 }
 
 Subject::~Subject() {}
@@ -155,10 +165,12 @@ void Subject::jumpLogger(u32 kDown)
     if (kDown & KEY_UP && purpleWizard.body_properties.num_foot_contacts >= 1)
     {
         Notify(JUMP, &purpleWizard);
+        purple_current_air = true;
     }
     if (kDown & KEY_X && yellowWizard.body_properties.num_foot_contacts >= 1)
     {
         Notify(JUMP, &yellowWizard);
+        yellow_current_air = true;
     }
 }
 
@@ -166,19 +178,42 @@ void Subject::airbornLogger()
 {
     if (purpleWizard.body_properties.num_foot_contacts < 1)
     {
-        Notify(AIRBORN, &purpleWizard);
+        purple_current_air = true;
     }
-    else
-    {
-        Notify(MOVE_STOP, &purpleWizard);
-    }
+    else purple_current_air = false;
     if (yellowWizard.body_properties.num_foot_contacts < 1)
     {
-        Notify(AIRBORN, &yellowWizard);
+        yellow_current_air = true;
     }
-    else
+    else yellow_current_air = false;
+    
+
+    if (purple_prev_air != purple_current_air)
     {
-        Notify(MOVE_STOP, &yellowWizard);
+        if (purple_prev_air == false)
+        {
+            Notify(AIRBORN, &purpleWizard);
+            purple_prev_air = true;
+        }
+        else
+        {
+            Notify(LAND, &purpleWizard);
+            purple_prev_air = false;
+        }
+    }
+
+    if (yellow_prev_air != yellow_current_air)
+    {
+        if (yellow_prev_air == false)
+        {
+            Notify(AIRBORN, &yellowWizard);
+            yellow_prev_air = true;
+        }
+        else
+        {
+            Notify(LAND, &yellowWizard);
+            yellow_prev_air = false;
+        }
     }
 }
 

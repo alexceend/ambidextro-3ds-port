@@ -14,6 +14,7 @@ typedef enum
     MOVE_LEFT,
     MOVE_STOP,
     JUMP,
+    LAND,
     AIRBORN,
     EXIT,
     DEBUG

@@ -1,8 +1,6 @@
 #include "sprite_animation_manager.h"
 #include "objects.h"
 
-bool locked_animation = false;
-
 void initialize_object(
     object_2d_t *object,
     size_t num_sprite_sheets,
@@ -14,7 +12,6 @@ void initialize_object(
     object->position.y = pos_y;
     object->rotation = 0.0f;
     object->rotation_velocity = 0.0f;
-    C2D_SpriteFromSheet(&object->static_animation, object->animations[0].sprite_sheet, 0);
 
     for (size_t animation_index = 0; animation_index < num_sprite_sheets; animation_index++)
     {
@@ -36,6 +33,7 @@ void initialize_object(
             C2D_SpriteSetPos(sprite, object->position.x, object->position.y);
             C2D_SpriteSetRotationDegrees(sprite, object->rotation);
         }
+        C2D_SpriteFromSheet(&object->static_animation, object->animations[0].sprite_sheet, 0);
         animation.refresh_info.start = osGetTime();
         animation.refresh_info.stop = animation.refresh_info.start;
         animation.refresh_info.elapsed = 0;
@@ -66,12 +64,12 @@ void update_animation(object_2d_t *object, size_t animation_index)
     }
 }
 
-void update_static(object_2d_t* object)
+void update_static(object_2d_t *object)
 {
     C2D_SpriteSetPos(&object->static_animation, object->position.x, object->position.y);
 }
 
-void update_object(object_2d_t* object, size_t animation_index)
+void update_object(object_2d_t *object, size_t animation_index)
 {
     if (animation_index < MAX_SPRITE_SHEETS)
     {
@@ -86,7 +84,6 @@ void update_object(object_2d_t* object, size_t animation_index)
 void draw_sprite_animation(object_2d_t *object, size_t animation_index)
 {
     animation_t &animation = object->animations[animation_index];
-    printf("%zu\n", animation_index);
 
     animation.refresh_info.stop = osGetTime();
     animation.refresh_info.elapsed = animation.refresh_info.stop - animation.refresh_info.start;
@@ -115,13 +112,7 @@ void draw_sprite_animation(object_2d_t *object, size_t animation_index)
 
 void draw_sprite_static(object_2d_t *object)
 {
-    C2D_DrawSprite(&object->current_animation->sprites[0]);
-    /*
-    C2D_DrawImageAt(
-        object->static_animation,
-        object->position.x, object->position.y,
-        0.0f, NULL, 1.0f, 1.0f);
-    */
+    C2D_DrawSprite(&object->static_animation);
 }
 
 void draw_sprite(object_2d_t *object, size_t animation_index)
@@ -142,6 +133,7 @@ SpriteAnimation::SpriteAnimation(ISubject &subject) : subject_(subject)
     this->subject_.Subscribe(MOVE_RIGHT, this);
     this->subject_.Subscribe(MOVE_LEFT, this);
     this->subject_.Subscribe(AIRBORN, this);
+    this->subject_.Subscribe(LAND, this);
 }
 
 SpriteAnimation::~SpriteAnimation() {}
@@ -149,22 +141,21 @@ SpriteAnimation::~SpriteAnimation() {}
 void SpriteAnimation::Update(EventType event, void *callback)
 {
     Wizard *wizard = (Wizard *)callback;
-
-    switch (event)
+    
+    if (event == AIRBORN)
     {
-    case MOVE_LEFT:
-        wizard->sprite_info.currentAnimationType = MOVE_ANIMATION;
-        break;
-    case MOVE_RIGHT:
-        wizard->sprite_info.currentAnimationType = MOVE_ANIMATION;
-        break;
-    case AIRBORN:
         wizard->sprite_info.currentAnimationType = JUMP_ANIMATION;
-        break;
-    case MOVE_STOP:
+    }
+    else if (event == LAND)
+    {
         wizard->sprite_info.currentAnimationType = STATIC_ANIMATION;
-        break;
-    default:
-        break;
+    }
+    else if (event == MOVE_STOP && wizard->body_properties.num_foot_contacts > 0)
+    {
+        wizard->sprite_info.currentAnimationType = STATIC_ANIMATION;
+    }
+    else if ((event == MOVE_LEFT || event == MOVE_RIGHT) && wizard->body_properties.num_foot_contacts > 0)
+    {
+        wizard->sprite_info.currentAnimationType = MOVE_ANIMATION;
     }
 }
