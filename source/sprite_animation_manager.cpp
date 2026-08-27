@@ -6,7 +6,7 @@ void initialize_object(
     size_t num_sprite_sheets,
     const C2D_SpriteSheet spriteSheets[MAX_SPRITE_SHEETS],
     const uint64_t refresh_times[MAX_SPRITE_SHEETS],
-    float pos_x, float pos_y)
+    float pos_x, float pos_y, bool x_flip, bool y_flip)
 {
     object->position.x = pos_x;
     object->position.y = pos_y;
@@ -32,8 +32,25 @@ void initialize_object(
             C2D_SpriteSetCenter(sprite, animation.pivot.x, animation.pivot.y);
             C2D_SpriteSetPos(sprite, object->position.x, object->position.y);
             C2D_SpriteSetRotationDegrees(sprite, object->rotation);
+            if (x_flip)
+            {
+                C2D_SpriteSetScale(sprite, -1.0f, 1.0f);
+            }
+            if (y_flip)
+            {
+                C2D_SpriteSetScale(sprite, 1.0f, -1.0f);
+            }
         }
         C2D_SpriteFromSheet(&object->static_animation, object->animations[0].sprite_sheet, 0);
+        if (x_flip)
+        {
+            C2D_SpriteSetScale(&object->static_animation, -1.0f, 1.0f);
+        }
+        if (y_flip)
+        {
+            C2D_SpriteSetScale(&object->static_animation, 1.0f, -1.0f);
+        }
+        
         animation.refresh_info.start = osGetTime();
         animation.refresh_info.stop = animation.refresh_info.start;
         animation.refresh_info.elapsed = 0;

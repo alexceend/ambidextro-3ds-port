@@ -65,7 +65,7 @@ void initialize_object(
     size_t num_sprite_sheets,
     const C2D_SpriteSheet spriteSheets[MAX_SPRITE_SHEETS],
     const uint64_t refresh_times[MAX_SPRITE_SHEETS],
-    float pos_x, float pos_y
+    float pos_x, float pos_y, bool x_flip, bool y_flip
 );
 
 void deinitialize_object(object_2d_t* object);

@@ -40,6 +40,8 @@ typedef struct Wizard
     sprite_info_t sprite_info;
     object_2d_t* object;
     std::map<AnimationType, size_t> animation_map;
+    bool x_flip;
+    bool y_flip;
 } Wizard;
 
 #endif
