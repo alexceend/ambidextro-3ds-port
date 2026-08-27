@@ -57,7 +57,7 @@ typedef struct object_2d
 
     animation_t animations[MAX_SPRITE_SHEETS];
     C2D_Sprite static_animation;
-    animation_t* current_animation;
+    bool reset_animation;
 } object_2d_t;
 
 void initialize_object(

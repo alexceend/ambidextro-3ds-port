@@ -12,6 +12,7 @@ void initialize_object(
     object->position.y = pos_y;
     object->rotation = 0.0f;
     object->rotation_velocity = 0.0f;
+    object->reset_animation = false;
 
     for (size_t animation_index = 0; animation_index < num_sprite_sheets; animation_index++)
     {
@@ -50,7 +51,7 @@ void initialize_object(
         {
             C2D_SpriteSetScale(&object->static_animation, 1.0f, -1.0f);
         }
-        
+
         animation.refresh_info.start = osGetTime();
         animation.refresh_info.stop = animation.refresh_info.start;
         animation.refresh_info.elapsed = 0;
@@ -98,33 +99,32 @@ void update_object(object_2d_t *object, size_t animation_index)
     }
 }
 
-void draw_sprite_animation(object_2d_t *object, size_t animation_index)
+void draw_sprite_animation(object_2d_t *object, size_t animation_index, bool reset)
 {
     animation_t &animation = object->animations[animation_index];
 
     animation.refresh_info.stop = osGetTime();
     animation.refresh_info.elapsed = animation.refresh_info.stop - animation.refresh_info.start;
 
-    if (animation.refresh_info.elapsed >= animation.refresh_info.refresh_time)
+    if (reset)
+    {
+        animation.frame_info.current_frame_index = 0;
+    }
+
+    else if (animation.refresh_info.elapsed >= animation.refresh_info.refresh_time)
     {
         if (animation.frame_info.loop_once == false)
         {
             animation.frame_info.current_frame_index = (animation.frame_info.current_frame_index + 1) % animation.frame_info.num_of_sprites;
         }
-        else
+        else if (animation.frame_info.current_frame_index < animation.frame_info.num_of_sprites - 1)
         {
-            if (animation.frame_info.current_frame_index < animation.frame_info.num_of_sprites - 1)
-            {
-                animation.frame_info.current_frame_index++;
-            }
+            animation.frame_info.current_frame_index++;
         }
         animation.refresh_info.start = osGetTime();
-        C2D_DrawSprite(&animation.sprites[animation.frame_info.current_frame_index]);
     }
-    else
-    {
-        C2D_DrawSprite(&animation.sprites[animation.frame_info.current_frame_index]);
-    }
+
+    C2D_DrawSprite(&animation.sprites[animation.frame_info.current_frame_index]);
 }
 
 void draw_sprite_static(object_2d_t *object)
@@ -136,7 +136,7 @@ void draw_sprite(object_2d_t *object, size_t animation_index)
 {
     if (animation_index < MAX_SPRITE_SHEETS)
     {
-        draw_sprite_animation(object, animation_index);
+        draw_sprite_animation(object, animation_index, object->reset_animation);
     }
     else
     {
@@ -158,7 +158,8 @@ SpriteAnimation::~SpriteAnimation() {}
 void SpriteAnimation::Update(EventType event, void *callback)
 {
     Wizard *wizard = (Wizard *)callback;
-    
+    wizard->sprite_info.prevAnimationType = wizard->sprite_info.currentAnimationType;
+
     if (event == AIRBORN)
     {
         wizard->sprite_info.currentAnimationType = JUMP_ANIMATION;
@@ -175,4 +176,5 @@ void SpriteAnimation::Update(EventType event, void *callback)
     {
         wizard->sprite_info.currentAnimationType = MOVE_ANIMATION;
     }
+    wizard->object->reset_animation = wizard->sprite_info.currentAnimationType == wizard->sprite_info.prevAnimationType ? false : true;
 }

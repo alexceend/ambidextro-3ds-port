@@ -29,13 +29,14 @@ Subject::Subject()
          0},
         NULL,
         {STATIC_ANIMATION,
+         STATIC_ANIMATION,
          2,
          {atlas_purple_wizard_static, atlas_purple_wizard_jump},
          {20, 20}},
         new object_2d_t{},
         {{STATIC_ANIMATION, MAX_SPRITE_SHEETS}, {MOVE_ANIMATION, 0}, {JUMP_ANIMATION, 1}},
-        true, false
-    };
+        true,
+        false};
     yellowWizard = {
         YELLOW,
         {WIZARD_WIDTH,
@@ -44,28 +45,27 @@ Subject::Subject()
          0},
         NULL,
         {STATIC_ANIMATION,
+         STATIC_ANIMATION,
          2,
          {atlas_yellow_wizard_static, atlas_yellow_wizard_jump},
          {20, 20}},
         new object_2d_t{},
         {{STATIC_ANIMATION, MAX_SPRITE_SHEETS}, {MOVE_ANIMATION, 0}, {JUMP_ANIMATION, 1}},
-        false, false
-    };
+        false,
+        false};
 
     initialize_object(
         purpleWizard.object, purpleWizard.sprite_info.num_animations,
         purpleWizard.sprite_info.spriteSheets, purpleWizard.sprite_info.animations_refresh_ms_time,
         metersToPixels(purpleWizard.body->GetPosition().x) - purpleWizard.body_properties.width / 2,
         metersToPixels(purpleWizard.body->GetPosition().y) - purpleWizard.body_properties.height / 2,
-        purpleWizard.x_flip, purpleWizard.y_flip
-    );
+        purpleWizard.x_flip, purpleWizard.y_flip);
     initialize_object(
         yellowWizard.object, yellowWizard.sprite_info.num_animations,
         yellowWizard.sprite_info.spriteSheets, yellowWizard.sprite_info.animations_refresh_ms_time,
         metersToPixels(yellowWizard.body->GetPosition().x) - yellowWizard.body_properties.width / 2,
         metersToPixels(yellowWizard.body->GetPosition().y) - yellowWizard.body_properties.height / 2,
-        yellowWizard.x_flip, yellowWizard.y_flip
-    );
+        yellowWizard.x_flip, yellowWizard.y_flip);
     purple_current_air = purpleWizard.body_properties.num_foot_contacts < 1;
     yellow_current_air = yellowWizard.body_properties.num_foot_contacts < 1;
 
@@ -186,13 +186,14 @@ void Subject::airbornLogger()
     {
         purple_current_air = true;
     }
-    else purple_current_air = false;
+    else
+        purple_current_air = false;
     if (yellowWizard.body_properties.num_foot_contacts < 1)
     {
         yellow_current_air = true;
     }
-    else yellow_current_air = false;
-    
+    else
+        yellow_current_air = false;
 
     if (purple_prev_air != purple_current_air)
     {

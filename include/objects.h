@@ -17,6 +17,7 @@ typedef enum
 
 typedef struct sprite_info
 {
+    AnimationType prevAnimationType;
     AnimationType currentAnimationType;
     size_t num_animations;
     C2D_SpriteSheet spriteSheets[MAX_SPRITE_SHEETS];
