@@ -1,6 +1,7 @@
 #include "sprite_animation_manager.h"
 #include "objects.h"
 
+
 void initialize_object(
     object_2d_t *object,
     size_t num_sprite_sheets,
@@ -99,16 +100,17 @@ void update_object(object_2d_t *object, size_t animation_index)
     }
 }
 
-void draw_sprite_animation(object_2d_t *object, size_t animation_index, bool reset)
+void draw_sprite_animation(object_2d_t *object, size_t animation_index)
 {
     animation_t &animation = object->animations[animation_index];
 
     animation.refresh_info.stop = osGetTime();
     animation.refresh_info.elapsed = animation.refresh_info.stop - animation.refresh_info.start;
 
-    if (reset)
+    if (object->reset_animation == true)
     {
         animation.frame_info.current_frame_index = 0;
+        object->reset_animation = false;
     }
 
     else if (animation.refresh_info.elapsed >= animation.refresh_info.refresh_time)
@@ -136,7 +138,7 @@ void draw_sprite(object_2d_t *object, size_t animation_index)
 {
     if (animation_index < MAX_SPRITE_SHEETS)
     {
-        draw_sprite_animation(object, animation_index, object->reset_animation);
+        draw_sprite_animation(object, animation_index);
     }
     else
     {
@@ -158,7 +160,6 @@ SpriteAnimation::~SpriteAnimation() {}
 void SpriteAnimation::Update(EventType event, void *callback)
 {
     Wizard *wizard = (Wizard *)callback;
-    wizard->sprite_info.prevAnimationType = wizard->sprite_info.currentAnimationType;
 
     if (event == AIRBORN)
     {
@@ -166,7 +167,14 @@ void SpriteAnimation::Update(EventType event, void *callback)
     }
     else if (event == LAND)
     {
-        wizard->sprite_info.currentAnimationType = STATIC_ANIMATION;
+        if (wizard->body->GetLinearVelocity().x == 0)
+        {
+            wizard->sprite_info.currentAnimationType = STATIC_ANIMATION;
+        }
+        else
+        {
+            wizard->sprite_info.currentAnimationType = MOVE_ANIMATION;
+        }
     }
     else if (event == MOVE_STOP && wizard->body_properties.num_foot_contacts > 0)
     {
@@ -176,5 +184,5 @@ void SpriteAnimation::Update(EventType event, void *callback)
     {
         wizard->sprite_info.currentAnimationType = MOVE_ANIMATION;
     }
-    wizard->object->reset_animation = wizard->sprite_info.currentAnimationType == wizard->sprite_info.prevAnimationType ? false : true;
+    wizard->object->reset_animation = true;
 }

@@ -43,6 +43,8 @@ typedef struct Wizard
     std::map<AnimationType, size_t> animation_map;
     bool x_flip;
     bool y_flip;
+    bool current_air;
+    bool prev_air;
 } Wizard;
 
 #endif

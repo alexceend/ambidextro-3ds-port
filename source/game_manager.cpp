@@ -35,8 +35,9 @@ Subject::Subject()
          {20, 20}},
         new object_2d_t{},
         {{STATIC_ANIMATION, MAX_SPRITE_SHEETS}, {MOVE_ANIMATION, 0}, {JUMP_ANIMATION, 1}},
-        true,
-        false};
+        true, false,
+        false, false
+    };
     yellowWizard = {
         YELLOW,
         {WIZARD_WIDTH,
@@ -51,8 +52,9 @@ Subject::Subject()
          {20, 20}},
         new object_2d_t{},
         {{STATIC_ANIMATION, MAX_SPRITE_SHEETS}, {MOVE_ANIMATION, 0}, {JUMP_ANIMATION, 1}},
-        false,
-        false};
+        false, false,
+        false, false
+    };
 
     initialize_object(
         purpleWizard.object, purpleWizard.sprite_info.num_animations,
@@ -66,11 +68,9 @@ Subject::Subject()
         metersToPixels(yellowWizard.body->GetPosition().x) - yellowWizard.body_properties.width / 2,
         metersToPixels(yellowWizard.body->GetPosition().y) - yellowWizard.body_properties.height / 2,
         yellowWizard.x_flip, yellowWizard.y_flip);
-    purple_current_air = purpleWizard.body_properties.num_foot_contacts < 1;
-    yellow_current_air = yellowWizard.body_properties.num_foot_contacts < 1;
 
-    purple_prev_air = purple_current_air == true ? false : true;
-    yellow_prev_air = yellow_current_air == true ? false : true;
+    purpleWizard.prev_air = purple_current_air == true ? false : true;
+    yellowWizard.prev_air = yellow_current_air == true ? false : true;
 }
 
 Subject::~Subject() {}
@@ -140,11 +140,12 @@ void Subject::keyLogger(u32 kDown, u32 kHeld, u32 kUp)
 void Subject::movementLogger(u32 kHeld, u32 kUp)
 {
 
-    if (kHeld & KEY_LEFT)
+    if (kHeld & KEY_LEFT && (
+        purpleWizard.body->GetLinearVelocity().x == 0))
     {
         Notify(MOVE_LEFT, &purpleWizard);
     }
-    else if (kHeld & KEY_RIGHT)
+    else if (kHeld & KEY_RIGHT && purpleWizard.body->GetLinearVelocity().x == 0)
     {
         Notify(MOVE_RIGHT, &purpleWizard);
     }
@@ -152,11 +153,11 @@ void Subject::movementLogger(u32 kHeld, u32 kUp)
     {
         Notify(MOVE_STOP, &purpleWizard);
     }
-    else if (kHeld & KEY_A)
+    else if (kHeld & KEY_A && yellowWizard.body->GetLinearVelocity().x == 0)
     {
         Notify(MOVE_RIGHT, &yellowWizard);
     }
-    else if (kHeld & KEY_Y)
+    else if (kHeld & KEY_Y && (yellowWizard.body->GetLinearVelocity().x == 0))
     {
         Notify(MOVE_LEFT, &yellowWizard);
     }
