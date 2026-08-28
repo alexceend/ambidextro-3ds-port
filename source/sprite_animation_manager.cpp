@@ -184,6 +184,6 @@ void SpriteAnimation::Update(EventType event, void *callback)
     {
         wizard->sprite_info.currentAnimationType = MOVE_ANIMATION;
     }
-    
+
     wizard->object->reset_animation = true;
 }

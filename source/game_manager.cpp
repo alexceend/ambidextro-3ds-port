@@ -152,7 +152,7 @@ void Subject::movementLogger(u32 kDown, u32 kUp)
     {
         Notify(MOVE_STOP, &purpleWizard);
     }
-    else if (kDown & KEY_A)
+    if (kDown & KEY_A)
     {
         Notify(MOVE_RIGHT, &yellowWizard);
     }
