@@ -229,6 +229,7 @@ void levelCleanup()
 
 void levelUpdate()
 {
+    updatePhysics();
     b2Vec2 wizardPurple = purpleWizard.body->GetPosition();
     b2Vec2 wizardYellow = yellowWizard.body->GetPosition();
 
@@ -239,7 +240,6 @@ void levelUpdate()
 
     update_object(purpleWizard.object, purpleWizard.animation_map[purpleWizard.sprite_info.currentAnimationType]);
     update_object(yellowWizard.object, yellowWizard.animation_map[yellowWizard.sprite_info.currentAnimationType]);
-    updatePhysics();
 }
 
 void FooDraw::DrawSolidPolygon(const b2Vec2 *vertices, int32 vertexCount, const b2Color &color)
