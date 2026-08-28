@@ -15,7 +15,7 @@ bool sceneInit(Scene* current, C3D_RenderTarget* target)
     return false;
 }
 
-void sceneUpdate(Scene* current, Scene* nextScene, u32 kDown, u32 kHeld)
+void sceneUpdate(Scene* current, Scene* nextScene, u32 kDown)
 {
     switch (*current)
     {

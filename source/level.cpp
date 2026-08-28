@@ -37,7 +37,7 @@ typedef enum
 
 std::map<TileType, std::array<int, 4>> tile = {
     {TILE_WALL, {14, 14, 0, 0}},
-    {TILE_FLOOR_SLAB, {14, 3, 0, 14}},
+    {TILE_FLOOR_SLAB, {14, 3, 0, 12}},
     {TILE_FLOOR, {14, 14, 0, 0}}
 };
 

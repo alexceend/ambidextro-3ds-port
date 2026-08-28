@@ -123,29 +123,28 @@ void Subject::Erase()
     }
     observers.clear();
 }
-void Subject::ManageGame(u32 kDown, u32 kHeld, u32 kUp)
+void Subject::ManageGame(u32 kDown, u32 kUp)
 {
-    keyLogger(kDown, kHeld, kUp);
+    keyLogger(kDown, kUp);
     airbornLogger();
 }
 
-void Subject::keyLogger(u32 kDown, u32 kHeld, u32 kUp)
+void Subject::keyLogger(u32 kDown, u32 kUp)
 {
-    movementLogger(kHeld, kUp);
+    movementLogger(kDown, kUp);
     jumpLogger(kDown);
     exitLogger(kDown);
     debugLogger(kDown);
 }
 
-void Subject::movementLogger(u32 kHeld, u32 kUp)
+void Subject::movementLogger(u32 kDown, u32 kUp)
 {
 
-    if (kHeld & KEY_LEFT && (
-        purpleWizard.body->GetLinearVelocity().x == 0))
+    if (kDown & KEY_LEFT)
     {
         Notify(MOVE_LEFT, &purpleWizard);
     }
-    else if (kHeld & KEY_RIGHT)
+    else if (kDown & KEY_RIGHT)
     {
         Notify(MOVE_RIGHT, &purpleWizard);
     }
@@ -153,11 +152,11 @@ void Subject::movementLogger(u32 kHeld, u32 kUp)
     {
         Notify(MOVE_STOP, &purpleWizard);
     }
-    else if (kHeld & KEY_A)
+    else if (kDown & KEY_A)
     {
         Notify(MOVE_RIGHT, &yellowWizard);
     }
-    else if (kHeld & KEY_Y)
+    else if (kDown & KEY_Y)
     {
         Notify(MOVE_LEFT, &yellowWizard);
     }

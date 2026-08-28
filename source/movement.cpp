@@ -48,7 +48,6 @@ void Movement::Update(EventType event, void *callback)
         applyVelocity(MS_LEFT, wizard->body, wizard->body_properties.velocity);
         break;
     case MOVE_STOP:
-        wizard = (Wizard *) callback;
         applyVelocity(MS_STOP, wizard->body, wizard->body_properties.velocity);
         break;
     case JUMP:

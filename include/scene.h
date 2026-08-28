@@ -28,7 +28,7 @@ extern "C"
 {
     #endif
     bool sceneInit(Scene* current, C3D_RenderTarget* target);
-    void sceneUpdate(Scene* current, Scene* nextScene, u32 kDown, u32 kHeld);
+    void sceneUpdate(Scene* current, Scene* nextScene, u32 kDown);
     void sceneDraw(Scene* current);
     void sceneExit(Scene* current);
     void sceneChange(Scene* current, Scene* nextScene, C3D_RenderTarget* target);

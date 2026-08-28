@@ -164,7 +164,6 @@ void SpriteAnimation::Update(EventType event, void *callback)
     if (event == AIRBORN)
     {
         wizard->sprite_info.currentAnimationType = JUMP_ANIMATION;
-        wizard->object->reset_animation = true;
     }
     else if (event == LAND)
     {
@@ -175,16 +174,16 @@ void SpriteAnimation::Update(EventType event, void *callback)
         else
         {
             wizard->sprite_info.currentAnimationType = MOVE_ANIMATION;
-            wizard->object->reset_animation = true;
         }
     }
     else if (event == MOVE_STOP && wizard->body_properties.num_foot_contacts > 0)
     {
         wizard->sprite_info.currentAnimationType = STATIC_ANIMATION;
-        wizard->object->reset_animation = true;
     }
     else if ((event == MOVE_LEFT || event == MOVE_RIGHT) && wizard->body_properties.num_foot_contacts > 0)
     {
         wizard->sprite_info.currentAnimationType = MOVE_ANIMATION;
     }
+    
+    wizard->object->reset_animation = true;
 }

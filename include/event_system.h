@@ -25,7 +25,6 @@ class IObserver
 public:
     virtual ~IObserver() {};
     virtual void Update(EventType event, void *callback) = 0;
-    // virtual void ManageGame(u32 kDown, u32 kHeld);
 };
 
 class ISubject
@@ -46,9 +45,9 @@ public:
     void Unsubscribe(EventType event, IObserver *observer);
     void Notify(EventType event, void *callback);
     void Erase();
-    void ManageGame(u32 kDown, u32 kHeld, u32 kUp);
-    void keyLogger(u32 kDown, u32 kHeld, u32 kUp);
-    void movementLogger(u32 kHeld, u32 kUp);
+    void ManageGame(u32 kDown, u32 kUp);
+    void keyLogger(u32 kDown, u32 kUp);
+    void movementLogger(u32 kDown, u32 kUp);
     void jumpLogger(u32 kDown);
     void airbornLogger();
     void exitLogger(u32 kDown);
