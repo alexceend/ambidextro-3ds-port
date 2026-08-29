@@ -10,6 +10,12 @@
 
 typedef enum
 {
+    WIZARD_,
+    STAFF_
+} EntityType;
+
+typedef enum
+{
     PURPLE,
     YELLOW
 } WizardType;
@@ -30,21 +36,37 @@ typedef struct body_properties
     float width;
     float height;
     float velocity;
-    int num_foot_contacts;
+    
 } body_properties_t;
 
-typedef struct Wizard
+typedef struct Entity
 {
-    WizardType wizard_type;
+    EntityType entity_type;
+    void* sub_struct;
     body_properties_t body_properties;
-    b2Body* body;
     sprite_info_t sprite_info;
     object_2d_t* object;
     std::map<AnimationType, size_t> animation_map;
+} Entity;
+
+typedef struct Wizard
+{
+    Entity entity;
+    WizardType wizard_type;
+    b2Body* body;
+    int num_foot_contacts;
     bool x_flip;
     bool y_flip;
     bool current_air;
     bool prev_air;
 } Wizard;
+
+typedef struct Staff
+{
+    b2Body* body;
+    Entity entity;
+    float offset_x;
+    float offset_y;
+} Staff;
 
 #endif

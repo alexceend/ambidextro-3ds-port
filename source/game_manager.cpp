@@ -22,51 +22,63 @@ C2D_Sprite yellow_sprite;
 Subject::Subject()
 {
     purpleWizard = {
+        {WIZARD_,
+         &purpleWizard,
+         {WIZARD_WIDTH,
+          WIZARD_HEIGHT,
+          WIZARD_SPEED},
+
+         {STATIC_ANIMATION,
+          STATIC_ANIMATION,
+          2,
+          {atlas_purple_wizard_static, atlas_purple_wizard_jump},
+          {20, 20}},
+
+         new object_2d_t{},
+
+         {{STATIC_ANIMATION, MAX_SPRITE_SHEETS}, {MOVE_ANIMATION, 0}, {JUMP_ANIMATION, 1}}},
         PURPLE,
-        {WIZARD_WIDTH,
-         WIZARD_HEIGHT,
-         WIZARD_SPEED,
-         0},
         NULL,
-        {STATIC_ANIMATION,
-         STATIC_ANIMATION,
-         2,
-         {atlas_purple_wizard_static, atlas_purple_wizard_jump},
-         {20, 20}},
-        new object_2d_t{},
-        {{STATIC_ANIMATION, MAX_SPRITE_SHEETS}, {MOVE_ANIMATION, 0}, {JUMP_ANIMATION, 1}},
-        true, false,
-        false, false
-    };
+        0,
+        true,
+        false,
+        false,
+        false};
     yellowWizard = {
+        {WIZARD_,
+         &yellowWizard,
+         {WIZARD_WIDTH,
+          WIZARD_HEIGHT,
+          WIZARD_SPEED},
+
+         {STATIC_ANIMATION,
+          STATIC_ANIMATION,
+          2,
+          {atlas_yellow_wizard_static, atlas_yellow_wizard_jump},
+          {20, 20}},
+
+         new object_2d_t{},
+
+         {{STATIC_ANIMATION, MAX_SPRITE_SHEETS}, {MOVE_ANIMATION, 0}, {JUMP_ANIMATION, 1}}},
         YELLOW,
-        {WIZARD_WIDTH,
-         WIZARD_HEIGHT,
-         WIZARD_SPEED,
-         0},
         NULL,
-        {STATIC_ANIMATION,
-         STATIC_ANIMATION,
-         2,
-         {atlas_yellow_wizard_static, atlas_yellow_wizard_jump},
-         {20, 20}},
-        new object_2d_t{},
-        {{STATIC_ANIMATION, MAX_SPRITE_SHEETS}, {MOVE_ANIMATION, 0}, {JUMP_ANIMATION, 1}},
-        false, false,
-        false, false
-    };
+        0,
+        false,
+        false,
+        false,
+        false};
 
     initialize_object(
-        purpleWizard.object, purpleWizard.sprite_info.num_animations,
-        purpleWizard.sprite_info.spriteSheets, purpleWizard.sprite_info.animations_refresh_ms_time,
-        metersToPixels(purpleWizard.body->GetPosition().x) - purpleWizard.body_properties.width / 2,
-        metersToPixels(purpleWizard.body->GetPosition().y) - purpleWizard.body_properties.height / 2,
+        purpleWizard.entity.object, purpleWizard.entity.sprite_info.num_animations,
+        purpleWizard.entity.sprite_info.spriteSheets, purpleWizard.entity.sprite_info.animations_refresh_ms_time,
+        metersToPixels(purpleWizard.body->GetPosition().x) - purpleWizard.entity.body_properties.width / 2,
+        metersToPixels(purpleWizard.body->GetPosition().y) - purpleWizard.entity.body_properties.height / 2,
         purpleWizard.x_flip, purpleWizard.y_flip);
     initialize_object(
-        yellowWizard.object, yellowWizard.sprite_info.num_animations,
-        yellowWizard.sprite_info.spriteSheets, yellowWizard.sprite_info.animations_refresh_ms_time,
-        metersToPixels(yellowWizard.body->GetPosition().x) - yellowWizard.body_properties.width / 2,
-        metersToPixels(yellowWizard.body->GetPosition().y) - yellowWizard.body_properties.height / 2,
+        yellowWizard.entity.object, yellowWizard.entity.sprite_info.num_animations,
+        yellowWizard.entity.sprite_info.spriteSheets, yellowWizard.entity.sprite_info.animations_refresh_ms_time,
+        metersToPixels(yellowWizard.body->GetPosition().x) - yellowWizard.entity.body_properties.width / 2,
+        metersToPixels(yellowWizard.body->GetPosition().y) - yellowWizard.entity.body_properties.height / 2,
         yellowWizard.x_flip, yellowWizard.y_flip);
 
     purpleWizard.prev_air = purple_current_air == true ? false : true;
@@ -168,12 +180,12 @@ void Subject::movementLogger(u32 kDown, u32 kUp)
 
 void Subject::jumpLogger(u32 kDown)
 {
-    if (kDown & KEY_UP && purpleWizard.body_properties.num_foot_contacts >= 1)
+    if (kDown & KEY_UP && purpleWizard.num_foot_contacts >= 1)
     {
         Notify(JUMP, &purpleWizard);
         purple_current_air = true;
     }
-    if (kDown & KEY_X && yellowWizard.body_properties.num_foot_contacts >= 1)
+    if (kDown & KEY_X && yellowWizard.num_foot_contacts >= 1)
     {
         Notify(JUMP, &yellowWizard);
         yellow_current_air = true;
@@ -182,13 +194,13 @@ void Subject::jumpLogger(u32 kDown)
 
 void Subject::airbornLogger()
 {
-    if (purpleWizard.body_properties.num_foot_contacts < 1)
+    if (purpleWizard.num_foot_contacts < 1)
     {
         purple_current_air = true;
     }
     else
         purple_current_air = false;
-    if (yellowWizard.body_properties.num_foot_contacts < 1)
+    if (yellowWizard.num_foot_contacts < 1)
     {
         yellow_current_air = true;
     }

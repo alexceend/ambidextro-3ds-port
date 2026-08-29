@@ -163,27 +163,27 @@ void SpriteAnimation::Update(EventType event, void *callback)
 
     if (event == AIRBORN)
     {
-        wizard->sprite_info.currentAnimationType = JUMP_ANIMATION;
+        wizard->entity.sprite_info.currentAnimationType = JUMP_ANIMATION;
     }
     else if (event == LAND)
     {
         if (wizard->body->GetLinearVelocity().x == 0)
         {
-            wizard->sprite_info.currentAnimationType = STATIC_ANIMATION;
+            wizard->entity.sprite_info.currentAnimationType = STATIC_ANIMATION;
         }
         else
         {
-            wizard->sprite_info.currentAnimationType = MOVE_ANIMATION;
+            wizard->entity.sprite_info.currentAnimationType = MOVE_ANIMATION;
         }
     }
-    else if (event == MOVE_STOP && wizard->body_properties.num_foot_contacts > 0)
+    else if (event == MOVE_STOP && wizard->num_foot_contacts > 0)
     {
-        wizard->sprite_info.currentAnimationType = STATIC_ANIMATION;
+        wizard->entity.sprite_info.currentAnimationType = STATIC_ANIMATION;
     }
-    else if ((event == MOVE_LEFT || event == MOVE_RIGHT) && wizard->body_properties.num_foot_contacts > 0)
+    else if ((event == MOVE_LEFT || event == MOVE_RIGHT) && wizard->num_foot_contacts > 0)
     {
-        wizard->sprite_info.currentAnimationType = MOVE_ANIMATION;
+        wizard->entity.sprite_info.currentAnimationType = MOVE_ANIMATION;
     }
 
-    wizard->object->reset_animation = true;
+    wizard->entity.object->reset_animation = true;
 }

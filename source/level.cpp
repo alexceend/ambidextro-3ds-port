@@ -45,12 +45,12 @@ typedef struct
 {
     int spawnX;
     int spawnY;
-} Entity;
+} Spawn;
 
 typedef struct
 {
     int8_t tiles[LEVEL_HEIGHT][LEVEL_WIDTH];
-    Entity entities[2];
+    Spawn spawns[2];
 } Level;
 
 std::list<Block *> blockList;
@@ -134,8 +134,8 @@ void loadPhysics()
         }
     }
 
-    loadWizardHitbox(level.entities[0].spawnX, level.entities[0].spawnY, &purpleWizard);
-    loadWizardHitbox(level.entities[1].spawnX, level.entities[1].spawnY, &yellowWizard);
+    loadWizardHitbox(level.spawns[0].spawnX, level.spawns[0].spawnY, &purpleWizard);
+    loadWizardHitbox(level.spawns[1].spawnX, level.spawns[1].spawnY, &yellowWizard);
 }
 
 bool levelInit(C3D_RenderTarget *target)
@@ -156,14 +156,14 @@ bool levelInit(C3D_RenderTarget *target)
         if (line.find("spawnPurple") != string::npos)
         {
             sscanf(line.c_str(), "spawnPurple %d %d", &x, &y);
-            level.entities[0].spawnX = x;
-            level.entities[0].spawnY = y;
+            level.spawns[0].spawnX = x;
+            level.spawns[0].spawnY = y;
         }
         else if (line.find("spawnYellow") != string::npos)
         {
             sscanf(line.c_str(), "spawnYellow %d %d", &x, &y);
-            level.entities[1].spawnX = x;
-            level.entities[1].spawnY = y;
+            level.spawns[1].spawnX = x;
+            level.spawns[1].spawnY = y;
         }
     }
 
@@ -233,13 +233,13 @@ void levelUpdate()
     b2Vec2 wizardPurple = purpleWizard.body->GetPosition();
     b2Vec2 wizardYellow = yellowWizard.body->GetPosition();
 
-    purpleWizard.object->position.x = metersToPixels(wizardPurple.x) - purpleWizard.body_properties.width / 2;
-    purpleWizard.object->position.y = metersToPixels(wizardPurple.y) - purpleWizard.body_properties.height / 2;
-    yellowWizard.object->position.x = metersToPixels(wizardYellow.x)- yellowWizard.body_properties.width / 2;
-    yellowWizard.object->position.y = metersToPixels(wizardYellow.y)- yellowWizard.body_properties.height / 2;
+    purpleWizard.entity.object->position.x = metersToPixels(wizardPurple.x) - purpleWizard.entity.body_properties.width / 2;
+    purpleWizard.entity.object->position.y = metersToPixels(wizardPurple.y) - purpleWizard.entity.body_properties.height / 2;
+    yellowWizard.entity.object->position.x = metersToPixels(wizardYellow.x)- yellowWizard.entity.body_properties.width / 2;
+    yellowWizard.entity.object->position.y = metersToPixels(wizardYellow.y)- yellowWizard.entity.body_properties.height / 2;
 
-    update_object(purpleWizard.object, purpleWizard.animation_map[purpleWizard.sprite_info.currentAnimationType]);
-    update_object(yellowWizard.object, yellowWizard.animation_map[yellowWizard.sprite_info.currentAnimationType]);
+    update_object(purpleWizard.entity.object, purpleWizard.entity.animation_map[purpleWizard.entity.sprite_info.currentAnimationType]);
+    update_object(yellowWizard.entity.object, yellowWizard.entity.animation_map[yellowWizard.entity.sprite_info.currentAnimationType]);
 }
 
 void FooDraw::DrawSolidPolygon(const b2Vec2 *vertices, int32 vertexCount, const b2Color &color)
@@ -293,8 +293,8 @@ void levelDraw()
         }
     }
 
-    draw_sprite(purpleWizard.object, purpleWizard.animation_map[purpleWizard.sprite_info.currentAnimationType]);
-    draw_sprite(yellowWizard.object, yellowWizard.animation_map[yellowWizard.sprite_info.currentAnimationType]);
+    draw_sprite(purpleWizard.entity.object, purpleWizard.entity.animation_map[purpleWizard.entity.sprite_info.currentAnimationType]);
+    draw_sprite(yellowWizard.entity.object, yellowWizard.entity.animation_map[yellowWizard.entity.sprite_info.currentAnimationType]);
 
     fooDrawInstance.SetFlags(b2Draw::e_shapeBit);
     if (showDebug)
