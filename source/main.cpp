@@ -95,7 +95,6 @@ int main(int argc, char** argv)
     new LevelClass(gameManager);
     new SpriteAnimation(gameManager);
     
-    
     while (aptMainLoop())
     {
         hidScanInput();
@@ -113,12 +112,15 @@ int main(int argc, char** argv)
             gameManager.ManageGame(kDown, kUp);
         }
         sceneUpdate(&currentScene, &nextScene, kDown);
+
     
         sceneChange(&currentScene, &nextScene, top);
 
         C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
 
+
         sceneDraw(&currentScene);
+
 
         C3D_FrameEnd(0);
     }

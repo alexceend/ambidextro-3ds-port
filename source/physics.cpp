@@ -1,6 +1,7 @@
 #include "physics.h"
 #include "objects.h"
 #include <memory>
+ #include <inttypes.h>
 
 std::unique_ptr<b2World> world = NULL;
 ContactListener contactListener;
@@ -45,7 +46,6 @@ void loadWizardHitbox(float pos_x, float pos_y, Wizard *wizard)
     bodyDef.position.Set(pixelsToMeters(pos_x), pixelsToMeters(pos_y));
     b2Body *body = world->CreateBody(&bodyDef);
     wizard->body = body;
-    body->GetUserData() = wizard;
 
     b2PolygonShape dynamicBox;
 
@@ -66,7 +66,7 @@ void loadWizardHitbox(float pos_x, float pos_y, Wizard *wizard)
     );
 
     fixtureDef.isSensor = true;
-    // fixtureDef.userData.pointer = reinterpret_cast<uintptr_t>(wizard);
+    fixtureDef.userData.pointer = reinterpret_cast<uintptr_t>(wizard);
     body->CreateFixture(&fixtureDef);
 }
 
@@ -102,11 +102,12 @@ void ContactListener::checkFootSensor(b2Fixture* fixture, int delta)
     uintptr_t data = fixture->GetUserData().pointer;
     if (data != 0)
     {
+        printf("Data: %" PRIxPTR "\n", data);
         Wizard* wizard = reinterpret_cast<Wizard*>(data);
         wizard->num_foot_contacts += delta;
     }
 }
-
+  
 void ContactListener::BeginContact(b2Contact *contact)
 {
     checkFootSensor(contact->GetFixtureA(), 1);

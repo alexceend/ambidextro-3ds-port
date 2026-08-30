@@ -37,7 +37,14 @@ SOURCES		:=	source
 DATA		:=	data
 INCLUDES	:=	include
 GRAPHICS	:=	gfx
-ATLASES		:=	atlas/dungeon atlas/purple_wizard/move_purple atlas/purple_wizard/jump_purple atlas/yellow_wizard/move_yellow atlas/yellow_wizard/jump_yellow atlas/staff
+ATLASES		:=	\
+			atlas/dungeon \
+			atlas/purple_wizard/move_purple \
+			atlas/purple_wizard/jump_purple \
+			atlas/yellow_wizard/move_yellow \
+			atlas/yellow_wizard/jump_yellow \
+			atlas/staff/staff_jump \
+			atlas/staff/staff_static
 #GFXBUILD	:=	$(BUILD)
 ROMFS		:=	romfs
 GFXBUILD	:=	$(ROMFS)/gfx
