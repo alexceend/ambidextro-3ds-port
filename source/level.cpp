@@ -10,6 +10,7 @@
 #include "assets_loader.h"
 #include <iostream>
 #include "level.h"
+#include "pause.h"
 #include <filesystem>
 #include <array>
 
@@ -170,6 +171,8 @@ bool levelInit(C3D_RenderTarget *target)
     }
 
     loadPhysics();
+
+    pauseInit(target);
   
     return true;
 }
@@ -229,9 +232,12 @@ void levelCleanup()
     top = NULL;
 }
 
-void levelUpdate()
+void levelUpdate(u32 kDown)
 {
-    if (paused) return;
+    if (paused){
+        pauseUpdate(kDown);
+        return;
+    }
     updatePhysics();
     b2Vec2 wizardPurple = purpleWizard.body->GetPosition();
     b2Vec2 wizardYellow = yellowWizard.body->GetPosition();
@@ -279,10 +285,13 @@ void FooDraw::DrawSolidPolygon(const b2Vec2 *vertices, int32 vertexCount, const 
 
 void levelDraw()
 {
-    if (paused) return;
-
     C2D_TargetClear(top, C2D_Color32(20, 20, 40, 255));
     C2D_SceneBegin(top);
+
+    if (paused){ 
+        pauseDraw();
+        return;
+    }
 
     for (Block *block : blockList)
     {

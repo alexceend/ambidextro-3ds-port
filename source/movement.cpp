@@ -1,4 +1,5 @@
 #include "movement.h"
+#include "level.h"
 #include <iostream>
 
 void applyVelocity(MoveState moveState, b2Body *body, float speed)
@@ -39,20 +40,23 @@ Movement::~Movement() {}
 void Movement::Update(EventType event, void *callback)
 {
     Wizard* wizard = static_cast<Wizard *>(callback);
-    switch (event)
+    if(!paused)
     {
-    case MOVE_RIGHT:
-        applyVelocity(MS_RIGHT, wizard->body, wizard->entity.body_properties.velocity);
-        break;
-    case MOVE_LEFT:
-        applyVelocity(MS_LEFT, wizard->body, wizard->entity.body_properties.velocity);
-        break;
-    case MOVE_STOP:
-        applyVelocity(MS_STOP, wizard->body, wizard->entity.body_properties.velocity);
-        break;
-    case JUMP:
-        jump(wizard->body);
-        break;
-    default: break;
+        switch (event)
+        {
+        case MOVE_RIGHT:
+            applyVelocity(MS_RIGHT, wizard->body, wizard->entity.body_properties.velocity);
+            break;
+        case MOVE_LEFT:
+            applyVelocity(MS_LEFT, wizard->body, wizard->entity.body_properties.velocity);
+            break;
+        case MOVE_STOP:
+            applyVelocity(MS_STOP, wizard->body, wizard->entity.body_properties.velocity);
+            break;
+        case JUMP:
+            jump(wizard->body);
+            break;
+        default: break;
+        }
     }
 }
