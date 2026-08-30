@@ -103,7 +103,7 @@ int main(int argc, char** argv)
 
         u32 kUp = hidKeysUp();
 
-        if (kDown & KEY_START) break;
+        //if (kDown & KEY_START) break;
 
         Scene nextScene = SCENE_NONE;
 

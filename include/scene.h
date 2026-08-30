@@ -12,7 +12,8 @@ typedef enum
 {
     SCENE_NONE = -1,
     SCENE_MENU,
-    SCENE_LEVEL
+    SCENE_LEVEL,
+    SCENE_PAUSE
 } Scene;
 
 typedef struct

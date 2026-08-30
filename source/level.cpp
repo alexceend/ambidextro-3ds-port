@@ -27,6 +27,8 @@ static C3D_RenderTarget *top = NULL;
 
 FooDraw fooDrawInstance;
 
+bool paused = false;
+
 typedef enum
 {
     TILE_EMPTY = -1,
@@ -229,6 +231,7 @@ void levelCleanup()
 
 void levelUpdate()
 {
+    if (paused) return;
     updatePhysics();
     b2Vec2 wizardPurple = purpleWizard.body->GetPosition();
     b2Vec2 wizardYellow = yellowWizard.body->GetPosition();
@@ -276,6 +279,8 @@ void FooDraw::DrawSolidPolygon(const b2Vec2 *vertices, int32 vertexCount, const 
 
 void levelDraw()
 {
+    if (paused) return;
+
     C2D_TargetClear(top, C2D_Color32(20, 20, 40, 255));
     C2D_SceneBegin(top);
 
@@ -320,6 +325,7 @@ void LevelClass::Update(EventType event, void* callback)
     case WIN:
         break;
     case PUASE:
+        paused = !paused;
         break;
     case DEATH:
         break;

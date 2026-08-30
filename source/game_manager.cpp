@@ -147,6 +147,17 @@ void Subject::keyLogger(u32 kDown, u32 kUp)
     jumpLogger(kDown);
     exitLogger(kDown);
     debugLogger(kDown);
+    pauseLogger(kDown);
+}
+
+
+void Subject::pauseLogger(u32 kDown)
+{
+    if(kDown & KEY_START)
+    {
+        printf("Notified pause\n");
+        Notify(PUASE, nullptr);
+    }
 }
 
 void Subject::movementLogger(u32 kDown, u32 kUp)
