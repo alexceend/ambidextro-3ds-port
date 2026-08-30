@@ -8,6 +8,8 @@
 #include "game_manager.h"
 #include "sprite_animation_manager.h"
 
+extern bool paused;
+
 bool levelInit(C3D_RenderTarget *target);
 void levelDraw(void);
 void levelUpdate(void);

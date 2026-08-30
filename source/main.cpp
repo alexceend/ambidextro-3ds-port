@@ -110,10 +110,13 @@ int main(int argc, char** argv)
         if (currentScene == SCENE_LEVEL)
         {
             gameManager.ManageGame(kDown, kUp);
+            if(kDown & KEY_START)
+            {
+                nextScene = SCENE_PAUSE;
+            }
         }
-        sceneUpdate(&currentScene, &nextScene, kDown);
 
-    
+        sceneUpdate(&currentScene, &nextScene, kDown);
         sceneChange(&currentScene, &nextScene, top);
 
         C3D_FrameBegin(C3D_FRAME_SYNCDRAW);

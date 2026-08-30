@@ -5,6 +5,7 @@
 #include "sprites.h"
 
 #include "scene.h"
+#include "level.h"
 
 #define SCREEN_WIDTH 400
 #define SCREEN_HEIGHT 240
@@ -129,6 +130,7 @@ Scene pauseUpdate(u32 kDown)
         {
             case 0:
                 printf("CONTINUE selected\n");
+                paused = false;
                 return SCENE_LEVEL;
             case 1:
                 printf("RESTART selected\n");
