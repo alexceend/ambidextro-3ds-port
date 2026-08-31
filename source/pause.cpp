@@ -135,7 +135,8 @@ Scene pauseUpdate(u32 kDown)
                 return SCENE_NONE;
             case 1:
                 printf("RESTART selected\n");
-                break;
+                paused = false;
+                return SCENE_LEVEL;
             case 2:
                 printf("OPTIONS selected\n");
                 break;
