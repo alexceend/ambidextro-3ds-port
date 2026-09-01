@@ -97,25 +97,49 @@ void updatePhysics()
     world->Step(timeStep, 6, 2);
 }
 
+/*
 void ContactListener::checkFootSensor(b2Fixture* fixture, int delta)
 {
     uintptr_t data = fixture->GetUserData().pointer;
     if (data != 0)
     {
-        printf("Data: %" PRIxPTR "\n", data);
-        Wizard* wizard = reinterpret_cast<Wizard*>(data);
-        wizard->num_foot_contacts += delta;
+        Entity* entity = reinterpret_cast<Entity*>(data);
+        if (entity->entity_type == WIZARD_)
+        {
+            Wizard* wizard = (Wizard*)entity->sub_struct;
+            wizard->num_foot_contacts += delta;
+        }
+    }
+}
+*/
+void checkFootSensor(Wizard* wizard, int delta)
+{
+    wizard->num_foot_contacts += delta;
+}
+
+void manageSensorContact(uintptr_t data, bool beginContact)
+{
+    Entity* entity = reinterpret_cast<Entity*>(data);
+    if (entity->entity_type == WIZARD_)
+    {
+        Wizard* wizard = (Wizard*)entity->sub_struct;
+        int delta = beginContact ? 1: -1;
+        checkFootSensor(wizard, delta);
     }
 }
   
 void ContactListener::BeginContact(b2Contact *contact)
 {
-    checkFootSensor(contact->GetFixtureA(), 1);
-    checkFootSensor(contact->GetFixtureB(), 1);
+    uintptr_t data_A = contact->GetFixtureA()->GetUserData().pointer;
+    uintptr_t data_B = contact->GetFixtureB()->GetUserData().pointer;
+    manageSensorContact(data_A, true);
+    manageSensorContact(data_B, true);
 }
 
 void ContactListener::EndContact(b2Contact *contact)
 {
-    checkFootSensor(contact->GetFixtureA(), -1);
-    checkFootSensor(contact->GetFixtureB(), -1);
+    uintptr_t data_A = contact->GetFixtureA()->GetUserData().pointer;
+    uintptr_t data_B = contact->GetFixtureB()->GetUserData().pointer;
+    manageSensorContact(data_A, false);
+    manageSensorContact(data_B, false);
 }
