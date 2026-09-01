@@ -232,11 +232,10 @@ void levelCleanup()
     top = NULL;
 }
 
-void levelUpdate(u32 kDown)
+Scene levelUpdate(u32 kDown)
 {
     if (paused){
-        pauseUpdate(kDown);
-        return;
+        return pauseUpdate(kDown);
     }
     updatePhysics();
     b2Vec2 wizardPurple = purpleWizard.body->GetPosition();
@@ -249,6 +248,7 @@ void levelUpdate(u32 kDown)
 
     update_object(purpleWizard.entity.object, purpleWizard.entity.animation_map[purpleWizard.entity.sprite_info.currentAnimationType]);
     update_object(yellowWizard.entity.object, yellowWizard.entity.animation_map[yellowWizard.entity.sprite_info.currentAnimationType]);
+    return SCENE_LEVEL;
 }
 
 void FooDraw::DrawSolidPolygon(const b2Vec2 *vertices, int32 vertexCount, const b2Color &color)
@@ -342,4 +342,10 @@ void LevelClass::Update(EventType event, void* callback)
         showDebug == true ? showDebug = false : showDebug = true;
     default: break;
     }
+}
+
+void restartLevel(C3D_RenderTarget *target)
+{
+    levelCleanup();
+    levelInit(target);
 }

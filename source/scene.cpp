@@ -22,7 +22,7 @@ void sceneUpdate(Scene* current, Scene* nextScene, u32 kDown)
     switch (*current)
     {
         case SCENE_MENU: *nextScene = menuUpdate(kDown); break;
-        case SCENE_LEVEL: levelUpdate(kDown); break;
+        case SCENE_LEVEL: *nextScene = levelUpdate(kDown); break;
         //case SCENE_PAUSE: *nextScene = pauseUpdate(kDown); break;
         default: break;
     }

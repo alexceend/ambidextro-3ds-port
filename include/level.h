@@ -12,8 +12,10 @@ extern bool paused;
 
 bool levelInit(C3D_RenderTarget *target);
 void levelDraw(void);
-void levelUpdate(u32 kDown);
+Scene levelUpdate(u32 kDown);
 void levelCleanup(void);
+
+void restartLevel(C3D_RenderTarget *target);
 
 class LevelClass : public IObserver
 {
