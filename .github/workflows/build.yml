@@ -27,41 +27,38 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Install dependencies
-        run: |
-          pacman -Sy --noconfirm
-          pacman -S --needed --noconfirm 3ds-box2d
-
       - name: Check devkitPro environment
         run: |
-            echo "DEVKITPRO=$DEVKITPRO"
-            echo "DEVKITARM=$DEVKITARM"
-        
-            export PATH="$DEVKITARM/bin:$DEVKITPRO/tools/bin:$PATH"
-        
-            echo "=== Compiler ==="
-            which arm-none-eabi-gcc
-            arm-none-eabi-gcc --version
-        
-            echo "=== Make ==="
-            which make
-            make --version
-        
-            echo "=== tex3ds ==="
-            which tex3ds
-            tex3ds --version || true
-        
-            echo "=== Libraries ==="
-            find /opt/devkitpro -name 'libbox2d.a' -o \
-                 -name 'libcitro2d.a' -o \
-                 -name 'libcitro3d.a' -o \
-                 -name 'libctru.a'
-        
-            echo "=== 3ds_rules ==="
-            ls -l "$DEVKITARM/3ds_rules"
+          echo "DEVKITPRO=$DEVKITPRO"
+          echo "DEVKITARM=$DEVKITARM"
+
+          export PATH="$DEVKITARM/bin:$DEVKITPRO/tools/bin:$PATH"
+
+          echo "=== Compiler ==="
+          which arm-none-eabi-gcc
+          arm-none-eabi-gcc --version
+
+          echo "=== Make ==="
+          which make
+          make --version
+
+          echo "=== tex3ds ==="
+          which tex3ds
+          tex3ds --version || true
+
+          echo "=== Libraries ==="
+          find /opt/devkitpro -name 'libbox2d.a' -o \
+               -name 'libcitro2d.a' -o \
+               -name 'libcitro3d.a' -o \
+               -name 'libctru.a'
+
+          echo "=== 3ds_rules ==="
+          ls -l "$DEVKITARM/3ds_rules"
 
       - name: Build
-        run: make -j$(nproc)
+        run: |
+          export PATH="$DEVKITARM/bin:$DEVKITPRO/tools/bin:$PATH"
+          make -j$(nproc)
 
       - name: Verify build
         run: |
