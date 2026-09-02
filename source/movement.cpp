@@ -8,10 +8,10 @@ void applyVelocity(MoveState moveState, b2Body *body, float speed)
     switch (moveState)
     {
     case MS_LEFT:
-        vel.x = -speed;
+        vel.x = pixelsToMeters(-speed);
         break;
     case MS_RIGHT:
-        vel.x = speed;
+        vel.x = pixelsToMeters(speed);
         break;
     case MS_STOP:
         vel.x = 0;
