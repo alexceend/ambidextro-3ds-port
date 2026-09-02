@@ -1,0 +1,51 @@
+name: Build Nintendo 3DS
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+
+  pull_request:
+    branches:
+      - main
+      - develop
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build 3DS
+    runs-on: ubuntu-latest
+
+    container:
+      image: devkitpro/devkitarm
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install dependencies
+        run: |
+          pacman -Sy --noconfirm
+          pacman -S --needed --noconfirm 3ds-box2d
+
+      - name: Build
+        run: make -j$(nproc)
+
+      - name: Verify build
+        run: |
+          test -f ambidextro3ds.3dsx
+          test -f ambidextro3ds.elf
+          test -f ambidextro3ds.smdh
+
+      - name: Upload build
+        uses: actions/upload-artifact@v4
+        with:
+          name: ambidextro3ds-${{ github.sha }}
+          path: |
+            ambidextro3ds.3dsx
+            ambidextro3ds.elf
+            ambidextro3ds.smdh
