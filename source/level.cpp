@@ -179,36 +179,6 @@ bool levelInit(C3D_RenderTarget *target)
 
 void levelCleanup()
 {
-    if (atlas_dungeon)
-    {
-        C2D_SpriteSheetFree(atlas_dungeon);
-        atlas_dungeon = NULL;
-    }
-    if (atlas_purple_wizard_static)
-    {
-        C2D_SpriteSheetFree(atlas_purple_wizard_static);
-        atlas_purple_wizard_static = NULL;
-    }
-    if (atlas_purple_wizard_jump)
-    {
-        C2D_SpriteSheetFree(atlas_purple_wizard_jump);
-        atlas_purple_wizard_jump = NULL;
-    }
-    if (atlas_yellow_wizard_static)
-    {
-        C2D_SpriteSheetFree(atlas_yellow_wizard_static);
-        atlas_yellow_wizard_static = NULL;
-    }
-    if (atlas_yellow_wizard_jump)
-    {
-        C2D_SpriteSheetFree(atlas_yellow_wizard_jump);
-        atlas_yellow_wizard_jump = NULL;
-    }
-    if (atlas_staff)
-    {
-        C2D_SpriteSheetFree(atlas_staff);
-        atlas_staff = NULL;
-    }
     for (Block *block : blockList)
     {
         delete block;
