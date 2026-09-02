@@ -7,15 +7,23 @@
 #include <time.h>
 #include "sprites.h"
 #include "audio_core.h"
-#include "test.h"
 #include "menu.h"
+#include "assets_loader.h"
+#include "game_manager.h"
+#include "movement.h"
+#include "level.h"
+
+#include "log.h"
 
 #define SCREEN_WIDTH 400
 #define SCREEN_HEIGHT 240
 
 
+
 int main(int argc, char** argv)
 {
+    log_message("-- BEGIN LOG --");
+
     romfsInit();
     gfxInitDefault();
     consoleInit(GFX_BOTTOM, NULL);
@@ -36,6 +44,8 @@ int main(int argc, char** argv)
         return -1;
     }
 
+    log_message("[INFO]: C2D, and top prepared and initialized");
+
     /* AUDIO */
 
     if (!audioInit())
@@ -45,6 +55,10 @@ int main(int argc, char** argv)
     {
         printf("ERROR: no se pudo reproducir romfs:/audio/menu.wav\n");
     }
+
+    log_message("[INFO]: Audio initialized");
+
+    
 
     /* MENU */
 
@@ -64,24 +78,48 @@ int main(int argc, char** argv)
         return -1;
     }
 
+    log_message("[INFO]: Menu initialized");
 
+    /* TEXTURES */
+    if (!loadAssets())
+    {
+        printf("Failed to load assets!\n");
+        return -1;
+    }
+
+    /* BUCLE PRINCIPAL */
+
+
+    Subject gameManager;
+    new Movement(gameManager);
+    new LevelClass(gameManager);
+    new SpriteAnimation(gameManager);
+    
     while (aptMainLoop())
     {
         hidScanInput();
 
         u32 kDown = hidKeysDown();
 
-        if (kDown & KEY_START) break;
+        u32 kUp = hidKeysUp();
+
+        //if (kDown & KEY_START) break;
 
         Scene nextScene = SCENE_NONE;
-    
-        sceneUpdate(&currentScene, &nextScene, kDown);
 
+        if (currentScene == SCENE_LEVEL)
+        {
+            gameManager.ManageGame(kDown, kUp);
+        }
+        
+        sceneUpdate(&currentScene, &nextScene, kDown);
         sceneChange(&currentScene, &nextScene, top);
 
         C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
 
+
         sceneDraw(&currentScene);
+
 
         C3D_FrameEnd(0);
     }
@@ -90,6 +128,7 @@ int main(int argc, char** argv)
 
     /* CLEANUP */
 
+    cfguExit();
     audioExit();
 
     C2D_Fini();

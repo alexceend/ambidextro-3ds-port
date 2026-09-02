@@ -167,7 +167,7 @@ Scene menuUpdate(u32 kDown)
         {
             case 0:
                 printf("PLAY selected\n");
-                return SCENE_TEST;
+                return SCENE_LEVEL;
             case 1:
                 printf("LEVELS selected\n");
                 break;

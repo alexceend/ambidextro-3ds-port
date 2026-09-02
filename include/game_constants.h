@@ -1,0 +1,8 @@
+#ifndef GAME_CONSTANTS_H
+#define GAME_CONSTANTS_H
+
+#define MAX_SPRITE_SHEETS 5
+#define MAX_SPRITES 15
+
+
+#endif
