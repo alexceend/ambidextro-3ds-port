@@ -1,11 +1,16 @@
 #include "physics.h"
 #include "objects.h"
 #include <memory>
- #include <inttypes.h>
+#include <inttypes.h>
+
+#define CIRCLE_STEPS 360
+
+
 
 std::unique_ptr<b2World> world = NULL;
 ContactListener contactListener;
 float timeStep = 1.0f / 60.0f;
+RayCastCallback rayCastCallback = {};
 
 float pixelsToMeters(float pixels)
 {
@@ -97,21 +102,6 @@ void updatePhysics()
     world->Step(timeStep, 6, 2);
 }
 
-/*
-void ContactListener::checkFootSensor(b2Fixture* fixture, int delta)
-{
-    uintptr_t data = fixture->GetUserData().pointer;
-    if (data != 0)
-    {
-        Entity* entity = reinterpret_cast<Entity*>(data);
-        if (entity->entity_type == WIZARD_)
-        {
-            Wizard* wizard = (Wizard*)entity->sub_struct;
-            wizard->num_foot_contacts += delta;
-        }
-    }
-}
-*/
 void checkFootSensor(Wizard* wizard, int delta)
 {
     wizard->num_foot_contacts += delta;
@@ -142,4 +132,29 @@ void ContactListener::EndContact(b2Contact *contact)
     uintptr_t data_B = contact->GetFixtureB()->GetUserData().pointer;
     manageSensorContact(data_A, false);
     manageSensorContact(data_B, false);
+}
+
+float RayCastCallback::ReportFixture(b2Fixture* fixture, const b2Vec2& point,
+									const b2Vec2& normal, float fraction)
+{
+    return 0;
+}
+
+
+
+Segment* circularRayCast(b2Vec2 p1, int radius)
+{
+    Segment segments[CIRCLE_STEPS];
+    for (int i = 0; i < CIRCLE_STEPS; i++)
+    {
+        b2RayCastInput input;
+        b2Vec2 p2 = p1 + radius * b2Vec2(sinf(i), cosf(i));
+        input.p1 = p1;
+        input.p2 = p2;
+        input.maxFraction = 1;
+
+        world->RayCast(&rayCastCallback, p1, p2);
+        segments[i] = {p1, rayCastCallback.m_point};
+    }
+    return segments;
 }

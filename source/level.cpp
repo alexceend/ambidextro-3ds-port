@@ -28,6 +28,8 @@ static C3D_RenderTarget *top = NULL;
 
 FooDraw fooDrawInstance;
 
+Segment* segments;
+
 bool paused = false;
 
 typedef enum
@@ -248,6 +250,11 @@ Scene levelUpdate(u32 kDown)
 
     update_object(purpleWizard.entity.object, purpleWizard.entity.animation_map[purpleWizard.entity.sprite_info.currentAnimationType]);
     update_object(yellowWizard.entity.object, yellowWizard.entity.animation_map[yellowWizard.entity.sprite_info.currentAnimationType]);
+
+    segments = circularRayCast({
+        purpleWizard.entity.object->position.x,
+        purpleWizard.entity.object->position.y
+    }, 10);
     return SCENE_LEVEL;
 }
 
@@ -283,6 +290,16 @@ void FooDraw::DrawSolidPolygon(const b2Vec2 *vertices, int32 vertexCount, const 
     }
 }
 
+void FooDraw::DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color& color)
+{
+    u32 lineColor = C2D_Color32f(color.r, color.g, color.b, 1.0f);
+    C2D_DrawLine(
+        p1.x, p1.y, lineColor,
+        p2.x, p2.y, lineColor,
+        1.0f, 0.0f
+    );
+}
+
 void levelDraw()
 {
     C2D_TargetClear(top, C2D_Color32(20, 20, 40, 255));
@@ -309,6 +326,15 @@ void levelDraw()
 
     draw_sprite(purpleWizard.entity.object, purpleWizard.entity.animation_map[purpleWizard.entity.sprite_info.currentAnimationType]);
     draw_sprite(yellowWizard.entity.object, yellowWizard.entity.animation_map[yellowWizard.entity.sprite_info.currentAnimationType]);
+   
+    for (int i = 0; i < CIRCLE_STEPS; i++)
+    {
+        C2D_DrawLine(
+            segments->p1.x, segments->p1.y, C2D_Color32f(1.0f, 1.0f, 1.0f, 1.0f),
+            segments->p2.x, segments->p2.y, C2D_Color32f(1.0f, 1.0f, 1.0f, 1.0f),
+            1.0f, 0.0f
+        );
+    }
 
     fooDrawInstance.SetFlags(b2Draw::e_shapeBit);
     if (showDebug)
