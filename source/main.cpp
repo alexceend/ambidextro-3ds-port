@@ -131,6 +131,8 @@ int main(int argc, char** argv)
     cfguExit();
     audioExit();
 
+    clearAssets();
+
     C2D_Fini();
     C3D_Fini();
 
