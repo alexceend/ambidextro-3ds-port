@@ -2,8 +2,10 @@
 #include "objects.h"
 #include <memory>
 #include <inttypes.h>
+#include <iostream>
+#include <math.h>
 
-#define CIRCLE_STEPS 360
+#define DEG_TO_RAD(degrees) (degrees * M_PI / 180)
 
 
 
@@ -137,22 +139,22 @@ void ContactListener::EndContact(b2Contact *contact)
 float RayCastCallback::ReportFixture(b2Fixture* fixture, const b2Vec2& point,
 									const b2Vec2& normal, float fraction)
 {
+    m_fixture = fixture;
+    m_point = point;
+    m_normal = normal;
+    m_fraction = fraction;
     return 0;
 }
 
 
 
-Segment* circularRayCast(b2Vec2 p1, int radius)
+std::array<Segment, CIRCLE_STEPS> circularRayCast(b2Vec2 p1, float radius)
 {
-    Segment segments[CIRCLE_STEPS];
+    std::array<Segment, CIRCLE_STEPS> segments;
     for (int i = 0; i < CIRCLE_STEPS; i++)
     {
-        b2RayCastInput input;
-        b2Vec2 p2 = p1 + radius * b2Vec2(sinf(i), cosf(i));
-        input.p1 = p1;
-        input.p2 = p2;
-        input.maxFraction = 1;
-
+        float radians = DEG_TO_RAD(i);
+        b2Vec2 p2 = p1 + radius * b2Vec2(sinf(radians), cosf(radians));
         world->RayCast(&rayCastCallback, p1, p2);
         segments[i] = {p1, rayCastCallback.m_point};
     }

@@ -6,6 +6,7 @@
 #include <memory>
 #include <stdio.h>
 #include "objects.h"
+#include <array>
 
 #define PIXELS_PER_METER 32.0f
 #define CIRCLE_STEPS 360
@@ -68,6 +69,6 @@ void updatePhysics();
 
 void loadCharacters();
 
-Segment* circularRayCast(b2Vec2 p1, int radius);
+std::array<Segment, CIRCLE_STEPS> circularRayCast(b2Vec2 p1, float radius);
 
 #endif

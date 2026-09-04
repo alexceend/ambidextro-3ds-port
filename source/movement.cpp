@@ -23,7 +23,7 @@ void applyVelocity(MoveState moveState, b2Body *body, float speed)
 
 void jump(b2Body *body)
 {
-    float impulse = body->GetMass() * 4;
+    float impulse = body->GetMass() * 5;
     body->ApplyLinearImpulse(b2Vec2(0, -impulse), body->GetWorldCenter(), true);
 }
 
