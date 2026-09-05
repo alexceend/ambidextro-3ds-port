@@ -135,15 +135,15 @@ void Subject::Erase()
     }
     observers.clear();
 }
-void Subject::ManageGame(u32 kDown, u32 kUp)
+void Subject::ManageGame(u32 kHeld, u32 kDown, u32 kUp)
 {
-    keyLogger(kDown, kUp);
+    keyLogger(kHeld, kDown, kUp);
     airbornLogger();
 }
 
-void Subject::keyLogger(u32 kDown, u32 kUp)
+void Subject::keyLogger(u32 kHeld, u32 kDown, u32 kUp)
 {
-    movementLogger(kDown, kUp);
+    movementLogger(kHeld, kDown, kUp);
     jumpLogger(kDown);
     exitLogger(kDown);
     debugLogger(kDown);
@@ -160,32 +160,98 @@ void Subject::pauseLogger(u32 kDown)
     }
 }
 
-void Subject::movementLogger(u32 kDown, u32 kUp)
+void Subject::movementLogger(u32 kHeld, u32 kDown, u32 kUp)
 {
-
-    if (kDown & KEY_LEFT)
-    {
-        Notify(MOVE_LEFT, &purpleWizard);
-    }
-    else if (kDown & KEY_RIGHT)
-    {
-        Notify(MOVE_RIGHT, &purpleWizard);
-    }
-    else if (kUp & KEY_RIGHT || kUp & KEY_LEFT)
+    if (kHeld & KEY_LEFT && kHeld & KEY_RIGHT)
     {
         Notify(MOVE_STOP, &purpleWizard);
     }
-    if (kDown & KEY_A)
+    else if (kHeld & KEY_LEFT)
+    {
+        Notify(MOVE_LEFT, &purpleWizard);
+    }
+    else if (kHeld & KEY_RIGHT)
+    {
+        Notify(MOVE_RIGHT, &purpleWizard);
+    }
+
+    if (kDown & KEY_LEFT)
+    {
+        Notify(ANIMATE_LEFT, &purpleWizard);
+    }
+    else if (kDown & KEY_RIGHT)
+    {
+        Notify(ANIMATE_RIGHT, &purpleWizard);
+    }
+
+    if (kUp & KEY_RIGHT)
+    {
+        if (kHeld & KEY_LEFT)
+        {
+            Notify(ANIMATE_LEFT, &purpleWizard);
+        }
+        else
+        {
+            Notify(MOVE_STOP, &purpleWizard);
+        }
+    }
+
+    if (kUp & KEY_LEFT)
+    {
+        if (kHeld & KEY_RIGHT)
+        {
+            Notify(MOVE_RIGHT, &purpleWizard);
+        }
+        else
+        {
+            Notify(MOVE_STOP, &purpleWizard);
+        }
+    }
+
+    if (kHeld & KEY_A && kHeld & KEY_Y)
+    {
+        Notify(MOVE_STOP, &yellowWizard);
+    }
+    else if (kHeld & KEY_A)
     {
         Notify(MOVE_RIGHT, &yellowWizard);
     }
-    else if (kDown & KEY_Y)
+    else if (kHeld & KEY_Y)
     {
         Notify(MOVE_LEFT, &yellowWizard);
     }
-    else if (kUp & KEY_A || kUp & KEY_Y)
+
+    if (kDown & KEY_A)
     {
-        Notify(MOVE_STOP, &yellowWizard);
+        Notify(ANIMATE_RIGHT, &yellowWizard);
+    }
+    else if (kDown & KEY_Y)
+    {
+        Notify(ANIMATE_LEFT, &yellowWizard);
+    }
+    
+    if (kUp & KEY_A)
+    {
+        if (kHeld & KEY_Y)
+        {
+            Notify(ANIMATE_LEFT, &yellowWizard);
+        }
+        else
+        {
+            Notify(MOVE_STOP, &yellowWizard);
+        }
+    }
+
+    if (kUp & KEY_Y)
+    {
+        if (kHeld & KEY_A)
+        {
+            Notify(ANIMATE_RIGHT, &yellowWizard);
+        }
+        else
+        {
+            Notify(MOVE_STOP, &yellowWizard);
+        }
     }
 }
 

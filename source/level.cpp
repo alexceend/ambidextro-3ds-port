@@ -286,15 +286,16 @@ void levelDraw()
 
     draw_sprite(purpleWizard.entity.object, purpleWizard.entity.animation_map[purpleWizard.entity.sprite_info.currentAnimationType]);
     draw_sprite(yellowWizard.entity.object, yellowWizard.entity.animation_map[yellowWizard.entity.sprite_info.currentAnimationType]);
-   
+   /*
     for (size_t i = 0; i < CIRCLE_STEPS; i++)
     {
         C2D_DrawLine(
-            metersToPixels(segments.at(i).p1.x), metersToPixels(segments.at(i).p1.y), C2D_Color32f(1.0f, 1.0f, 1.0f, 1.0f),
-            metersToPixels(segments.at(i).p2.x), metersToPixels(segments.at(i).p2.y), C2D_Color32f(1.0f, 1.0f, 1.0f, 1.0f),
+            metersToPixels(segments.at(i).p1.x), metersToPixels(segments.at(i).p1.y), C2D_Color32f(1.0f, 1.0f, 1.0f, 0.2f),
+            metersToPixels(segments.at(i).p2.x), metersToPixels(segments.at(i).p2.y), C2D_Color32f(1.0f, 1.0f, 1.0f, 0.2f),
             1.0f, 0.0f
         );
     }
+    */
 
     fooDrawInstance.SetFlags(b2Draw::e_shapeBit);
     if (showDebug)
@@ -325,7 +326,7 @@ void LevelClass::Update(EventType event, void* callback)
     case DEATH:
         break;
     case DEBUG:
-        showDebug == true ? showDebug = false : showDebug = true;
+        showDebug = !showDebug;
     default: break;
     }
 }

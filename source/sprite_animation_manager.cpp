@@ -149,8 +149,8 @@ void draw_sprite(object_2d_t *object, size_t animation_index)
 SpriteAnimation::SpriteAnimation(ISubject &subject) : subject_(subject)
 {
     this->subject_.Subscribe(MOVE_STOP, this);
-    this->subject_.Subscribe(MOVE_RIGHT, this);
-    this->subject_.Subscribe(MOVE_LEFT, this);
+    this->subject_.Subscribe(ANIMATE_LEFT, this);
+    this->subject_.Subscribe(ANIMATE_RIGHT, this);
     this->subject_.Subscribe(AIRBORN, this);
     this->subject_.Subscribe(LAND, this);
 }
@@ -180,7 +180,7 @@ void SpriteAnimation::Update(EventType event, void *callback)
     {
         wizard->entity.sprite_info.currentAnimationType = STATIC_ANIMATION;
     }
-    else if ((event == MOVE_LEFT || event == MOVE_RIGHT) && wizard->num_foot_contacts > 0)
+    else if ((event == ANIMATE_LEFT || event == ANIMATE_RIGHT) && wizard->num_foot_contacts > 0)
     {
         wizard->entity.sprite_info.currentAnimationType = MOVE_ANIMATION;
     }

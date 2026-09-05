@@ -11,7 +11,9 @@ typedef enum
     PUASE,
     DEATH,
     MOVE_RIGHT,
+    ANIMATE_RIGHT,
     MOVE_LEFT,
+    ANIMATE_LEFT,
     MOVE_STOP,
     JUMP,
     LAND,
@@ -45,9 +47,9 @@ public:
     void Unsubscribe(EventType event, IObserver *observer);
     void Notify(EventType event, void *callback);
     void Erase();
-    void ManageGame(u32 kDown, u32 kUp);
-    void keyLogger(u32 kDown, u32 kUp);
-    void movementLogger(u32 kDown, u32 kUp);
+    void ManageGame(u32 kHeld, u32 kDown, u32 kUp);
+    void keyLogger(u32 kHeld, u32 kDown, u32 kUp);
+    void movementLogger(u32 kHeld, u32 kDown, u32 kUp);
     void jumpLogger(u32 kDown);
     void pauseLogger(u32 kDown);
     void airbornLogger();

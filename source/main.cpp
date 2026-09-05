@@ -103,13 +103,15 @@ int main(int argc, char** argv)
 
         u32 kUp = hidKeysUp();
 
+        u32 kHeld = hidKeysHeld();
+
         //if (kDown & KEY_START) break;
 
         Scene nextScene = SCENE_NONE;
 
         if (currentScene == SCENE_LEVEL)
         {
-            gameManager.ManageGame(kDown, kUp);
+            gameManager.ManageGame(kHeld, kDown, kUp);
         }
         
         sceneUpdate(&currentScene, &nextScene, kDown);
