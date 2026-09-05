@@ -98,6 +98,47 @@ void loadStaff(float pos_x, float pos_y, Staff* staff)
     body->CreateFixture(&fixtureDef);
 }
 
+void preSolve(b2Contact* contact)
+{
+    b2WorldManifold worldManifold;
+    contact->GetWorldManifold(&worldManifold);
+
+    const uintptr_t body_a = contact->GetFixtureA()->GetUserData().pointer;
+    const uintptr_t body_b = contact->GetFixtureB()->GetUserData().pointer;
+
+    b2Body* wizard_body;
+    b2Vec2 normal = worldManifold.normal;
+    Entity* entity_a = reinterpret_cast<Entity*>(body_a);
+    Entity* entity_b = reinterpret_cast<Entity*>(body_b);
+
+    if (entity_a->entity_type == WIZARD_)
+    {
+        Wizard* wizard = static_cast<Wizard*>(entity_a->sub_struct);
+        wizard_body = wizard->body;
+    }
+    else if (entity_b->entity_type == WIZARD_)
+    {
+        Wizard* wizard = static_cast<Wizard*>(entity_a->sub_struct);
+        wizard_body = wizard->body;
+        normal = -normal;
+    }
+    else return;
+
+    if (b2Dot(normal, wizard_body->GetLinearVelocity()) >= 0.0f)
+    {
+        size_t size = (sizeof(worldManifold.points) / sizeof(*worldManifold.points));
+        if (size > 1)
+        {
+            constexpr float overlap_slop = 4.0f * b2_linearSlop;
+            float contact_area = (worldManifold.points[0] - worldManifold.points[1]).Length();
+
+            if (contact_area < overlap_slop)
+            {
+                contact->SetEnabled(false);
+            }
+        }
+    }
+}
 
 void updatePhysics()
 {
@@ -122,6 +163,7 @@ void manageSensorContact(uintptr_t data, bool beginContact)
   
 void ContactListener::BeginContact(b2Contact *contact)
 {
+    preSolve(contact);
     uintptr_t data_A = contact->GetFixtureA()->GetUserData().pointer;
     uintptr_t data_B = contact->GetFixtureB()->GetUserData().pointer;
     manageSensorContact(data_A, true);
