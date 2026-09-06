@@ -42,10 +42,39 @@ void loadGroundBox(int pos_x, int pos_y, int width, int height, int offset_x, in
     groundBody->CreateFixture(&groundBox, 1.0f);
 }
 
+void loadWizardFootSensor(float footSensorX, float footSensorY, Wizard* wizard, b2PolygonShape* dynamicBox, b2FixtureDef* fixtureDef, b2Body* body)
+{
+    dynamicBox->SetAsBox(
+        pixelsToMeters(footSensorX), 
+        pixelsToMeters(footSensorY), 
+        b2Vec2(0, pixelsToMeters((wizard->entity.body_properties.height / 2) - footSensorY)), 
+        0
+    );
+
+    fixtureDef->isSensor = true;
+    fixtureDef->userData.pointer = reinterpret_cast<uintptr_t>(wizard);
+    body->CreateFixture(fixtureDef);
+}
+
+void loadStaff(float staff_x, float staff_y, Wizard* wizard, b2PolygonShape* dynamicBox, b2FixtureDef* fixtureDef, b2Body* body)
+{
+    dynamicBox->SetAsBox(
+        pixelsToMeters(staff_x / 2),
+        pixelsToMeters(staff_y / 2),
+        b2Vec2(pixelsToMeters(1.0f), pixelsToMeters(1.0f)),
+        0
+    );
+    fixtureDef->isSensor = true;
+    fixtureDef->userData.pointer = reinterpret_cast<uintptr_t>(wizard);
+    body->CreateFixture(fixtureDef);
+}
+
 void loadWizardHitbox(float pos_x, float pos_y, Wizard *wizard)
 {   
     float footSensorX = wizard->entity.body_properties.width / 4;
     float footSensorY = 2.0f;
+    float staff_x = 2.0f;
+    float staff_y = 12.0f;
     
     b2BodyDef bodyDef;
     bodyDef.type = b2_dynamicBody;
@@ -65,38 +94,10 @@ void loadWizardHitbox(float pos_x, float pos_y, Wizard *wizard)
 
     body->CreateFixture(&fixtureDef);
 
-    dynamicBox.SetAsBox(
-        pixelsToMeters(footSensorX), 
-        pixelsToMeters(footSensorY), 
-        b2Vec2(0, pixelsToMeters((wizard->entity.body_properties.height / 2) - footSensorY)), 
-        0
-    );
-
-    fixtureDef.isSensor = true;
-    fixtureDef.userData.pointer = reinterpret_cast<uintptr_t>(wizard);
-    body->CreateFixture(&fixtureDef);
+    loadWizardFootSensor(footSensorX, footSensorY, wizard, &dynamicBox, &fixtureDef, body);
+    loadStaff(staff_x, staff_y, wizard, &dynamicBox, &fixtureDef, body);
 }
 
-
-void loadStaff(float pos_x, float pos_y, Staff* staff)
-{
-    b2BodyDef bodyDef;
-    bodyDef.type = b2_dynamicBody;
-    bodyDef.fixedRotation = true;
-    bodyDef.position.Set(pixelsToMeters(pos_x), pixelsToMeters(pos_y));
-    b2Body* body = world->CreateBody(&bodyDef);
-    staff->body = body;
-
-    b2PolygonShape dynamicBox;
-    dynamicBox.SetAsBox(pixelsToMeters(staff->entity.body_properties.width / 2), pixelsToMeters(staff->entity.body_properties.height / 2));
-    b2FixtureDef fixtureDef;
-    fixtureDef.shape = &dynamicBox;
-    fixtureDef.density = 1.0f;
-    fixtureDef.friction = 0.0f;
-    fixtureDef.isSensor = true;
-
-    body->CreateFixture(&fixtureDef);
-}
 
 void preSolve(b2Contact* contact)
 {
@@ -118,7 +119,7 @@ void preSolve(b2Contact* contact)
     }
     else if (entity_b->entity_type == WIZARD_)
     {
-        Wizard* wizard = static_cast<Wizard*>(entity_a->sub_struct);
+        Wizard* wizard = static_cast<Wizard*>(entity_b->sub_struct);
         wizard_body = wizard->body;
         normal = -normal;
     }

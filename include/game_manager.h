@@ -15,6 +15,8 @@
 
 extern Wizard purpleWizard;
 extern Wizard yellowWizard;
+extern Staff purpleStaff;
+extern Staff yellowStaff;
 
 
 #endif

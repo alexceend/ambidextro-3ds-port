@@ -11,6 +11,8 @@
 
 Wizard yellowWizard;
 Wizard purpleWizard;
+Staff purpleStaff;
+Staff yellowStaff;
 
 bool purple_prev_air;
 bool purple_current_air;
@@ -19,7 +21,8 @@ bool yellow_current_air;
 
 C2D_Sprite purple_sprite;
 C2D_Sprite yellow_sprite;
-Subject::Subject()
+
+void createWizards()
 {
     purpleWizard = {
         {WIZARD_,
@@ -43,7 +46,8 @@ Subject::Subject()
         true,
         false,
         false,
-        false};
+        false
+    };
     yellowWizard = {
         {WIZARD_,
          &yellowWizard,
@@ -66,7 +70,13 @@ Subject::Subject()
         false,
         false,
         false,
-        false};
+        false
+    };
+}
+
+Subject::Subject()
+{
+    createWizards();
 
     initialize_object(
         purpleWizard.entity.object, purpleWizard.entity.sprite_info.num_animations,
