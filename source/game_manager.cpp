@@ -9,6 +9,8 @@
 #include "sprite_animation_manager.h"
 #include "objects.h"
 
+std::array<Segment, CIRCLE_STEPS> segments;
+
 Wizard yellowWizard;
 Wizard purpleWizard;
 
@@ -193,6 +195,11 @@ void Subject::ManageGame(u32 kHeld, u32 kDown, u32 kUp)
 {
     keyLogger(kHeld, kDown, kUp);
     airbornLogger();
+    segments = wizardDetectionLogger(
+        {
+        purpleWizard.body->GetPosition().x,
+        purpleWizard.body->GetPosition().y
+    }, 2.0f );
 }
 
 void Subject::keyLogger(u32 kHeld, u32 kDown, u32 kUp)

@@ -7,18 +7,13 @@
 #include <stdio.h>
 #include "objects.h"
 #include <array>
+#include "game_constants.h"
+#include "game_structs.h"
 
-#define PIXELS_PER_METER 32.0f
-#define CIRCLE_STEPS 360
 
 struct Wizard;
 struct Staff;
 
-typedef struct
-{
-  b2Vec2 p1;
-  b2Vec2 p2;
-} Segment;
 
 class ContactListener : public b2ContactListener
 {

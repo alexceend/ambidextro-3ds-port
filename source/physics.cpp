@@ -191,6 +191,18 @@ float RayCastCallback::ReportFixture(b2Fixture* fixture, const b2Vec2& point,
 
 
 
+bool fixtureIsWizard(b2Fixture * fixture){
+    if (fixture->GetUserData().pointer > 0)
+    {
+        Entity* entity = reinterpret_cast<Entity*>(fixture->GetUserData().pointer);
+        return entity->entity_type == WIZARD_;
+
+    }
+    return false;
+}
+
+/*
+
 std::array<Segment, CIRCLE_STEPS> circularRayCast(b2Vec2 p1, float radius)
 {
     std::array<Segment, CIRCLE_STEPS> segments;
@@ -200,6 +212,24 @@ std::array<Segment, CIRCLE_STEPS> circularRayCast(b2Vec2 p1, float radius)
         b2Vec2 p2 = p1 + radius * b2Vec2(sinf(radians), cosf(radians));
         world->RayCast(&rayCastCallback, p1, p2);
         segments[i] = {p1, rayCastCallback.m_point};
+    }
+    return segments;
+}
+    */
+
+std::array<Segment, CIRCLE_STEPS> Subject::wizardDetectionLogger(b2Vec2 p1, float radius)
+{
+    std::array<Segment, CIRCLE_STEPS> segments;
+    for (int i = 0; i < CIRCLE_STEPS; i++)
+    {
+        float radians = DEG_TO_RAD(i);
+        b2Vec2 p2 = p1 + radius * b2Vec2(sinf(radians), cosf(radians));
+        world->RayCast(&rayCastCallback, p1, p2);
+        segments[i] = {p1, rayCastCallback.m_point};
+        if(fixtureIsWizard(rayCastCallback.m_fixture))
+        {
+            Notify(WIZARD_DETECTED, nullptr);
+        }
     }
     return segments;
 }

@@ -28,7 +28,6 @@ static C3D_RenderTarget *top = NULL;
 
 FooDraw fooDrawInstance;
 
-std::array<Segment, CIRCLE_STEPS> segments;
 
 bool paused = false;
 
@@ -244,10 +243,11 @@ Scene levelUpdate(u32 kDown)
     update_object(purpleWizard.staff.entity.object, purpleWizard.staff.entity.animation_map[purpleWizard.staff.entity.sprite_info.currentAnimationType]);
     update_object(yellowWizard.staff.entity.object, yellowWizard.staff.entity.animation_map[yellowWizard.staff.entity.sprite_info.currentAnimationType]);
 
+    /*
     segments = circularRayCast({
         purpleWizard.body->GetPosition().x,
         purpleWizard.body->GetPosition().y
-    }, 2.0f);
+    }, 2.0f);*/
     return SCENE_LEVEL;
 }
 
@@ -311,7 +311,7 @@ void levelDraw()
     draw_sprite(yellowWizard.entity.object, yellowWizard.entity.animation_map[yellowWizard.entity.sprite_info.currentAnimationType]);
     draw_sprite(purpleWizard.staff.entity.object, purpleWizard.staff.entity.animation_map[purpleWizard.staff.entity.sprite_info.currentAnimationType]);
     draw_sprite(yellowWizard.staff.entity.object, yellowWizard.staff.entity.animation_map[yellowWizard.staff.entity.sprite_info.currentAnimationType]);
-   /*
+    
     for (size_t i = 0; i < CIRCLE_STEPS; i++)
     {
         C2D_DrawLine(
@@ -320,7 +320,6 @@ void levelDraw()
             1.0f, 0.0f
         );
     }
-    */
 
     fooDrawInstance.SetFlags(b2Draw::e_shapeBit);
     if (showDebug)
@@ -337,6 +336,7 @@ LevelClass::LevelClass(ISubject &subject) : subject_(subject)
     subject.Subscribe(PUASE, this);
     subject.Subscribe(DEATH, this);
     subject.Subscribe(DEBUG, this);
+    subject.Subscribe(WIZARD_DETECTED, this);
 }
 
 void LevelClass::Update(EventType event, void* callback)
@@ -352,6 +352,10 @@ void LevelClass::Update(EventType event, void* callback)
         break;
     case DEBUG:
         showDebug = !showDebug;
+        break;
+    case WIZARD_DETECTED:
+        printf("Wizard detected\n");
+        break;
     default: break;
     }
 }

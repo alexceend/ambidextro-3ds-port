@@ -4,6 +4,9 @@
 #include <3ds.h>
 #include <map>
 #include <list>
+#include <box2d/box2d.h>
+#include "game_constants.h"
+#include "game_structs.h"
 
 typedef enum
 {
@@ -19,7 +22,8 @@ typedef enum
     LAND,
     AIRBORN,
     EXIT,
-    DEBUG
+    DEBUG,
+    WIZARD_DETECTED
 } EventType;
 
 class IObserver
@@ -55,6 +59,7 @@ public:
     void airbornLogger();
     void exitLogger(u32 kDown);
     void debugLogger(u32 kDown);
+    std::array<Segment, CIRCLE_STEPS> wizardDetectionLogger(b2Vec2 p1, float radius);
 
 private:
     std::map<EventType, std::list<IObserver *>> observers;

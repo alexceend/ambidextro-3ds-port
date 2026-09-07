@@ -3,6 +3,8 @@
 
 #define MAX_SPRITE_SHEETS 5
 #define MAX_SPRITES 15
+#define CIRCLE_STEPS 360
+#define PIXELS_PER_METER 32.0f
 
 
 #endif

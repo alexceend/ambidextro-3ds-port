@@ -7,6 +7,10 @@
 #include "scene.h"
 #include "game_manager.h"
 #include "sprite_animation_manager.h"
+#include "game_structs.h"
+
+
+extern std::array<Segment, CIRCLE_STEPS> segments;
 
 extern bool paused;
 
