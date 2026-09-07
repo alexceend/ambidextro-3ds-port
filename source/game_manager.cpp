@@ -217,35 +217,35 @@ void Subject::movementLogger(u32 kHeld, u32 kDown, u32 kUp)
 {
     if (kHeld & KEY_LEFT && kHeld & KEY_RIGHT)
     {
-        Notify(MOVE_STOP, &purpleWizard);
+        Notify(MOVE_STOP, &purpleWizard.entity);
     }
     else if (kHeld & KEY_LEFT)
     {
-        Notify(MOVE_LEFT, &purpleWizard);
+        Notify(MOVE_LEFT, &purpleWizard.entity);
     }
     else if (kHeld & KEY_RIGHT)
     {
-        Notify(MOVE_RIGHT, &purpleWizard);
+        Notify(MOVE_RIGHT, &purpleWizard.entity);
     }
 
     if (kDown & KEY_LEFT)
     {
-        Notify(ANIMATE_LEFT, &purpleWizard);
+        Notify(ANIMATE_LEFT, &purpleWizard.entity);
     }
     else if (kDown & KEY_RIGHT)
     {
-        Notify(ANIMATE_RIGHT, &purpleWizard);
+        Notify(ANIMATE_RIGHT, &purpleWizard.entity);
     }
 
     if (kUp & KEY_RIGHT)
     {
         if (kHeld & KEY_LEFT)
         {
-            Notify(ANIMATE_LEFT, &purpleWizard);
+            Notify(ANIMATE_LEFT, &purpleWizard.entity);
         }
         else
         {
-            Notify(MOVE_STOP, &purpleWizard);
+            Notify(MOVE_STOP, &purpleWizard.entity);
         }
     }
 
@@ -253,45 +253,45 @@ void Subject::movementLogger(u32 kHeld, u32 kDown, u32 kUp)
     {
         if (kHeld & KEY_RIGHT)
         {
-            Notify(MOVE_RIGHT, &purpleWizard);
+            Notify(MOVE_RIGHT, &purpleWizard.entity);
         }
         else
         {
-            Notify(MOVE_STOP, &purpleWizard);
+            Notify(MOVE_STOP, &purpleWizard.entity);
         }
     }
 
     if (kHeld & KEY_A && kHeld & KEY_Y)
     {
-        Notify(MOVE_STOP, &yellowWizard);
+        Notify(MOVE_STOP, &yellowWizard.entity);
     }
     else if (kHeld & KEY_A)
     {
-        Notify(MOVE_RIGHT, &yellowWizard);
+        Notify(MOVE_RIGHT, &yellowWizard.entity);
     }
     else if (kHeld & KEY_Y)
     {
-        Notify(MOVE_LEFT, &yellowWizard);
+        Notify(MOVE_LEFT, &yellowWizard.entity);
     }
 
     if (kDown & KEY_A)
     {
-        Notify(ANIMATE_RIGHT, &yellowWizard);
+        Notify(ANIMATE_RIGHT, &yellowWizard.entity);
     }
     else if (kDown & KEY_Y)
     {
-        Notify(ANIMATE_LEFT, &yellowWizard);
+        Notify(ANIMATE_LEFT, &yellowWizard.entity);
     }
 
     if (kUp & KEY_A)
     {
         if (kHeld & KEY_Y)
         {
-            Notify(ANIMATE_LEFT, &yellowWizard);
+            Notify(ANIMATE_LEFT, &yellowWizard.entity);
         }
         else
         {
-            Notify(MOVE_STOP, &yellowWizard);
+            Notify(MOVE_STOP, &yellowWizard.entity);
         }
     }
 
@@ -299,11 +299,11 @@ void Subject::movementLogger(u32 kHeld, u32 kDown, u32 kUp)
     {
         if (kHeld & KEY_A)
         {
-            Notify(ANIMATE_RIGHT, &yellowWizard);
+            Notify(ANIMATE_RIGHT, &yellowWizard.entity);
         }
         else
         {
-            Notify(MOVE_STOP, &yellowWizard);
+            Notify(MOVE_STOP, &yellowWizard.entity);
         }
     }
 }
@@ -312,12 +312,12 @@ void Subject::jumpLogger(u32 kDown)
 {
     if (kDown & KEY_UP && purpleWizard.num_foot_contacts >= 1)
     {
-        Notify(JUMP, &purpleWizard);
+        Notify(JUMP, &purpleWizard.entity);
         purple_current_air = true;
     }
     if (kDown & KEY_X && yellowWizard.num_foot_contacts >= 1)
     {
-        Notify(JUMP, &yellowWizard);
+        Notify(JUMP, &yellowWizard.entity);
         yellow_current_air = true;
     }
 }
@@ -341,12 +341,12 @@ void Subject::airbornLogger()
     {
         if (purple_prev_air == false)
         {
-            Notify(AIRBORN, &purpleWizard);
+            Notify(AIRBORN, &purpleWizard.entity);
             purple_prev_air = true;
         }
         else
         {
-            Notify(LAND, &purpleWizard);
+            Notify(LAND, &purpleWizard.entity);
             purple_prev_air = false;
         }
     }
@@ -355,12 +355,12 @@ void Subject::airbornLogger()
     {
         if (yellow_prev_air == false)
         {
-            Notify(AIRBORN, &yellowWizard);
+            Notify(AIRBORN, &yellowWizard.entity);
             yellow_prev_air = true;
         }
         else
         {
-            Notify(LAND, &yellowWizard);
+            Notify(LAND, &yellowWizard.entity);
             yellow_prev_air = false;
         }
     }

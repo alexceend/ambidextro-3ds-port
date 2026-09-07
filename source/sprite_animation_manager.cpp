@@ -1,7 +1,6 @@
 #include "sprite_animation_manager.h"
 #include "objects.h"
 
-
 void initialize_object(
     object_2d_t *object,
     size_t num_sprite_sheets,
@@ -146,6 +145,42 @@ void draw_sprite(object_2d_t *object, size_t animation_index)
     }
 }
 
+void update_wizard(Wizard *wizard, EventType event)
+{
+    if (event == AIRBORN)
+    {
+        wizard->entity.sprite_info.currentAnimationType = JUMP_ANIMATION;
+        wizard->staff.entity.sprite_info.currentAnimationType = JUMP_ANIMATION;
+    }
+    else if (event == LAND)
+    {
+        if (wizard->body->GetLinearVelocity().x == 0)
+        {
+            wizard->entity.sprite_info.currentAnimationType = STATIC_ANIMATION;
+            wizard->staff.entity.sprite_info.currentAnimationType = STATIC_ANIMATION;
+        }
+        else
+        {
+            wizard->entity.sprite_info.currentAnimationType = MOVE_ANIMATION;
+            wizard->staff.entity.sprite_info.currentAnimationType = MOVE_ANIMATION;
+        }
+    }
+    else if (event == MOVE_STOP && wizard->num_foot_contacts > 0)
+    {
+        wizard->entity.sprite_info.currentAnimationType = STATIC_ANIMATION;
+        wizard->staff.entity.sprite_info.currentAnimationType = STATIC_ANIMATION;
+    }
+    else if ((event == ANIMATE_LEFT || event == ANIMATE_RIGHT) && wizard->num_foot_contacts > 0)
+    {
+        wizard->entity.sprite_info.currentAnimationType = MOVE_ANIMATION;
+        wizard->staff.entity.sprite_info.currentAnimationType = MOVE_ANIMATION;
+    }
+
+    wizard->entity.object->reset_animation = true;
+    wizard->staff.entity.object->reset_animation = true;
+}
+
+
 SpriteAnimation::SpriteAnimation(ISubject &subject) : subject_(subject)
 {
     this->subject_.Subscribe(MOVE_STOP, this);
@@ -159,31 +194,13 @@ SpriteAnimation::~SpriteAnimation() {}
 
 void SpriteAnimation::Update(EventType event, void *callback)
 {
-    Wizard *wizard = (Wizard *)callback;
-
-    if (event == AIRBORN)
+    Entity *entity = static_cast<Entity *>(callback);
+    switch (entity->entity_type)
     {
-        wizard->entity.sprite_info.currentAnimationType = JUMP_ANIMATION;
+    case WIZARD_:
+        update_wizard(static_cast<Wizard *>(entity->sub_struct), event);
+        break;
+    default:
+        break;
     }
-    else if (event == LAND)
-    {
-        if (wizard->body->GetLinearVelocity().x == 0)
-        {
-            wizard->entity.sprite_info.currentAnimationType = STATIC_ANIMATION;
-        }
-        else
-        {
-            wizard->entity.sprite_info.currentAnimationType = MOVE_ANIMATION;
-        }
-    }
-    else if (event == MOVE_STOP && wizard->num_foot_contacts > 0)
-    {
-        wizard->entity.sprite_info.currentAnimationType = STATIC_ANIMATION;
-    }
-    else if ((event == ANIMATE_LEFT || event == ANIMATE_RIGHT) && wizard->num_foot_contacts > 0)
-    {
-        wizard->entity.sprite_info.currentAnimationType = MOVE_ANIMATION;
-    }
-
-    wizard->entity.object->reset_animation = true;
 }
