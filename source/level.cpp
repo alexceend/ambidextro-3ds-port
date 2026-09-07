@@ -312,13 +312,17 @@ void levelDraw()
     draw_sprite(purpleWizard.staff.entity.object, purpleWizard.staff.entity.animation_map[purpleWizard.staff.entity.sprite_info.currentAnimationType]);
     draw_sprite(yellowWizard.staff.entity.object, yellowWizard.staff.entity.animation_map[yellowWizard.staff.entity.sprite_info.currentAnimationType]);
     
-    for (size_t i = 0; i < CIRCLE_STEPS; i++)
+    
+    if(DEBUG_RAYCAST)
     {
-        C2D_DrawLine(
-            metersToPixels(segments.at(i).p1.x), metersToPixels(segments.at(i).p1.y), C2D_Color32f(1.0f, 1.0f, 1.0f, 0.2f),
-            metersToPixels(segments.at(i).p2.x), metersToPixels(segments.at(i).p2.y), C2D_Color32f(1.0f, 1.0f, 1.0f, 0.2f),
-            1.0f, 0.0f
-        );
+        for (size_t i = 0; i < CIRCLE_STEPS; i++)
+        {
+            C2D_DrawLine(
+                metersToPixels(segments.at(i).p1.x), metersToPixels(segments.at(i).p1.y), C2D_Color32f(1.0f, 1.0f, 1.0f, 0.2f),
+                metersToPixels(segments.at(i).p2.x), metersToPixels(segments.at(i).p2.y), C2D_Color32f(1.0f, 1.0f, 1.0f, 0.2f),
+                1.0f, 0.0f
+            );
+        }
     }
 
     fooDrawInstance.SetFlags(b2Draw::e_shapeBit);
