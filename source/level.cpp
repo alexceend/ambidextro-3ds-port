@@ -109,6 +109,21 @@ bool loadLevelFromFile(ifstream *file, Level* level)
     return i == LEVEL_HEIGHT;
 }
 
+void initialize_staff_fixture(Wizard* wizard)
+{
+    for (b2Fixture* fixture = wizard->body->GetFixtureList(); fixture; fixture = fixture->GetNext())
+    {
+        if (fixture->GetUserData().pointer != 0)
+        {
+            Entity* entity = reinterpret_cast<Entity*>(fixture->GetUserData().pointer);
+            if (entity->entity_type == STAFF_)
+            {
+                wizard->staff.fixture = fixture;
+            }
+        }
+    }
+}
+
 void loadPhysics()
 {
     b2Vec2 gravity(0.0f, 9.8);
@@ -141,6 +156,8 @@ void loadPhysics()
 
     loadWizardHitbox(level.spawns[0].spawnX, level.spawns[0].spawnY, &purpleWizard);
     loadWizardHitbox(level.spawns[1].spawnX, level.spawns[1].spawnY, &yellowWizard);
+    initialize_staff_fixture(&purpleWizard);
+    initialize_staff_fixture(&yellowWizard);
 }
 
 bool levelInit(C3D_RenderTarget *target)
@@ -217,9 +234,16 @@ Scene levelUpdate(u32 kDown)
     purpleWizard.entity.object->position.y = metersToPixels(wizardPurple.y) - purpleWizard.entity.body_properties.height / 2;
     yellowWizard.entity.object->position.x = metersToPixels(wizardYellow.x)- yellowWizard.entity.body_properties.width / 2;
     yellowWizard.entity.object->position.y = metersToPixels(wizardYellow.y)- yellowWizard.entity.body_properties.height / 2;
+    purpleWizard.staff.entity.object->position.x = metersToPixels(wizardPurple.x) - purpleWizard.entity.body_properties.width / 2;
+    purpleWizard.staff.entity.object->position.y = metersToPixels(wizardPurple.y) - purpleWizard.entity.body_properties.height / 2;
+    yellowWizard.staff.entity.object->position.x = metersToPixels(wizardYellow.x) - yellowWizard.entity.body_properties.width / 2;
+    yellowWizard.staff.entity.object->position.y = metersToPixels(wizardYellow.y) - yellowWizard.entity.body_properties.height / 2;
+
 
     update_object(purpleWizard.entity.object, purpleWizard.entity.animation_map[purpleWizard.entity.sprite_info.currentAnimationType]);
     update_object(yellowWizard.entity.object, yellowWizard.entity.animation_map[yellowWizard.entity.sprite_info.currentAnimationType]);
+    update_object(purpleWizard.staff.entity.object, purpleWizard.staff.entity.animation_map[purpleWizard.staff.entity.sprite_info.currentAnimationType]);
+    update_object(yellowWizard.staff.entity.object, yellowWizard.staff.entity.animation_map[yellowWizard.staff.entity.sprite_info.currentAnimationType]);
 
     segments = circularRayCast({
         wizardPurple.x,
@@ -286,6 +310,8 @@ void levelDraw()
 
     draw_sprite(purpleWizard.entity.object, purpleWizard.entity.animation_map[purpleWizard.entity.sprite_info.currentAnimationType]);
     draw_sprite(yellowWizard.entity.object, yellowWizard.entity.animation_map[yellowWizard.entity.sprite_info.currentAnimationType]);
+    draw_sprite(purpleWizard.staff.entity.object, purpleWizard.staff.entity.animation_map[purpleWizard.staff.entity.sprite_info.currentAnimationType]);
+    draw_sprite(yellowWizard.staff.entity.object, yellowWizard.staff.entity.animation_map[yellowWizard.staff.entity.sprite_info.currentAnimationType]);
    /*
     for (size_t i = 0; i < CIRCLE_STEPS; i++)
     {

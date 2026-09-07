@@ -11,12 +11,12 @@
 #define WIZARD_HEIGHT 15.0f
 #define WIZARD_WIDTH 12.0f
 #define WIZARD_SPEED 130.0f
+#define STAFF_HEIGHT 12.0f
+#define STAFF_WIDTH 3.0f
 #define GRAVITY b2Vec2(0.0f, 9.8f)
 
 extern Wizard purpleWizard;
 extern Wizard yellowWizard;
-extern Staff purpleStaff;
-extern Staff yellowStaff;
 
 
 #endif

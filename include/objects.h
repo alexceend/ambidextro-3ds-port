@@ -49,9 +49,18 @@ typedef struct Entity
     std::map<AnimationType, size_t> animation_map;
 } Entity;
 
+typedef struct Staff
+{
+    Entity entity;
+    b2Fixture* fixture;
+    float offset_x;
+    float offset_y;
+} Staff;
+
 typedef struct Wizard
 {
     Entity entity;
+    Staff staff;
     WizardType wizard_type;
     b2Body* body;
     int num_foot_contacts;
@@ -60,13 +69,5 @@ typedef struct Wizard
     bool current_air;
     bool prev_air;
 } Wizard;
-
-typedef struct Staff
-{
-    b2Body* body;
-    Entity entity;
-    float offset_x;
-    float offset_y;
-} Staff;
 
 #endif

@@ -11,8 +11,6 @@
 
 Wizard yellowWizard;
 Wizard purpleWizard;
-Staff purpleStaff;
-Staff yellowStaff;
 
 bool purple_prev_air;
 bool purple_current_air;
@@ -40,14 +38,32 @@ void createWizards()
          new object_2d_t{},
 
          {{STATIC_ANIMATION, MAX_SPRITE_SHEETS}, {MOVE_ANIMATION, 0}, {JUMP_ANIMATION, 1}}},
+        {{
+             STAFF_,
+             &purpleWizard.staff,
+             {STAFF_WIDTH,
+              STAFF_HEIGHT,
+              WIZARD_SPEED},
+             {STATIC_ANIMATION,
+              STATIC_ANIMATION,
+              2,
+              {atlas_staff_static, atlas_staff_jump},
+              {20, 20}},
+             new object_2d_t{},
+             {{STATIC_ANIMATION, MAX_SPRITE_SHEETS}, {MOVE_ANIMATION, 0}, {JUMP_ANIMATION, 1}},
+
+         },
+         NULL,
+         1.0f,
+         1.0f},
+
         PURPLE,
         NULL,
         0,
         true,
         false,
         false,
-        false
-    };
+        false};
     yellowWizard = {
         {WIZARD_,
          &yellowWizard,
@@ -64,14 +80,28 @@ void createWizards()
          new object_2d_t{},
 
          {{STATIC_ANIMATION, MAX_SPRITE_SHEETS}, {MOVE_ANIMATION, 0}, {JUMP_ANIMATION, 1}}},
+        {{STAFF_,
+          &yellowWizard.staff,
+          {STAFF_WIDTH,
+           STAFF_HEIGHT,
+           WIZARD_SPEED},
+          {STATIC_ANIMATION,
+           STATIC_ANIMATION,
+           2,
+           {atlas_staff_static, atlas_staff_jump},
+           {20, 20}},
+          new object_2d_t{},
+          {{STATIC_ANIMATION, MAX_SPRITE_SHEETS}, {MOVE_ANIMATION, 0}, {JUMP_ANIMATION, 1}}},
+         NULL,
+         1.0f,
+         1.0f},
         YELLOW,
         NULL,
         0,
         false,
         false,
         false,
-        false
-    };
+        false};
 }
 
 Subject::Subject()
@@ -90,6 +120,20 @@ Subject::Subject()
         metersToPixels(yellowWizard.body->GetPosition().x) - yellowWizard.entity.body_properties.width / 2,
         metersToPixels(yellowWizard.body->GetPosition().y) - yellowWizard.entity.body_properties.height / 2,
         yellowWizard.x_flip, yellowWizard.y_flip);
+    initialize_object(
+        purpleWizard.staff.entity.object, purpleWizard.staff.entity.sprite_info.num_animations,
+        purpleWizard.staff.entity.sprite_info.spriteSheets, purpleWizard.staff.entity.sprite_info.animations_refresh_ms_time,
+        metersToPixels(purpleWizard.body->GetPosition().x) - purpleWizard.entity.body_properties.width / 2 - pixelsToMeters(purpleWizard.staff.offset_x),
+        metersToPixels(purpleWizard.body->GetPosition().y) - purpleWizard.entity.body_properties.height / 2 + pixelsToMeters(purpleWizard.staff.offset_y),
+        purpleWizard.x_flip, purpleWizard.y_flip
+    );
+    initialize_object(
+        yellowWizard.staff.entity.object, yellowWizard.staff.entity.sprite_info.num_animations,
+        yellowWizard.staff.entity.sprite_info.spriteSheets, yellowWizard.staff.entity.sprite_info.animations_refresh_ms_time,
+        metersToPixels(yellowWizard.body->GetPosition().x) - yellowWizard.entity.body_properties.width / 2,
+        metersToPixels(yellowWizard.body->GetPosition().y) - yellowWizard.entity.body_properties.height / 2,
+        yellowWizard.x_flip, yellowWizard.y_flip
+    );
 
     purpleWizard.prev_air = purple_current_air == true ? false : true;
     yellowWizard.prev_air = yellow_current_air == true ? false : true;
@@ -160,10 +204,9 @@ void Subject::keyLogger(u32 kHeld, u32 kDown, u32 kUp)
     pauseLogger(kDown);
 }
 
-
 void Subject::pauseLogger(u32 kDown)
 {
-    if(kDown & KEY_START)
+    if (kDown & KEY_START)
     {
         printf("Notified pause\n");
         Notify(PUASE, nullptr);
@@ -239,7 +282,7 @@ void Subject::movementLogger(u32 kHeld, u32 kDown, u32 kUp)
     {
         Notify(ANIMATE_LEFT, &yellowWizard);
     }
-    
+
     if (kUp & KEY_A)
     {
         if (kHeld & KEY_Y)

@@ -8,7 +8,8 @@ extern C2D_SpriteSheet atlas_purple_wizard_static;
 extern C2D_SpriteSheet atlas_purple_wizard_jump;
 extern C2D_SpriteSheet atlas_yellow_wizard_static;
 extern C2D_SpriteSheet atlas_yellow_wizard_jump;
-extern C2D_SpriteSheet atlas_staff;
+extern C2D_SpriteSheet atlas_staff_static;
+extern C2D_SpriteSheet atlas_staff_jump;
 bool loadAssets();
 void clearAssets();
 

@@ -6,7 +6,8 @@ C2D_SpriteSheet atlas_purple_wizard_static = NULL;
 C2D_SpriteSheet atlas_purple_wizard_jump = NULL;
 C2D_SpriteSheet atlas_yellow_wizard_static = NULL;
 C2D_SpriteSheet atlas_yellow_wizard_jump = NULL;
-C2D_SpriteSheet atlas_staff = NULL;
+C2D_SpriteSheet atlas_staff_static = NULL;
+C2D_SpriteSheet atlas_staff_jump = NULL;
 
 bool loadAssets()
 {
@@ -15,7 +16,8 @@ bool loadAssets()
     atlas_purple_wizard_jump = C2D_SpriteSheetLoad("romfs:/gfx/purple_wizard_jump_atlas.t3x");
     atlas_yellow_wizard_static = C2D_SpriteSheetLoad("romfs:/gfx/yellow_wizard_static_atlas.t3x");
     atlas_yellow_wizard_jump = C2D_SpriteSheetLoad("romfs:/gfx/yellow_wizard_jump_atlas.t3x");
-    atlas_staff = C2D_SpriteSheetLoad("romfs:/gfx/staff_atlas.t3x");
+    atlas_staff_static = C2D_SpriteSheetLoad("romfs:/gfx/staff_static_atlas.t3x");
+    atlas_staff_jump = C2D_SpriteSheetLoad("romfs:/gfx/staff_jump_atlas.t3x");
 
     if (!atlas_dungeon)
     {
@@ -47,9 +49,15 @@ bool loadAssets()
         return false;
     }
 
-    if (!atlas_staff)
+    if (!atlas_staff_static)
     {
-        printf("ERROR: Failed to load staff atlas\n");
+        printf("ERROR: Failed to load staff static atlas\n");
+        return false;
+    }
+
+    if (!atlas_staff_jump)
+    {
+        printf("ERROR: Failed to load staff jump atlas\n");
         return false;
     }
 
@@ -83,9 +91,14 @@ void clearAssets()
         C2D_SpriteSheetFree(atlas_yellow_wizard_jump);
         atlas_yellow_wizard_jump = NULL;
     }
-    if (atlas_staff)
+    if (atlas_staff_static)
     {
-        C2D_SpriteSheetFree(atlas_staff);
-        atlas_staff = NULL;
+        C2D_SpriteSheetFree(atlas_staff_static);
+        atlas_staff_static = NULL;
+    }
+    if (atlas_staff_jump)
+    {
+        C2D_SpriteSheetFree(atlas_staff_jump);
+        atlas_staff_jump = NULL;
     }
 }

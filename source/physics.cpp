@@ -56,7 +56,7 @@ void loadWizardFootSensor(float footSensorX, float footSensorY, Wizard* wizard, 
     body->CreateFixture(fixtureDef);
 }
 
-void loadStaff(float staff_x, float staff_y, Wizard* wizard, b2PolygonShape* dynamicBox, b2FixtureDef* fixtureDef, b2Body* body)
+void loadStaff(float staff_x, float staff_y, Staff* staff, b2PolygonShape* dynamicBox, b2FixtureDef* fixtureDef, b2Body* body)
 {
     dynamicBox->SetAsBox(
         pixelsToMeters(staff_x / 2),
@@ -65,7 +65,7 @@ void loadStaff(float staff_x, float staff_y, Wizard* wizard, b2PolygonShape* dyn
         0
     );
     fixtureDef->isSensor = true;
-    fixtureDef->userData.pointer = reinterpret_cast<uintptr_t>(wizard);
+    fixtureDef->userData.pointer = reinterpret_cast<uintptr_t>(staff);
     body->CreateFixture(fixtureDef);
 }
 
@@ -95,7 +95,7 @@ void loadWizardHitbox(float pos_x, float pos_y, Wizard *wizard)
     body->CreateFixture(&fixtureDef);
 
     loadWizardFootSensor(footSensorX, footSensorY, wizard, &dynamicBox, &fixtureDef, body);
-    loadStaff(staff_x, staff_y, wizard, &dynamicBox, &fixtureDef, body);
+    loadStaff(staff_x, staff_y, &wizard->staff, &dynamicBox, &fixtureDef, body);
 }
 
 
