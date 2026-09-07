@@ -221,24 +221,23 @@ void levelCleanup()
     top = NULL;
 }
 
+void updateWizard(Wizard* wizard)
+{
+    wizard->entity.object->position.x = metersToPixels(wizard->body->GetPosition().x) - wizard->entity.body_properties.width / 2;
+    wizard->entity.object->position.y = metersToPixels(wizard->body->GetPosition().y) - wizard->entity.body_properties.height / 2;
+    wizard->staff.entity.object->position.x = metersToPixels(wizard->body->GetPosition().x) - wizard->entity.body_properties.width / 2;
+    wizard->staff.entity.object->position.y = metersToPixels(wizard->body->GetPosition().y) - wizard->entity.body_properties.height / 2;
+}
+
 Scene levelUpdate(u32 kDown)
 {
     if (paused){
         return pauseUpdate(kDown);
     }
     updatePhysics();
-    b2Vec2 wizardPurple = purpleWizard.body->GetPosition();
-    b2Vec2 wizardYellow = yellowWizard.body->GetPosition();
 
-    purpleWizard.entity.object->position.x = metersToPixels(wizardPurple.x) - purpleWizard.entity.body_properties.width / 2;
-    purpleWizard.entity.object->position.y = metersToPixels(wizardPurple.y) - purpleWizard.entity.body_properties.height / 2;
-    yellowWizard.entity.object->position.x = metersToPixels(wizardYellow.x)- yellowWizard.entity.body_properties.width / 2;
-    yellowWizard.entity.object->position.y = metersToPixels(wizardYellow.y)- yellowWizard.entity.body_properties.height / 2;
-    purpleWizard.staff.entity.object->position.x = metersToPixels(wizardPurple.x) - purpleWizard.entity.body_properties.width / 2;
-    purpleWizard.staff.entity.object->position.y = metersToPixels(wizardPurple.y) - purpleWizard.entity.body_properties.height / 2;
-    yellowWizard.staff.entity.object->position.x = metersToPixels(wizardYellow.x) - yellowWizard.entity.body_properties.width / 2;
-    yellowWizard.staff.entity.object->position.y = metersToPixels(wizardYellow.y) - yellowWizard.entity.body_properties.height / 2;
-
+    updateWizard(&purpleWizard);
+    updateWizard(&yellowWizard);
 
     update_object(purpleWizard.entity.object, purpleWizard.entity.animation_map[purpleWizard.entity.sprite_info.currentAnimationType]);
     update_object(yellowWizard.entity.object, yellowWizard.entity.animation_map[yellowWizard.entity.sprite_info.currentAnimationType]);
@@ -246,8 +245,8 @@ Scene levelUpdate(u32 kDown)
     update_object(yellowWizard.staff.entity.object, yellowWizard.staff.entity.animation_map[yellowWizard.staff.entity.sprite_info.currentAnimationType]);
 
     segments = circularRayCast({
-        wizardPurple.x,
-        wizardPurple.y
+        purpleWizard.body->GetPosition().x,
+        purpleWizard.body->GetPosition().y
     }, 2.0f);
     return SCENE_LEVEL;
 }
