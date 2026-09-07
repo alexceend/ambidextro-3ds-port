@@ -195,7 +195,7 @@ void Subject::ManageGame(u32 kHeld, u32 kDown, u32 kUp)
 {
     keyLogger(kHeld, kDown, kUp);
     airbornLogger();
-    segments = wizardDetectionLogger(
+   segments = wizardDetectionLogger(
         {
         purpleWizard.body->GetPosition().x,
         purpleWizard.body->GetPosition().y

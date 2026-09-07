@@ -89,7 +89,7 @@ void loadWizardHitbox(float pos_x, float pos_y, Wizard *wizard)
 
     b2FixtureDef fixtureDef;
     fixtureDef.shape = &dynamicBox;
-    fixtureDef.density = 1.0f;
+    fixtureDef.density = 0.0f;
     fixtureDef.friction = 0.0f;
 
     body->CreateFixture(&fixtureDef);
@@ -195,7 +195,7 @@ bool fixtureIsWizard(b2Fixture * fixture){
     if (fixture->GetUserData().pointer > 0)
     {
         Entity* entity = reinterpret_cast<Entity*>(fixture->GetUserData().pointer);
-        return entity->entity_type == WIZARD_;
+        return entity->entity_type == STAFF_;
 
     }
     return false;
