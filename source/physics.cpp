@@ -89,7 +89,7 @@ void loadWizardHitbox(float pos_x, float pos_y, Wizard *wizard)
 
     b2FixtureDef fixtureDef;
     fixtureDef.shape = &dynamicBox;
-    fixtureDef.density = 0.0f;
+    fixtureDef.density = 1.0f;
     fixtureDef.friction = 0.0f;
 
     body->CreateFixture(&fixtureDef);
@@ -182,6 +182,12 @@ void ContactListener::EndContact(b2Contact *contact)
 float RayCastCallback::ReportFixture(b2Fixture* fixture, const b2Vec2& point,
 									const b2Vec2& normal, float fraction)
 {
+
+    if(fixture->GetBody() == ignoredBody)
+    {
+        return -1;
+    }
+
     m_fixture = fixture;
     m_point = point;
     m_normal = normal;
@@ -195,7 +201,7 @@ bool fixtureIsWizard(b2Fixture * fixture){
     if (fixture->GetUserData().pointer > 0)
     {
         Entity* entity = reinterpret_cast<Entity*>(fixture->GetUserData().pointer);
-        return entity->entity_type == STAFF_;
+        return entity->entity_type == WIZARD_;
 
     }
     return false;
@@ -217,13 +223,18 @@ std::array<Segment, CIRCLE_STEPS> circularRayCast(b2Vec2 p1, float radius)
 }
     */
 
-std::array<Segment, CIRCLE_STEPS> Subject::wizardDetectionLogger(b2Vec2 p1, float radius)
+std::array<Segment, CIRCLE_STEPS> Subject::wizardDetectionLogger(b2Vec2 p1, float radius, b2Body* ignoredBody)
 {
     std::array<Segment, CIRCLE_STEPS> segments;
     for (int i = 0; i < CIRCLE_STEPS; i++)
     {
         float radians = DEG_TO_RAD(i);
         b2Vec2 p2 = p1 + radius * b2Vec2(sinf(radians), cosf(radians));
+
+        rayCastCallback.m_fixture = nullptr;
+        rayCastCallback.m_point = p2;
+        rayCastCallback.ignoredBody = ignoredBody;
+
         world->RayCast(&rayCastCallback, p1, p2);
         segments[i] = {p1, rayCastCallback.m_point};
         if(fixtureIsWizard(rayCastCallback.m_fixture))

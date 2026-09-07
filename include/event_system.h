@@ -59,7 +59,7 @@ public:
     void airbornLogger();
     void exitLogger(u32 kDown);
     void debugLogger(u32 kDown);
-    std::array<Segment, CIRCLE_STEPS> wizardDetectionLogger(b2Vec2 p1, float radius);
+    std::array<Segment, CIRCLE_STEPS> wizardDetectionLogger(b2Vec2 p1, float radius, b2Body* ignoredBody);
 
 private:
     std::map<EventType, std::list<IObserver *>> observers;

@@ -32,6 +32,7 @@ class RayCastCallback : public b2RayCastCallback
     float ReportFixture(b2Fixture* fixture, const b2Vec2& point,
 									const b2Vec2& normal, float fraction) override;
 
+    b2Body* ignoredBody = nullptr;
     b2Fixture* m_fixture;
     b2Vec2 m_point;
     b2Vec2 m_normal;

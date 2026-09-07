@@ -199,7 +199,7 @@ void Subject::ManageGame(u32 kHeld, u32 kDown, u32 kUp)
         {
         purpleWizard.body->GetPosition().x,
         purpleWizard.body->GetPosition().y
-    }, 2.0f );
+    }, 2.0f, purpleWizard.body );
 }
 
 void Subject::keyLogger(u32 kHeld, u32 kDown, u32 kUp)
