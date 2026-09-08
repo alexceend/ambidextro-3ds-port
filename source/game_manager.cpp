@@ -110,7 +110,7 @@ Subject::Subject()
 {
     createWizards();
 
-    initialize_object(
+    /*initialize_object(
         purpleWizard.entity.object, purpleWizard.entity.sprite_info.num_animations,
         purpleWizard.entity.sprite_info.spriteSheets, purpleWizard.entity.sprite_info.animations_refresh_ms_time,
         metersToPixels(purpleWizard.body->GetPosition().x) - purpleWizard.entity.body_properties.width / 2,
@@ -134,6 +134,30 @@ Subject::Subject()
         yellowWizard.staff.entity.sprite_info.spriteSheets, yellowWizard.staff.entity.sprite_info.animations_refresh_ms_time,
         metersToPixels(yellowWizard.body->GetPosition().x) - yellowWizard.entity.body_properties.width / 2,
         metersToPixels(yellowWizard.body->GetPosition().y) - yellowWizard.entity.body_properties.height / 2,
+        yellowWizard.x_flip, yellowWizard.y_flip
+    );
+    */
+
+    initialize_object(
+        purpleWizard.entity.object, purpleWizard.entity.sprite_info.num_animations,
+        purpleWizard.entity.sprite_info.spriteSheets, purpleWizard.entity.sprite_info.animations_refresh_ms_time,
+        0.0f, 0.0f,
+        purpleWizard.x_flip, purpleWizard.y_flip);
+    initialize_object(
+        yellowWizard.entity.object, yellowWizard.entity.sprite_info.num_animations,
+        yellowWizard.entity.sprite_info.spriteSheets, yellowWizard.entity.sprite_info.animations_refresh_ms_time,
+        0.0f, 0.0f,
+        yellowWizard.x_flip, yellowWizard.y_flip);
+    initialize_object(
+        purpleWizard.staff.entity.object, purpleWizard.staff.entity.sprite_info.num_animations,
+        purpleWizard.staff.entity.sprite_info.spriteSheets, purpleWizard.staff.entity.sprite_info.animations_refresh_ms_time,
+        0.0f, 0.0f,
+        purpleWizard.x_flip, purpleWizard.y_flip
+    );
+    initialize_object(
+        yellowWizard.staff.entity.object, yellowWizard.staff.entity.sprite_info.num_animations,
+        yellowWizard.staff.entity.sprite_info.spriteSheets, yellowWizard.staff.entity.sprite_info.animations_refresh_ms_time,
+        0.0f, 0.0f,
         yellowWizard.x_flip, yellowWizard.y_flip
     );
 
