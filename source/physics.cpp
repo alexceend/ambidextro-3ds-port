@@ -52,7 +52,6 @@ void loadWizardFootSensor(float footSensorX, float footSensorY, Wizard* wizard, 
     );
 
     fixtureDef->isSensor = true;
-    fixtureDef->userData.pointer = reinterpret_cast<uintptr_t>(wizard);
     body->CreateFixture(fixtureDef);
 }
 
@@ -79,6 +78,7 @@ void loadWizardHitbox(float pos_x, float pos_y, Wizard *wizard)
     b2BodyDef bodyDef;
     bodyDef.type = b2_dynamicBody;
     bodyDef.fixedRotation = true;
+    bodyDef.allowSleep = false;
     bodyDef.position.Set(pixelsToMeters(pos_x), pixelsToMeters(pos_y));
     b2Body *body = world->CreateBody(&bodyDef);
     wizard->body = body;
@@ -89,6 +89,7 @@ void loadWizardHitbox(float pos_x, float pos_y, Wizard *wizard)
 
     b2FixtureDef fixtureDef;
     fixtureDef.shape = &dynamicBox;
+    fixtureDef.userData.pointer = reinterpret_cast<uintptr_t>(wizard);
     fixtureDef.density = 1.0f;
     fixtureDef.friction = 0.0f;
 
@@ -206,22 +207,6 @@ bool fixtureIsWizard(b2Fixture * fixture){
     }
     return false;
 }
-
-/*
-
-std::array<Segment, CIRCLE_STEPS> circularRayCast(b2Vec2 p1, float radius)
-{
-    std::array<Segment, CIRCLE_STEPS> segments;
-    for (int i = 0; i < CIRCLE_STEPS; i++)
-    {
-        float radians = DEG_TO_RAD(i);
-        b2Vec2 p2 = p1 + radius * b2Vec2(sinf(radians), cosf(radians));
-        world->RayCast(&rayCastCallback, p1, p2);
-        segments[i] = {p1, rayCastCallback.m_point};
-    }
-    return segments;
-}
-    */
 
 std::array<Segment, CIRCLE_STEPS> Subject::wizardDetectionLogger(b2Vec2 p1, float radius, b2Body* ignoredBody)
 {
