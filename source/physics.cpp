@@ -113,6 +113,11 @@ void preSolve(b2Contact* contact)
     Entity* entity_a = reinterpret_cast<Entity*>(body_a);
     Entity* entity_b = reinterpret_cast<Entity*>(body_b);
 
+    if (entity_a == nullptr || entity_b == nullptr)
+    {
+        return;
+    }
+
     if (entity_a->entity_type == WIZARD_)
     {
         Wizard* wizard = static_cast<Wizard*>(entity_a->sub_struct);
@@ -199,6 +204,10 @@ float RayCastCallback::ReportFixture(b2Fixture* fixture, const b2Vec2& point,
 
 
 bool fixtureIsWizard(b2Fixture * fixture){
+    if (fixture == nullptr)
+    {
+        return false;
+    }
     if (fixture->GetUserData().pointer > 0)
     {
         Entity* entity = reinterpret_cast<Entity*>(fixture->GetUserData().pointer);
