@@ -58,6 +58,25 @@ void createWizards()
          NULL,
          1.0f,
          1.0f},
+        
+        {
+            {
+                WIZARD_FOOT_,
+                &purpleWizard.foot_sensor,
+                {
+                    WIZARD_WIDTH / 4,
+                    2.0f,
+                    WIZARD_SPEED
+                },
+                {},
+                NULL,
+                {}
+            },
+            &purpleWizard,
+            NULL,
+            0,
+            WIZARD_HEIGHT / 2
+        },
 
         PURPLE,
         NULL,
@@ -97,6 +116,24 @@ void createWizards()
          NULL,
          1.0f,
          1.0f},
+         {
+            {
+                WIZARD_FOOT_,
+                &yellowWizard.foot_sensor,
+                {
+                    WIZARD_WIDTH / 4,
+                    2.0f,
+                    WIZARD_SPEED
+                },
+                {},
+                NULL,
+                {}
+            },
+            &yellowWizard,
+            NULL,
+            0,
+            WIZARD_HEIGHT / 2 
+        },
         YELLOW,
         NULL,
         0,

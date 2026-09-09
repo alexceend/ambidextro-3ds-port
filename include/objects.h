@@ -8,9 +8,12 @@
 #include <physics.h>
 #include <map>
 
+struct Wizard;
+
 typedef enum
 {
     WIZARD_,
+    WIZARD_FOOT_,
     STAFF_
 } EntityType;
 
@@ -57,10 +60,20 @@ typedef struct Staff
     float offset_y;
 } Staff;
 
+typedef struct FootSensor
+{
+    Entity entity;
+    Wizard* wizard;
+    b2Fixture* fixture;
+    float offset_x;
+    float offset_y;
+} FootSensor;
+
 typedef struct Wizard
 {
     Entity entity;
     Staff staff;
+    FootSensor foot_sensor;
     WizardType wizard_type;
     b2Body* body;
     int num_foot_contacts;

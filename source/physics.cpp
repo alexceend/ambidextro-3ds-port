@@ -40,15 +40,17 @@ void loadGroundBox(int pos_x, int pos_y, int width, int height, int offset_x, in
     groundBody->CreateFixture(&groundBox, 1.0f);
 }
 
-void loadWizardFootSensor(float footSensorX, float footSensorY, Wizard *wizard, b2PolygonShape *dynamicBox, b2FixtureDef *fixtureDef, b2Body *body)
+void loadWizardFootSensor(float footSensorX, float footSensorY, FootSensor* foot_sensor, b2PolygonShape *dynamicBox, b2FixtureDef *fixtureDef, b2Body *body)
 {
     dynamicBox->SetAsBox(
-        pixelsToMeters(footSensorX),
-        pixelsToMeters(footSensorY),
-        b2Vec2(0, pixelsToMeters((wizard->entity.body_properties.height / 2) - footSensorY)),
+        pixelsToMeters(footSensorX / 2),
+        pixelsToMeters(footSensorY / 2),
+        b2Vec2(pixelsToMeters(foot_sensor->offset_x), pixelsToMeters(foot_sensor->offset_y)),
         0);
 
     fixtureDef->isSensor = true;
+    fixtureDef->userData.pointer = reinterpret_cast<uintptr_t>(&foot_sensor->entity);
+    
     body->CreateFixture(fixtureDef);
 }
 
@@ -57,7 +59,7 @@ void loadStaff(float staff_x, float staff_y, Staff *staff, b2PolygonShape *dynam
     dynamicBox->SetAsBox(
         pixelsToMeters(staff_x / 2),
         pixelsToMeters(staff_y / 2),
-        b2Vec2(pixelsToMeters(1.0f), pixelsToMeters(1.0f)),
+        b2Vec2(pixelsToMeters(staff->offset_x), pixelsToMeters(staff->offset_y)),
         0);
     fixtureDef->isSensor = true;
     fixtureDef->userData.pointer = reinterpret_cast<uintptr_t>(&staff->entity);
@@ -66,8 +68,8 @@ void loadStaff(float staff_x, float staff_y, Staff *staff, b2PolygonShape *dynam
 
 void loadWizardHitbox(float pos_x, float pos_y, Wizard *wizard)
 {
-    float footSensorX = wizard->entity.body_properties.width / 4;
-    float footSensorY = 2.0f;
+    // float footSensorX = wizard->entity.body_properties.width / 4;
+    // float footSensorY = 2.0f;
     float staff_x = 2.0f;
     float staff_y = 12.0f;
 
@@ -91,7 +93,7 @@ void loadWizardHitbox(float pos_x, float pos_y, Wizard *wizard)
 
     body->CreateFixture(&fixtureDef);
 
-    loadWizardFootSensor(footSensorX, footSensorY, wizard, &dynamicBox, &fixtureDef, body);
+    loadWizardFootSensor(wizard->foot_sensor.entity.body_properties.width, wizard->foot_sensor.entity.body_properties.height, &wizard->foot_sensor, &dynamicBox, &fixtureDef, body);
     loadStaff(staff_x, staff_y, &wizard->staff, &dynamicBox, &fixtureDef, body);
 }
 
@@ -151,11 +153,11 @@ void checkFootSensor(Wizard *wizard, int delta)
 void manageSensorContact(uintptr_t data, bool beginContact)
 {
     Entity *entity = reinterpret_cast<Entity *>(data);
-    if (entity != nullptr && entity->entity_type == WIZARD_)
+    if (entity != nullptr && entity->entity_type == WIZARD_FOOT_)
     {
-        Wizard *wizard = (Wizard *)entity->sub_struct;
+        FootSensor *wizard_sensor = static_cast<FootSensor*>(entity->sub_struct);
         int delta = beginContact ? 1 : -1;
-        checkFootSensor(wizard, delta);
+        checkFootSensor(wizard_sensor->wizard, delta);
     }
 }
 
@@ -164,6 +166,7 @@ void ContactListener::BeginContact(b2Contact *contact)
     preSolve(contact);
     uintptr_t data_A = contact->GetFixtureA()->GetUserData().pointer;
     uintptr_t data_B = contact->GetFixtureB()->GetUserData().pointer;
+    
     manageSensorContact(data_A, true);
     manageSensorContact(data_B, true);
 }
