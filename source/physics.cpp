@@ -7,8 +7,6 @@
 
 #define DEG_TO_RAD(degrees) (degrees * M_PI / 180)
 
-
-
 std::unique_ptr<b2World> world = NULL;
 ContactListener contactListener;
 float timeStep = 1.0f / 60.0f;
@@ -38,43 +36,41 @@ void loadGroundBox(int pos_x, int pos_y, int width, int height, int offset_x, in
     b2PolygonShape groundBox;
 
     groundBox.SetAsBox(pixelsToMeters(width / 2.0f), pixelsToMeters(height / 2.0f));
-    
+
     groundBody->CreateFixture(&groundBox, 1.0f);
 }
 
-void loadWizardFootSensor(float footSensorX, float footSensorY, Wizard* wizard, b2PolygonShape* dynamicBox, b2FixtureDef* fixtureDef, b2Body* body)
+void loadWizardFootSensor(float footSensorX, float footSensorY, Wizard *wizard, b2PolygonShape *dynamicBox, b2FixtureDef *fixtureDef, b2Body *body)
 {
     dynamicBox->SetAsBox(
-        pixelsToMeters(footSensorX), 
-        pixelsToMeters(footSensorY), 
-        b2Vec2(0, pixelsToMeters((wizard->entity.body_properties.height / 2) - footSensorY)), 
-        0
-    );
+        pixelsToMeters(footSensorX),
+        pixelsToMeters(footSensorY),
+        b2Vec2(0, pixelsToMeters((wizard->entity.body_properties.height / 2) - footSensorY)),
+        0);
 
     fixtureDef->isSensor = true;
     body->CreateFixture(fixtureDef);
 }
 
-void loadStaff(float staff_x, float staff_y, Staff* staff, b2PolygonShape* dynamicBox, b2FixtureDef* fixtureDef, b2Body* body)
+void loadStaff(float staff_x, float staff_y, Staff *staff, b2PolygonShape *dynamicBox, b2FixtureDef *fixtureDef, b2Body *body)
 {
     dynamicBox->SetAsBox(
         pixelsToMeters(staff_x / 2),
         pixelsToMeters(staff_y / 2),
         b2Vec2(pixelsToMeters(1.0f), pixelsToMeters(1.0f)),
-        0
-    );
+        0);
     fixtureDef->isSensor = true;
-    fixtureDef->userData.pointer = reinterpret_cast<uintptr_t>(staff);
+    fixtureDef->userData.pointer = reinterpret_cast<uintptr_t>(&staff->entity);
     body->CreateFixture(fixtureDef);
 }
 
 void loadWizardHitbox(float pos_x, float pos_y, Wizard *wizard)
-{   
+{
     float footSensorX = wizard->entity.body_properties.width / 4;
     float footSensorY = 2.0f;
     float staff_x = 2.0f;
     float staff_y = 12.0f;
-    
+
     b2BodyDef bodyDef;
     bodyDef.type = b2_dynamicBody;
     bodyDef.fixedRotation = true;
@@ -89,7 +85,7 @@ void loadWizardHitbox(float pos_x, float pos_y, Wizard *wizard)
 
     b2FixtureDef fixtureDef;
     fixtureDef.shape = &dynamicBox;
-    fixtureDef.userData.pointer = reinterpret_cast<uintptr_t>(wizard);
+    fixtureDef.userData.pointer = reinterpret_cast<uintptr_t>(&wizard->entity);
     fixtureDef.density = 1.0f;
     fixtureDef.friction = 0.0f;
 
@@ -99,8 +95,7 @@ void loadWizardHitbox(float pos_x, float pos_y, Wizard *wizard)
     loadStaff(staff_x, staff_y, &wizard->staff, &dynamicBox, &fixtureDef, body);
 }
 
-
-void preSolve(b2Contact* contact)
+void preSolve(b2Contact *contact)
 {
     b2WorldManifold worldManifold;
     contact->GetWorldManifold(&worldManifold);
@@ -108,28 +103,24 @@ void preSolve(b2Contact* contact)
     const uintptr_t body_a = contact->GetFixtureA()->GetUserData().pointer;
     const uintptr_t body_b = contact->GetFixtureB()->GetUserData().pointer;
 
-    b2Body* wizard_body;
+    b2Body *wizard_body;
     b2Vec2 normal = worldManifold.normal;
-    Entity* entity_a = reinterpret_cast<Entity*>(body_a);
-    Entity* entity_b = reinterpret_cast<Entity*>(body_b);
+    Entity *entity_a = reinterpret_cast<Entity *>(body_a);
+    Entity *entity_b = reinterpret_cast<Entity *>(body_b);
 
-    if (entity_a == nullptr || entity_b == nullptr)
+    if (entity_a != nullptr && entity_a->entity_type == WIZARD_)
     {
-        return;
-    }
-
-    if (entity_a->entity_type == WIZARD_)
-    {
-        Wizard* wizard = static_cast<Wizard*>(entity_a->sub_struct);
+        Wizard *wizard = static_cast<Wizard *>(entity_a->sub_struct);
         wizard_body = wizard->body;
     }
-    else if (entity_b->entity_type == WIZARD_)
+    else if (entity_b != nullptr && entity_b->entity_type == WIZARD_)
     {
-        Wizard* wizard = static_cast<Wizard*>(entity_b->sub_struct);
+        Wizard *wizard = static_cast<Wizard *>(entity_b->sub_struct);
         wizard_body = wizard->body;
         normal = -normal;
     }
-    else return;
+    else
+        return;
 
     if (b2Dot(normal, wizard_body->GetLinearVelocity()) >= 0.0f)
     {
@@ -152,22 +143,22 @@ void updatePhysics()
     world->Step(timeStep, 6, 2);
 }
 
-void checkFootSensor(Wizard* wizard, int delta)
+void checkFootSensor(Wizard *wizard, int delta)
 {
     wizard->num_foot_contacts += delta;
 }
 
 void manageSensorContact(uintptr_t data, bool beginContact)
 {
-    Entity* entity = reinterpret_cast<Entity*>(data);
-    if (entity->entity_type == WIZARD_)
+    Entity *entity = reinterpret_cast<Entity *>(data);
+    if (entity != nullptr && entity->entity_type == WIZARD_)
     {
-        Wizard* wizard = (Wizard*)entity->sub_struct;
-        int delta = beginContact ? 1: -1;
+        Wizard *wizard = (Wizard *)entity->sub_struct;
+        int delta = beginContact ? 1 : -1;
         checkFootSensor(wizard, delta);
     }
 }
-  
+
 void ContactListener::BeginContact(b2Contact *contact)
 {
     preSolve(contact);
@@ -185,11 +176,11 @@ void ContactListener::EndContact(b2Contact *contact)
     manageSensorContact(data_B, false);
 }
 
-float RayCastCallback::ReportFixture(b2Fixture* fixture, const b2Vec2& point,
-									const b2Vec2& normal, float fraction)
+float RayCastCallback::ReportFixture(b2Fixture *fixture, const b2Vec2 &point,
+                                     const b2Vec2 &normal, float fraction)
 {
 
-    if(fixture->GetBody() == ignoredBody)
+    if (fixture->GetBody() == ignoredBody)
     {
         return -1;
     }
@@ -201,23 +192,21 @@ float RayCastCallback::ReportFixture(b2Fixture* fixture, const b2Vec2& point,
     return 0;
 }
 
-
-
-bool fixtureIsWizard(b2Fixture * fixture){
+bool fixtureIsWizard(b2Fixture *fixture)
+{
     if (fixture == nullptr)
     {
         return false;
     }
     if (fixture->GetUserData().pointer > 0)
     {
-        Entity* entity = reinterpret_cast<Entity*>(fixture->GetUserData().pointer);
+        Entity *entity = reinterpret_cast<Entity *>(fixture->GetUserData().pointer);
         return entity->entity_type == WIZARD_;
-
     }
     return false;
 }
 
-std::array<Segment, CIRCLE_STEPS> Subject::wizardDetectionLogger(b2Vec2 p1, float radius, b2Body* ignoredBody)
+std::array<Segment, CIRCLE_STEPS> Subject::wizardDetectionLogger(b2Vec2 p1, float radius, b2Body *ignoredBody)
 {
     std::array<Segment, CIRCLE_STEPS> segments;
     for (int i = 0; i < CIRCLE_STEPS; i++)
@@ -231,7 +220,7 @@ std::array<Segment, CIRCLE_STEPS> Subject::wizardDetectionLogger(b2Vec2 p1, floa
 
         world->RayCast(&rayCastCallback, p1, p2);
         segments[i] = {p1, rayCastCallback.m_point};
-        if(fixtureIsWizard(rayCastCallback.m_fixture))
+        if (fixtureIsWizard(rayCastCallback.m_fixture))
         {
             Notify(WIZARD_DETECTED, nullptr);
         }
