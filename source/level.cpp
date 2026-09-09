@@ -359,6 +359,7 @@ void LevelClass::Update(EventType event, void* callback)
         break;
     case WIZARD_DETECTED:
         printf("Wizard detected\n");
+        
         break;
     default: break;
     }

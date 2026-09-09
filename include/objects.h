@@ -55,7 +55,7 @@ typedef struct Entity
 typedef struct Staff
 {
     Entity entity;
-    b2Fixture* fixture;
+    b2Body* body;
     float offset_x;
     float offset_y;
 } Staff;

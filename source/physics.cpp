@@ -54,22 +54,33 @@ void loadWizardFootSensor(float footSensorX, float footSensorY, FootSensor* foot
     body->CreateFixture(fixtureDef);
 }
 
-void loadStaff(float staff_x, float staff_y, Staff *staff, b2PolygonShape *dynamicBox, b2FixtureDef *fixtureDef, b2Body *body)
+void loadStaffHitbox(float staff_x, float staff_y, Staff *staff)
 {
-    dynamicBox->SetAsBox(
-        pixelsToMeters(staff_x / 2),
-        pixelsToMeters(staff_y / 2),
-        b2Vec2(pixelsToMeters(staff->offset_x), pixelsToMeters(staff->offset_y)),
-        0);
-    fixtureDef->isSensor = true;
-    fixtureDef->userData.pointer = reinterpret_cast<uintptr_t>(&staff->entity);
-    body->CreateFixture(fixtureDef);
+
+    b2BodyDef bodyDef;
+    bodyDef.type = b2_dynamicBody;
+    bodyDef.fixedRotation = false;
+    bodyDef.allowSleep = false;
+    bodyDef.position.Set(pixelsToMeters(staff_x), pixelsToMeters(staff_y));
+    b2Body* body = world->CreateBody(&bodyDef);
+
+    b2PolygonShape dynamicBox;
+    dynamicBox.SetAsBox(pixelsToMeters(staff->entity.body_properties.width / 2), pixelsToMeters(staff->entity.body_properties.height / 2));
+
+    b2FixtureDef fixtureDef;
+
+    fixtureDef.density = 1.0f;
+    fixtureDef.shape = &dynamicBox;
+    fixtureDef.friction = .0f;
+    fixtureDef.userData.pointer = reinterpret_cast<uintptr_t>(&staff->entity);
+    fixtureDef.filter()
+
+    body->CreateFixture(&fixtureDef);
+
 }
 
 void loadWizardHitbox(float pos_x, float pos_y, Wizard *wizard)
 {
-    // float footSensorX = wizard->entity.body_properties.width / 4;
-    // float footSensorY = 2.0f;
     float staff_x = 2.0f;
     float staff_y = 12.0f;
 
