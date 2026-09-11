@@ -13,10 +13,10 @@ float timeStep = 1.0f / 60.0f;
 RayCastCallback rayCastCallback = {};
 
 enum _entityCategory {
-    WIZARD_ = 0x0001,
-    WIZARD_FOOT_ = 0x0002,
-    STAFF_ = 0x0004,
-    GROUND_ = 0x0008,
+    WIZARD_BITS_ = 0x0001,
+    WIZARD_FOOT_BITS_ = 0x0002,
+    STAFF_BITS_ = 0x0004,
+    GROUND_BITS_ = 0x0008,
 };
 
 float pixelsToMeters(float pixels)
@@ -57,8 +57,8 @@ void loadWizardFootSensor(float footSensorX, float footSensorY, FootSensor* foot
 
     fixtureDef->isSensor = true;
     fixtureDef->userData.pointer = reinterpret_cast<uintptr_t>(&foot_sensor->entity);
-    fixtureDef->filter.categoryBits = WIZARD_FOOT_;
-    fixtureDef->filter.maskBits = GROUND_;
+    fixtureDef->filter.categoryBits = WIZARD_FOOT_BITS_;
+    fixtureDef->filter.maskBits = GROUND_BITS_;
     
     body->CreateFixture(fixtureDef);
 }
@@ -82,8 +82,8 @@ void loadStaffHitbox(float staff_x, float staff_y, Staff *staff)
     fixtureDef.shape = &dynamicBox;
     fixtureDef.friction = .0f;
     fixtureDef.userData.pointer = reinterpret_cast<uintptr_t>(&staff->entity);
-    fixtureDef.filter.categoryBits = STAFF_;
-    fixtureDef.filter.maskBits = STAFF_;
+    fixtureDef.filter.categoryBits = STAFF_BITS_;
+    fixtureDef.filter.maskBits = STAFF_BITS_;
 
     body->CreateFixture(&fixtureDef);
 
@@ -111,8 +111,8 @@ void loadWizardHitbox(float pos_x, float pos_y, Wizard *wizard)
     fixtureDef.userData.pointer = reinterpret_cast<uintptr_t>(&wizard->entity);
     fixtureDef.density = 1.0f;
     fixtureDef.friction = 0.0f;
-    fixtureDef.filter.categoryBits = WIZARD_;
-    fixtureDef.filter.maskBits = WIZARD_;
+    fixtureDef.filter.categoryBits = WIZARD_BITS_;
+    fixtureDef.filter.maskBits = WIZARD_BITS_;
 
     body->CreateFixture(&fixtureDef);
 

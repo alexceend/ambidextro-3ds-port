@@ -117,7 +117,8 @@ void initialize_staff_fixture(Wizard* wizard)
             Entity* entity = reinterpret_cast<Entity*>(fixture->GetUserData().pointer);
             if (entity->entity_type == STAFF_)
             {
-                wizard->staff.fixture = fixture;
+                loadStaffHitbox(wizard->staff.body->GetPosition().x, wizard->staff.body->GetPosition().y, &wizard->staff);
+                //wizard->staff.body.fixture = fixture;
             }
         }
     }
