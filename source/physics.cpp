@@ -85,7 +85,7 @@ void loadStaffHitbox(float staff_x, float staff_y, Staff *staff)
     fixtureDef.friction = .0f;
     fixtureDef.userData.pointer = reinterpret_cast<uintptr_t>(&staff->entity);
     fixtureDef.filter.categoryBits = STAFF_BITS_;
-    fixtureDef.filter.maskBits = STAFF_BITS_ | WIZARD_BITS_;
+    fixtureDef.filter.maskBits = STAFF_BITS_;
 
     body->CreateFixture(&fixtureDef);
 
@@ -113,7 +113,7 @@ void loadWizardHitbox(float pos_x, float pos_y, Wizard *wizard)
     fixtureDef.density = 1.0f;
     fixtureDef.friction = 0.0f;
     fixtureDef.filter.categoryBits = WIZARD_BITS_;
-    fixtureDef.filter.maskBits = WIZARD_BITS_ | GROUND_BITS_ | STAFF_BITS_ | WIZARD_FOOT_BITS_;
+    fixtureDef.filter.maskBits = WIZARD_BITS_ | GROUND_BITS_ | WIZARD_FOOT_BITS_;
 
     body->CreateFixture(&fixtureDef);
 
