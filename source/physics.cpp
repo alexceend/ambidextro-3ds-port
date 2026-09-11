@@ -109,6 +109,8 @@ void loadWizardHitbox(float pos_x, float pos_y, Wizard *wizard)
     fixtureDef.userData.pointer = reinterpret_cast<uintptr_t>(&wizard->entity);
     fixtureDef.density = 1.0f;
     fixtureDef.friction = 0.0f;
+    fixtureDef.filter.categoryBits = WIZARD_;
+    fixtureDef.filter.maskBits = WIZARD_;
 
     body->CreateFixture(&fixtureDef);
 
