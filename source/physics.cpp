@@ -12,6 +12,13 @@ ContactListener contactListener;
 float timeStep = 1.0f / 60.0f;
 RayCastCallback rayCastCallback = {};
 
+enum _entityCategory {
+    WIZARD_ = 0x0001,
+    WIZARD_FOOT_ = 0x0002,
+    STAFF_ = 0x0004,
+    GROUND_ = 0x0008,
+};
+
 float pixelsToMeters(float pixels)
 {
     return pixels / PIXELS_PER_METER;
@@ -73,7 +80,8 @@ void loadStaffHitbox(float staff_x, float staff_y, Staff *staff)
     fixtureDef.shape = &dynamicBox;
     fixtureDef.friction = .0f;
     fixtureDef.userData.pointer = reinterpret_cast<uintptr_t>(&staff->entity);
-    fixtureDef.filter()
+    fixtureDef.filter.categoryBits = STAFF_;
+    fixtureDef.filter.maskBits = STAFF_;
 
     body->CreateFixture(&fixtureDef);
 
