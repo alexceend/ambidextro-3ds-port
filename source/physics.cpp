@@ -111,7 +111,7 @@ void loadWizardHitbox(float pos_x, float pos_y, Wizard *wizard)
     fixtureDef.shape = &dynamicBox;
     fixtureDef.userData.pointer = reinterpret_cast<uintptr_t>(&wizard->entity);
     fixtureDef.density = 1.0f;
-    fixtureDef.friction = 0.0f;
+    fixtureDef.friction = 0.9f;
     fixtureDef.filter.categoryBits = WIZARD_BITS_;
     fixtureDef.filter.maskBits = WIZARD_BITS_ | GROUND_BITS_ | WIZARD_FOOT_BITS_;
 
