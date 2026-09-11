@@ -58,7 +58,7 @@ void loadWizardFootSensor(float footSensorX, float footSensorY, FootSensor* foot
     fixtureDef->isSensor = true;
     fixtureDef->userData.pointer = reinterpret_cast<uintptr_t>(&foot_sensor->entity);
     fixtureDef->filter.categoryBits = WIZARD_FOOT_BITS_;
-    fixtureDef->filter.maskBits = GROUND_BITS_;
+    fixtureDef->filter.maskBits = GROUND_BITS_ | WIZARD_BITS_ | STAFF_BITS_;
     
     body->CreateFixture(fixtureDef);
 }
@@ -71,7 +71,9 @@ void loadStaffHitbox(float staff_x, float staff_y, Staff *staff)
     bodyDef.fixedRotation = false;
     bodyDef.allowSleep = false;
     bodyDef.position.Set(pixelsToMeters(staff_x), pixelsToMeters(staff_y));
-    b2Body* body = world->CreateBody(&bodyDef);
+    staff->body = world->CreateBody(&bodyDef);
+    b2Body* body = staff->body;
+
 
     b2PolygonShape dynamicBox;
     dynamicBox.SetAsBox(pixelsToMeters(staff->entity.body_properties.width / 2), pixelsToMeters(staff->entity.body_properties.height / 2));
@@ -83,7 +85,7 @@ void loadStaffHitbox(float staff_x, float staff_y, Staff *staff)
     fixtureDef.friction = .0f;
     fixtureDef.userData.pointer = reinterpret_cast<uintptr_t>(&staff->entity);
     fixtureDef.filter.categoryBits = STAFF_BITS_;
-    fixtureDef.filter.maskBits = STAFF_BITS_;
+    fixtureDef.filter.maskBits = STAFF_BITS_ | WIZARD_BITS_;
 
     body->CreateFixture(&fixtureDef);
 
@@ -91,9 +93,7 @@ void loadStaffHitbox(float staff_x, float staff_y, Staff *staff)
 
 void loadWizardHitbox(float pos_x, float pos_y, Wizard *wizard)
 {
-    float staff_x = 2.0f;
-    float staff_y = 12.0f;
-
+    
     b2BodyDef bodyDef;
     bodyDef.type = b2_dynamicBody;
     bodyDef.fixedRotation = true;
@@ -101,7 +101,8 @@ void loadWizardHitbox(float pos_x, float pos_y, Wizard *wizard)
     bodyDef.position.Set(pixelsToMeters(pos_x), pixelsToMeters(pos_y));
     b2Body *body = world->CreateBody(&bodyDef);
     wizard->body = body;
-
+    
+    //WIZARD HITBOX
     b2PolygonShape dynamicBox;
 
     dynamicBox.SetAsBox(pixelsToMeters(wizard->entity.body_properties.width / 2), pixelsToMeters(wizard->entity.body_properties.height / 2));
@@ -112,13 +113,31 @@ void loadWizardHitbox(float pos_x, float pos_y, Wizard *wizard)
     fixtureDef.density = 1.0f;
     fixtureDef.friction = 0.0f;
     fixtureDef.filter.categoryBits = WIZARD_BITS_;
-    fixtureDef.filter.maskBits = WIZARD_BITS_;
+    fixtureDef.filter.maskBits = WIZARD_BITS_ | GROUND_BITS_ | STAFF_BITS_ | WIZARD_FOOT_BITS_;
 
     body->CreateFixture(&fixtureDef);
 
-    loadWizardFootSensor(wizard->foot_sensor.entity.body_properties.width, wizard->foot_sensor.entity.body_properties.height, &wizard->foot_sensor, &dynamicBox, &fixtureDef, body);
+    //Foot sensor
+
+    loadWizardFootSensor(
+        wizard->foot_sensor.entity.body_properties.width,
+        wizard->foot_sensor.entity.body_properties.height,
+        &wizard->foot_sensor,
+        &dynamicBox,
+        &fixtureDef,
+        body
+    );
+
+    // STAFF
+
+    float staff_x_pos = pos_x + wizard->staff.offset_x;
+    float staff_y_pos = pos_y + wizard->staff.offset_y;
+
+    loadStaffHitbox(staff_x_pos, staff_y_pos, &wizard->staff);
+
+    //loadWizardFootSensor(wizard->foot_sensor.entity.body_properties.width, wizard->foot_sensor.entity.body_properties.height, &wizard->foot_sensor, &dynamicBox, &fixtureDef, body);
     //loadStaff(staff_x, staff_y, &wizard->staff, &dynamicBox, &fixtureDef, body);
-    loadStaffHitbox(staff_x, staff_y, &wizard->staff);
+    //loadStaffHitbox(staff_x, staff_y, &wizard->staff);
 }
 
 void preSolve(b2Contact *contact)

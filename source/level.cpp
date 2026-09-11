@@ -156,8 +156,8 @@ void loadPhysics()
 
     loadWizardHitbox(level.spawns[0].spawnX, level.spawns[0].spawnY, &purpleWizard);
     loadWizardHitbox(level.spawns[1].spawnX, level.spawns[1].spawnY, &yellowWizard);
-    initialize_staff_fixture(&purpleWizard);
-    initialize_staff_fixture(&yellowWizard);
+    //initialize_staff_fixture(&purpleWizard);
+    //initialize_staff_fixture(&yellowWizard);
 }
 
 bool levelInit(C3D_RenderTarget *target)
