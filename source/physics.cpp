@@ -57,6 +57,8 @@ void loadWizardFootSensor(float footSensorX, float footSensorY, FootSensor* foot
 
     fixtureDef->isSensor = true;
     fixtureDef->userData.pointer = reinterpret_cast<uintptr_t>(&foot_sensor->entity);
+    fixtureDef->filter.categoryBits = WIZARD_FOOT_;
+    fixtureDef->filter.maskBits = GROUND_;
     
     body->CreateFixture(fixtureDef);
 }
