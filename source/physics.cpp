@@ -117,7 +117,8 @@ void loadWizardHitbox(float pos_x, float pos_y, Wizard *wizard)
     body->CreateFixture(&fixtureDef);
 
     loadWizardFootSensor(wizard->foot_sensor.entity.body_properties.width, wizard->foot_sensor.entity.body_properties.height, &wizard->foot_sensor, &dynamicBox, &fixtureDef, body);
-    loadStaff(staff_x, staff_y, &wizard->staff, &dynamicBox, &fixtureDef, body);
+    //loadStaff(staff_x, staff_y, &wizard->staff, &dynamicBox, &fixtureDef, body);
+    loadStaffHitbox(staff_x, staff_y, &wizard->staff);
 }
 
 void preSolve(b2Contact *contact)
