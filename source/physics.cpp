@@ -138,6 +138,15 @@ void loadWizardHitbox(float pos_x, float pos_y, Wizard *wizard)
     //loadWizardFootSensor(wizard->foot_sensor.entity.body_properties.width, wizard->foot_sensor.entity.body_properties.height, &wizard->foot_sensor, &dynamicBox, &fixtureDef, body);
     //loadStaff(staff_x, staff_y, &wizard->staff, &dynamicBox, &fixtureDef, body);
     //loadStaffHitbox(staff_x, staff_y, &wizard->staff);
+
+    // UNIR MAGO Y STAFF
+    b2RevoluteJointDef jointDef;
+    jointDef.bodyA = wizard->body;
+    jointDef.bodyB = wizard->staff.body;
+    jointDef.localAnchorA.Set(pixelsToMeters(wizard->staff.offset_x), pixelsToMeters(wizard->staff.offset_y));
+    jointDef.localAnchorB.Set(0, 0);
+    jointDef.collideConnected = false;
+    world->CreateJoint(&jointDef);
 }
 
 void preSolve(b2Contact *contact)
