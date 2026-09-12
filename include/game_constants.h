@@ -6,7 +6,7 @@
 #define CIRCLE_STEPS 120
 #define PIXELS_PER_METER 32.0f
 
-#define DEBUG_RAYCAST true
+#define DEBUG_RAYCAST false
 
 
 #endif

@@ -459,7 +459,7 @@ std::array<Segment, CIRCLE_STEPS> Subject::wizardDetectionLogger(b2Vec2 p1, floa
         }
     }
 
-    if (wizard_detected && !raycast_wizard_prev)
+    if (wizard_detected)
     {
         Notify(WIZARD_DETECTED, nullptr);
         printf("Wizard detected!\n");

@@ -31,6 +31,8 @@ FooDraw fooDrawInstance;
 
 bool paused = false;
 
+float desired_angle = 0.0f;
+
 typedef enum
 {
     TILE_EMPTY = -1,
@@ -228,7 +230,7 @@ void updateWizard(Wizard* wizard)
     wizard->staff.entity.object->position.x = metersToPixels(wizard->body->GetPosition().x) - wizard->entity.body_properties.width / 2;
     wizard->staff.entity.object->position.y = metersToPixels(wizard->body->GetPosition().y) - wizard->entity.body_properties.height / 2;
 
-    wizard->staff.body->SetTransform({wizard->body->GetPosition().x, wizard->body->GetPosition().y}, 0.0f);
+    wizard->staff.body->SetTransform({wizard->body->GetPosition().x, wizard->body->GetPosition().y}, desired_angle);
 }
 
 Scene levelUpdate(u32 kDown)
@@ -331,6 +333,19 @@ void levelDraw()
     C2D_Flush();
 }
 
+void rotate_staff()
+{
+    desired_angle = atan2f(
+        yellowWizard.body->GetPosition().y - purpleWizard.body->GetPosition().y,
+        yellowWizard.body->GetPosition().x - purpleWizard.body->GetPosition().x
+    ) + M_PI / 2;
+}
+
+void reset_staff()
+{
+    desired_angle = 0.0f;
+}
+
 LevelClass::LevelClass(ISubject &subject) : subject_(subject)
 {
     subject.Subscribe(WIN, this);
@@ -338,6 +353,7 @@ LevelClass::LevelClass(ISubject &subject) : subject_(subject)
     subject.Subscribe(DEATH, this);
     subject.Subscribe(DEBUG, this);
     subject.Subscribe(WIZARD_DETECTED, this);
+    subject.Subscribe(WIZARD_UNDETECTED, this);
 }
 
 void LevelClass::Update(EventType event, void* callback)
@@ -355,7 +371,10 @@ void LevelClass::Update(EventType event, void* callback)
         showDebug = !showDebug;
         break;
     case WIZARD_DETECTED:
-        
+        rotate_staff();
+        break;
+    case WIZARD_UNDETECTED:
+        reset_staff();
         break;
     default: break;
     }
