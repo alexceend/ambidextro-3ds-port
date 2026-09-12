@@ -42,8 +42,13 @@ void loadGroundBox(int pos_x, int pos_y, int width, int height, int offset_x, in
     b2PolygonShape groundBox;
 
     groundBox.SetAsBox(pixelsToMeters(width / 2.0f), pixelsToMeters(height / 2.0f));
+    b2FixtureDef fixtureDef;
+    fixtureDef.density = 1.0f;
+    fixtureDef.shape = &groundBox;
+    fixtureDef.filter.categoryBits = GROUND_BITS_;
+    fixtureDef.filter.maskBits = WIZARD_BITS_ | WIZARD_FOOT_BITS_;
 
-    groundBody->CreateFixture(&groundBox, 1.0f);
+    groundBody->CreateFixture(&fixtureDef);
 }
 
 void loadWizardFootSensor(float footSensorX, float footSensorY, FootSensor* foot_sensor, b2PolygonShape *dynamicBox, b2FixtureDef *fixtureDef, b2Body *body)
@@ -225,16 +230,11 @@ float RayCastCallback::ReportFixture(b2Fixture *fixture, const b2Vec2 &point,
                                      const b2Vec2 &normal, float fraction)
 {
 
-    if (fixture->GetBody() == ignoredBody)
-    {
-        return -1;
-    }
-
     m_fixture = fixture;
     m_point = point;
     m_normal = normal;
     m_fraction = fraction;
-    return 0;
+    return -1;
 }
 
 bool fixtureIsWizard(b2Fixture *fixture)
