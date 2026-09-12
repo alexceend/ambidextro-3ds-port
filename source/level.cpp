@@ -225,10 +225,11 @@ void levelCleanup()
 
 void updateWizard(Wizard* wizard)
 {
-    wizard->entity.object->position.x = metersToPixels(wizard->body->GetPosition().x) - wizard->entity.body_properties.width / 2;
-    wizard->entity.object->position.y = metersToPixels(wizard->body->GetPosition().y) - wizard->entity.body_properties.height / 2;
-    wizard->staff.entity.object->position.x = metersToPixels(wizard->body->GetPosition().x) - wizard->entity.body_properties.width / 2;
-    wizard->staff.entity.object->position.y = metersToPixels(wizard->body->GetPosition().y) - wizard->entity.body_properties.height / 2;
+    wizard->entity.object->position.x = metersToPixels(wizard->body->GetPosition().x); 
+    wizard->entity.object->position.y = metersToPixels(wizard->body->GetPosition().y); 
+    wizard->staff.entity.object->position.x = metersToPixels(wizard->body->GetPosition().x); 
+    wizard->staff.entity.object->position.y = metersToPixels(wizard->body->GetPosition().y);
+    wizard->staff.entity.object->rotation = desired_angle;
 
     wizard->staff.body->SetTransform({wizard->body->GetPosition().x, wizard->body->GetPosition().y}, desired_angle);
 }

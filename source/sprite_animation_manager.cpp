@@ -22,8 +22,8 @@ void initialize_object(
         animation.frame_info.current_frame_index = 0;
         animation.frame_info.loop_once = false;
 
-        animation.pivot.x = 0.0f;
-        animation.pivot.y = 0.0f;
+        animation.pivot.x = 0.5f;
+        animation.pivot.y = 0.5f;
 
         for (size_t sprite_index = 0; sprite_index < animation.frame_info.num_of_sprites; sprite_index++)
         {
@@ -72,12 +72,12 @@ void update_animation(object_2d_t *object, size_t animation_index)
     if (animation_index < MAX_SPRITE_SHEETS)
     {
         animation_t *animation = &object->animations[animation_index];
-        object->rotation += object->rotation_velocity;
+        // object->rotation += object->rotation_velocity;
 
         for (size_t sprite_index = 0; sprite_index < animation->frame_info.num_of_sprites; sprite_index++)
         {
             C2D_SpriteSetPos(&(animation->sprites[sprite_index]), object->position.x, object->position.y);
-            C2D_SpriteSetRotationDegrees(&(animation->sprites[sprite_index]), object->rotation);
+            C2D_SpriteSetRotationDegrees(&(animation->sprites[sprite_index]), object->rotation * 180 / M_PI);
         }
     }
 }
@@ -85,6 +85,7 @@ void update_animation(object_2d_t *object, size_t animation_index)
 void update_static(object_2d_t *object)
 {
     C2D_SpriteSetPos(&object->static_animation, object->position.x, object->position.y);
+    C2D_SpriteSetRotationDegrees(&object->static_animation, object->rotation * 180 / M_PI);
 }
 
 void update_object(object_2d_t *object, size_t animation_index)

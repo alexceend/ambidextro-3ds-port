@@ -138,33 +138,6 @@ Subject::Subject()
 {
     createWizards();
 
-    /*initialize_object(
-        purpleWizard.entity.object, purpleWizard.entity.sprite_info.num_animations,
-        purpleWizard.entity.sprite_info.spriteSheets, purpleWizard.entity.sprite_info.animations_refresh_ms_time,
-        metersToPixels(purpleWizard.body->GetPosition().x) - purpleWizard.entity.body_properties.width / 2,
-        metersToPixels(purpleWizard.body->GetPosition().y) - purpleWizard.entity.body_properties.height / 2,
-        purpleWizard.x_flip, purpleWizard.y_flip);
-    initialize_object(
-        yellowWizard.entity.object, yellowWizard.entity.sprite_info.num_animations,
-        yellowWizard.entity.sprite_info.spriteSheets, yellowWizard.entity.sprite_info.animations_refresh_ms_time,
-        metersToPixels(yellowWizard.body->GetPosition().x) - yellowWizard.entity.body_properties.width / 2,
-        metersToPixels(yellowWizard.body->GetPosition().y) - yellowWizard.entity.body_properties.height / 2,
-        yellowWizard.x_flip, yellowWizard.y_flip);
-    initialize_object(
-        purpleWizard.staff.entity.object, purpleWizard.staff.entity.sprite_info.num_animations,
-        purpleWizard.staff.entity.sprite_info.spriteSheets, purpleWizard.staff.entity.sprite_info.animations_refresh_ms_time,
-        metersToPixels(purpleWizard.body->GetPosition().x) - purpleWizard.entity.body_properties.width / 2 - pixelsToMeters(purpleWizard.staff.offset_x),
-        metersToPixels(purpleWizard.body->GetPosition().y) - purpleWizard.entity.body_properties.height / 2 + pixelsToMeters(purpleWizard.staff.offset_y),
-        purpleWizard.x_flip, purpleWizard.y_flip
-    );
-    initialize_object(
-        yellowWizard.staff.entity.object, yellowWizard.staff.entity.sprite_info.num_animations,
-        yellowWizard.staff.entity.sprite_info.spriteSheets, yellowWizard.staff.entity.sprite_info.animations_refresh_ms_time,
-        metersToPixels(yellowWizard.body->GetPosition().x) - yellowWizard.entity.body_properties.width / 2,
-        metersToPixels(yellowWizard.body->GetPosition().y) - yellowWizard.entity.body_properties.height / 2,
-        yellowWizard.x_flip, yellowWizard.y_flip
-    );
-    */
 
     initialize_object(
         purpleWizard.entity.object, purpleWizard.entity.sprite_info.num_animations,
