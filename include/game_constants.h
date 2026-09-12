@@ -3,10 +3,10 @@
 
 #define MAX_SPRITE_SHEETS 5
 #define MAX_SPRITES 15
-#define CIRCLE_STEPS 360
+#define CIRCLE_STEPS 120
 #define PIXELS_PER_METER 32.0f
 
-#define DEBUG_RAYCAST false
+#define DEBUG_RAYCAST true
 
 
 #endif

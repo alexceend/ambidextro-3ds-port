@@ -13,11 +13,14 @@ std::array<Segment, CIRCLE_STEPS> segments;
 
 Wizard yellowWizard;
 Wizard purpleWizard;
+RayCastCallback rayCastCallback = {};
 
 bool purple_prev_air;
 bool purple_current_air;
 bool yellow_prev_air;
 bool yellow_current_air;
+
+bool raycast_wizard_prev = false;
 
 C2D_Sprite purple_sprite;
 C2D_Sprite yellow_sprite;
@@ -58,25 +61,19 @@ void createWizards()
          NULL,
          1.0f,
          1.0f},
-        
-        {
-            {
-                WIZARD_FOOT_,
-                &purpleWizard.foot_sensor,
-                {
-                    WIZARD_WIDTH / 4,
-                    2.0f,
-                    WIZARD_SPEED
-                },
-                {},
-                NULL,
-                {}
-            },
-            &purpleWizard,
-            NULL,
-            0,
-            WIZARD_HEIGHT / 2
-        },
+
+        {{WIZARD_FOOT_,
+          &purpleWizard.foot_sensor,
+          {WIZARD_WIDTH / 4,
+           2.0f,
+           WIZARD_SPEED},
+          {},
+          NULL,
+          {}},
+         &purpleWizard,
+         NULL,
+         0,
+         WIZARD_HEIGHT / 2},
 
         PURPLE,
         NULL,
@@ -116,24 +113,18 @@ void createWizards()
          NULL,
          1.0f,
          1.0f},
-         {
-            {
-                WIZARD_FOOT_,
-                &yellowWizard.foot_sensor,
-                {
-                    WIZARD_WIDTH / 4,
-                    2.0f,
-                    WIZARD_SPEED
-                },
-                {},
-                NULL,
-                {}
-            },
-            &yellowWizard,
-            NULL,
-            0,
-            WIZARD_HEIGHT / 2 
-        },
+        {{WIZARD_FOOT_,
+          &yellowWizard.foot_sensor,
+          {WIZARD_WIDTH / 4,
+           2.0f,
+           WIZARD_SPEED},
+          {},
+          NULL,
+          {}},
+         &yellowWizard,
+         NULL,
+         0,
+         WIZARD_HEIGHT / 2},
         YELLOW,
         NULL,
         0,
@@ -189,14 +180,12 @@ Subject::Subject()
         purpleWizard.staff.entity.object, purpleWizard.staff.entity.sprite_info.num_animations,
         purpleWizard.staff.entity.sprite_info.spriteSheets, purpleWizard.staff.entity.sprite_info.animations_refresh_ms_time,
         0.0f, 0.0f,
-        purpleWizard.x_flip, purpleWizard.y_flip
-    );
+        purpleWizard.x_flip, purpleWizard.y_flip);
     initialize_object(
         yellowWizard.staff.entity.object, yellowWizard.staff.entity.sprite_info.num_animations,
         yellowWizard.staff.entity.sprite_info.spriteSheets, yellowWizard.staff.entity.sprite_info.animations_refresh_ms_time,
         0.0f, 0.0f,
-        yellowWizard.x_flip, yellowWizard.y_flip
-    );
+        yellowWizard.x_flip, yellowWizard.y_flip);
 
     purpleWizard.prev_air = purple_current_air == true ? false : true;
     yellowWizard.prev_air = yellow_current_air == true ? false : true;
@@ -256,11 +245,10 @@ void Subject::ManageGame(u32 kHeld, u32 kDown, u32 kUp)
 {
     keyLogger(kHeld, kDown, kUp);
     airbornLogger();
-   segments = wizardDetectionLogger(
-        {
-        purpleWizard.body->GetPosition().x,
-        purpleWizard.body->GetPosition().y
-    }, 2.0f, purpleWizard.body );
+    segments = wizardDetectionLogger(
+        {purpleWizard.body->GetPosition().x,
+         purpleWizard.body->GetPosition().y},
+        1.0f, purpleWizard.body);
 }
 
 void Subject::keyLogger(u32 kHeld, u32 kDown, u32 kUp)
@@ -448,4 +436,43 @@ void Subject::debugLogger(u32 kDown)
     {
         Notify(DEBUG, NULL);
     }
+}
+
+std::array<Segment, CIRCLE_STEPS> Subject::wizardDetectionLogger(b2Vec2 p1, float radius, b2Body *ignoredBody)
+{
+    std::array<Segment, CIRCLE_STEPS> segments;
+    bool wizard_detected = false;
+
+    for (int i = 0; i < CIRCLE_STEPS; i++)
+    {
+        float radians = (2.0f * M_PI * i) / CIRCLE_STEPS;
+        b2Vec2 p2 = p1 + radius * b2Vec2(sinf(radians), cosf(radians));
+
+        rayCastCallback.m_fixture = nullptr;
+        rayCastCallback.m_point = p2;
+        rayCastCallback.ignoredBody = ignoredBody;
+
+        world->RayCast(&rayCastCallback, p1, p2);
+        segments[i] = {p1, rayCastCallback.m_point};
+        if (fixtureIsWizard(rayCastCallback.m_fixture))
+        {
+            wizard_detected = true;
+        }
+    }
+
+    if (wizard_detected && !raycast_wizard_prev)
+    {
+        Notify(WIZARD_DETECTED, nullptr);
+        printf("Wizard detected!\n");
+    }
+
+    if (!wizard_detected && raycast_wizard_prev)
+    {
+        Notify(WIZARD_UNDETECTED, nullptr);
+        printf("Wizrad undetected\n");
+    }
+
+    raycast_wizard_prev = wizard_detected;
+
+    return segments;
 }

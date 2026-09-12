@@ -10,6 +10,8 @@
 #include "game_constants.h"
 #include "game_structs.h"
 
+#define DEG_TO_RAD(degrees) (degrees * M_PI / 180)
+
 
 struct Wizard;
 struct Staff;
@@ -69,5 +71,9 @@ void updatePhysics();
 void loadCharacters();
 
 std::array<Segment, CIRCLE_STEPS> circularRayCast(b2Vec2 p1, float radius);
+
+bool fixtureIsWizard(b2Fixture *fixture);
+
+
 
 #endif

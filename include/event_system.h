@@ -23,7 +23,8 @@ typedef enum
     AIRBORN,
     EXIT,
     DEBUG,
-    WIZARD_DETECTED
+    WIZARD_DETECTED,
+    WIZARD_UNDETECTED
 } EventType;
 
 class IObserver

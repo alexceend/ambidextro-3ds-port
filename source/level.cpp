@@ -227,6 +227,8 @@ void updateWizard(Wizard* wizard)
     wizard->entity.object->position.y = metersToPixels(wizard->body->GetPosition().y) - wizard->entity.body_properties.height / 2;
     wizard->staff.entity.object->position.x = metersToPixels(wizard->body->GetPosition().x) - wizard->entity.body_properties.width / 2;
     wizard->staff.entity.object->position.y = metersToPixels(wizard->body->GetPosition().y) - wizard->entity.body_properties.height / 2;
+
+    wizard->staff.body->SetTransform({wizard->body->GetPosition().x, wizard->body->GetPosition().y}, 0.0f);
 }
 
 Scene levelUpdate(u32 kDown)
@@ -243,12 +245,6 @@ Scene levelUpdate(u32 kDown)
     update_object(yellowWizard.entity.object, yellowWizard.entity.animation_map[yellowWizard.entity.sprite_info.currentAnimationType]);
     update_object(purpleWizard.staff.entity.object, purpleWizard.staff.entity.animation_map[purpleWizard.staff.entity.sprite_info.currentAnimationType]);
     update_object(yellowWizard.staff.entity.object, yellowWizard.staff.entity.animation_map[yellowWizard.staff.entity.sprite_info.currentAnimationType]);
-
-    /*
-    segments = circularRayCast({
-        purpleWizard.body->GetPosition().x,
-        purpleWizard.body->GetPosition().y
-    }, 2.0f);*/
     return SCENE_LEVEL;
 }
 
@@ -359,7 +355,6 @@ void LevelClass::Update(EventType event, void* callback)
         showDebug = !showDebug;
         break;
     case WIZARD_DETECTED:
-        printf("Wizard detected\n");
         
         break;
     default: break;

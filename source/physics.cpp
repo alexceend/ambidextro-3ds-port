@@ -5,12 +5,11 @@
 #include <iostream>
 #include <math.h>
 
-#define DEG_TO_RAD(degrees) (degrees * M_PI / 180)
 
 std::unique_ptr<b2World> world = NULL;
 ContactListener contactListener;
 float timeStep = 1.0f / 60.0f;
-RayCastCallback rayCastCallback = {};
+// RayCastCallback rayCastCallback = {};
 
 enum _entityCategory {
     WIZARD_BITS_ = 0x0001,
@@ -80,7 +79,7 @@ void loadStaffHitbox(float staff_x, float staff_y, Staff *staff)
 
     b2FixtureDef fixtureDef;
 
-    fixtureDef.density = 1.0f;
+    fixtureDef.density = 0.1f;
     fixtureDef.shape = &dynamicBox;
     fixtureDef.friction = .0f;
     fixtureDef.userData.pointer = reinterpret_cast<uintptr_t>(&staff->entity);
@@ -111,13 +110,13 @@ void loadWizardHitbox(float pos_x, float pos_y, Wizard *wizard)
     fixtureDef.shape = &dynamicBox;
     fixtureDef.userData.pointer = reinterpret_cast<uintptr_t>(&wizard->entity);
     fixtureDef.density = 1.0f;
-    fixtureDef.friction = 0.9f;
+    fixtureDef.friction = 0.0f;
     fixtureDef.filter.categoryBits = WIZARD_BITS_;
-    fixtureDef.filter.maskBits = WIZARD_BITS_ | GROUND_BITS_ | WIZARD_FOOT_BITS_;
+    fixtureDef.filter.maskBits = WIZARD_BITS_ | GROUND_BITS_;
 
     body->CreateFixture(&fixtureDef);
 
-    //Foot sensor
+    // Foot sensor
 
     loadWizardFootSensor(
         wizard->foot_sensor.entity.body_properties.width,
@@ -138,15 +137,6 @@ void loadWizardHitbox(float pos_x, float pos_y, Wizard *wizard)
     //loadWizardFootSensor(wizard->foot_sensor.entity.body_properties.width, wizard->foot_sensor.entity.body_properties.height, &wizard->foot_sensor, &dynamicBox, &fixtureDef, body);
     //loadStaff(staff_x, staff_y, &wizard->staff, &dynamicBox, &fixtureDef, body);
     //loadStaffHitbox(staff_x, staff_y, &wizard->staff);
-
-    // UNIR MAGO Y STAFF
-    b2RevoluteJointDef jointDef;
-    jointDef.bodyA = wizard->body;
-    jointDef.bodyB = wizard->staff.body;
-    jointDef.localAnchorA.Set(pixelsToMeters(wizard->staff.offset_x), pixelsToMeters(wizard->staff.offset_y));
-    jointDef.localAnchorB.Set(0, 0);
-    jointDef.collideConnected = false;
-    world->CreateJoint(&jointDef);
 }
 
 void preSolve(b2Contact *contact)
@@ -259,26 +249,4 @@ bool fixtureIsWizard(b2Fixture *fixture)
         return entity->entity_type == WIZARD_;
     }
     return false;
-}
-
-std::array<Segment, CIRCLE_STEPS> Subject::wizardDetectionLogger(b2Vec2 p1, float radius, b2Body *ignoredBody)
-{
-    std::array<Segment, CIRCLE_STEPS> segments;
-    for (int i = 0; i < CIRCLE_STEPS; i++)
-    {
-        float radians = DEG_TO_RAD(i);
-        b2Vec2 p2 = p1 + radius * b2Vec2(sinf(radians), cosf(radians));
-
-        rayCastCallback.m_fixture = nullptr;
-        rayCastCallback.m_point = p2;
-        rayCastCallback.ignoredBody = ignoredBody;
-
-        world->RayCast(&rayCastCallback, p1, p2);
-        segments[i] = {p1, rayCastCallback.m_point};
-        if (fixtureIsWizard(rayCastCallback.m_fixture))
-        {
-            Notify(WIZARD_DETECTED, nullptr);
-        }
-    }
-    return segments;
 }
