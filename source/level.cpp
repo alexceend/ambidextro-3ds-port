@@ -31,7 +31,8 @@ FooDraw fooDrawInstance;
 
 bool paused = false;
 
-float desired_angle = 0.0f;
+float purple_desired_angle = 0.0f;
+float yellow_desired_angle = 0.0f;
 
 typedef enum
 {
@@ -225,6 +226,7 @@ void levelCleanup()
 
 void updateWizard(Wizard* wizard)
 {
+    float desired_angle = wizard->x_flip ? purple_desired_angle : yellow_desired_angle;
     wizard->entity.object->position.x = metersToPixels(wizard->body->GetPosition().x); 
     wizard->entity.object->position.y = metersToPixels(wizard->body->GetPosition().y); 
     wizard->staff.entity.object->position.x = metersToPixels(wizard->body->GetPosition().x); 
@@ -336,15 +338,21 @@ void levelDraw()
 
 void rotate_staff()
 {
-    desired_angle = atan2f(
+    purple_desired_angle = atan2f(
         yellowWizard.body->GetPosition().y - purpleWizard.body->GetPosition().y,
         yellowWizard.body->GetPosition().x - purpleWizard.body->GetPosition().x
+    ) + M_PI / 2;
+
+    yellow_desired_angle = atan2f(
+        purpleWizard.body->GetPosition().y - yellowWizard.body->GetPosition().y,
+        purpleWizard.body->GetPosition().x - yellowWizard.body->GetPosition().x
     ) + M_PI / 2;
 }
 
 void reset_staff()
 {
-    desired_angle = 0.0f;
+    purple_desired_angle = 0.0f;
+    yellow_desired_angle = 0.0f;
 }
 
 LevelClass::LevelClass(ISubject &subject) : subject_(subject)
