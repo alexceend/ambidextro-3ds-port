@@ -248,7 +248,7 @@ void Subject::ManageGame(u32 kHeld, u32 kDown, u32 kUp)
     segments = wizardDetectionLogger(
         {purpleWizard.body->GetPosition().x,
          purpleWizard.body->GetPosition().y},
-        1.0f, purpleWizard.body);
+        1.0f);
 }
 
 void Subject::keyLogger(u32 kHeld, u32 kDown, u32 kUp)
@@ -438,7 +438,7 @@ void Subject::debugLogger(u32 kDown)
     }
 }
 
-std::array<Segment, CIRCLE_STEPS> Subject::wizardDetectionLogger(b2Vec2 p1, float radius, b2Body *ignoredBody)
+std::array<Segment, CIRCLE_STEPS> Subject::wizardDetectionLogger(b2Vec2 p1, float radius)
 {
     std::array<Segment, CIRCLE_STEPS> segments;
     bool wizard_detected = false;
@@ -450,7 +450,6 @@ std::array<Segment, CIRCLE_STEPS> Subject::wizardDetectionLogger(b2Vec2 p1, floa
 
         rayCastCallback.m_fixture = nullptr;
         rayCastCallback.m_point = p2;
-        rayCastCallback.ignoredBody = ignoredBody;
 
         world->RayCast(&rayCastCallback, p1, p2);
         segments[i] = {p1, rayCastCallback.m_point};
