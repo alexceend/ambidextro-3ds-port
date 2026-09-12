@@ -42,7 +42,8 @@ void initialize_object(
                 C2D_SpriteSetScale(sprite, 1.0f, -1.0f);
             }
         }
-        C2D_SpriteFromSheet(&object->static_animation, object->animations[0].sprite_sheet, 0);
+        object->static_animation = object->animations[0].sprites[0];
+        
         if (x_flip)
         {
             C2D_SpriteSetScale(&object->static_animation, -1.0f, 1.0f);
@@ -72,7 +73,6 @@ void update_animation(object_2d_t *object, size_t animation_index)
     if (animation_index < MAX_SPRITE_SHEETS)
     {
         animation_t *animation = &object->animations[animation_index];
-        // object->rotation += object->rotation_velocity;
 
         for (size_t sprite_index = 0; sprite_index < animation->frame_info.num_of_sprites; sprite_index++)
         {
