@@ -56,6 +56,7 @@ public:
     void keyLogger(u32 kHeld, u32 kDown, u32 kUp);
     void movementLogger(u32 kHeld, u32 kDown, u32 kUp);
     void jumpLogger(u32 kDown);
+    void timerLogger();
     void pauseLogger(u32 kDown);
     void airbornLogger();
     void exitLogger(u32 kDown);

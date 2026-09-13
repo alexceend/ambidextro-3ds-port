@@ -73,6 +73,8 @@ bool showDebug = true;
 static C2D_TextBuf textBuf;
 static C2D_Font font;
 static C2D_Text labels[1];
+static int lastTimeShown = -1;
+
 
 
 using namespace std;
@@ -287,6 +289,7 @@ Scene levelUpdate(u32 kDown)
     update_object(yellowWizard.entity.object, yellowWizard.entity.animation_map[yellowWizard.entity.sprite_info.currentAnimationType]);
     update_object(purpleWizard.staff.entity.object, purpleWizard.staff.entity.animation_map[purpleWizard.staff.entity.sprite_info.currentAnimationType]);
     update_object(yellowWizard.staff.entity.object, yellowWizard.staff.entity.animation_map[yellowWizard.staff.entity.sprite_info.currentAnimationType]);
+
     return SCENE_LEVEL;
 }
 
@@ -321,6 +324,19 @@ void FooDraw::DrawSolidPolygon(const b2Vec2 *vertices, int32 vertexCount, const 
             1.0f, 0.0f);
     }
 }
+
+void updateTimerText()
+{
+    int remaining = levelTimer.getRemainingTimeInSeconds();
+    if (remaining == lastTimeShown) return;
+    lastTimeShown = remaining;
+
+    C2D_TextBufClear(textBuf);
+    std::string s = "Time: " + std::to_string(remaining);
+    C2D_TextFontParse(&labels[0], font, textBuf, s.c_str());
+    C2D_TextOptimize(&labels[0]);
+}
+
 
 void levelDraw()
 {

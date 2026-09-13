@@ -8,6 +8,7 @@
 #include "movement.h"
 #include "sprite_animation_manager.h"
 #include "objects.h"
+#include "timer.h"
 
 std::array<Segment, CIRCLE_STEPS> segments;
 
@@ -214,6 +215,7 @@ void Subject::Erase()
     }
     observers.clear();
 }
+
 void Subject::ManageGame(u32 kHeld, u32 kDown, u32 kUp)
 {
     keyLogger(kHeld, kDown, kUp);
@@ -223,6 +225,7 @@ void Subject::ManageGame(u32 kHeld, u32 kDown, u32 kUp)
          purpleWizard.body->GetPosition().y},
         1.0f);
     victoryLogger();
+    timerLogger();
 }
 
 void Subject::keyLogger(u32 kHeld, u32 kDown, u32 kUp)
@@ -240,6 +243,14 @@ void Subject::pauseLogger(u32 kDown)
     {
         printf("Notified pause\n");
         Notify(PUASE, nullptr);
+    }
+}
+
+void Subject::timerLogger()
+{
+    if (levelTimer.getRemainingTime() <= 0.0f)
+    {
+        Notify(DEATH, nullptr);
     }
 }
 

@@ -6,6 +6,8 @@
 
 #include "game_manager.h"
 
+extern Timer levelTimer;
+
 class Timer : public IObserver
 {
     public:
