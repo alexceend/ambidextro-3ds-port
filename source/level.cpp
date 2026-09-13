@@ -59,6 +59,7 @@ typedef struct
 {
     int8_t tiles[LEVEL_HEIGHT][LEVEL_WIDTH];
     Spawn spawns[2];
+    int8_t time_limit;
 } Level;
 
 std::list<Block *> blockList;
@@ -176,11 +177,12 @@ bool levelInit(C3D_RenderTarget *targetTop, C3D_RenderTarget *targetBottom)
 
     loadLevelFromFile(&file, &level);
 
-    // Set spawn points for entities
+    // Set spawn points for entities and time limit
     string line;
     while (getline(file, line))
     {
         int x, y;
+        int8_t time_limit;
         if (line.find("spawnPurple") != string::npos)
         {
             sscanf(line.c_str(), "spawnPurple %d %d", &x, &y);
@@ -192,8 +194,13 @@ bool levelInit(C3D_RenderTarget *targetTop, C3D_RenderTarget *targetBottom)
             sscanf(line.c_str(), "spawnYellow %d %d", &x, &y);
             level.spawns[1].spawnX = x;
             level.spawns[1].spawnY = y;
+        }else if (line.find("time") != string::npos)
+        {
+            sscanf(line.c_str(), "time %d", &time_limit);
+            level.time_limit = time_limit;
         }
     }
+
 
     loadPhysics();
 
