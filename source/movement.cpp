@@ -8,10 +8,10 @@ void applyVelocity(MoveState moveState, b2Body *body, float speed)
     switch (moveState)
     {
     case MS_LEFT:
-        vel.x = -speed;
+        vel.x = pixelsToMeters(-speed);
         break;
     case MS_RIGHT:
-        vel.x = speed;
+        vel.x = pixelsToMeters(speed);
         break;
     case MS_STOP:
         vel.x = 0;
@@ -23,7 +23,7 @@ void applyVelocity(MoveState moveState, b2Body *body, float speed)
 
 void jump(b2Body *body)
 {
-    float impulse = body->GetMass() * 4;
+    float impulse = body->GetMass() * 5;
     body->ApplyLinearImpulse(b2Vec2(0, -impulse), body->GetWorldCenter(), true);
 }
 
@@ -52,6 +52,7 @@ void Movement::Update(EventType event, void *callback)
             break;
         case MOVE_STOP:
             applyVelocity(MS_STOP, wizard->body, wizard->entity.body_properties.velocity);
+            // applyVelocity(MS_STOP, wizard->staff.body, wizard->entity.body_properties.velocity);
             break;
         case JUMP:
             jump(wizard->body);

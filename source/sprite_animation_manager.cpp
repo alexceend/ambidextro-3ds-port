@@ -1,7 +1,6 @@
 #include "sprite_animation_manager.h"
 #include "objects.h"
 
-
 void initialize_object(
     object_2d_t *object,
     size_t num_sprite_sheets,
@@ -23,8 +22,8 @@ void initialize_object(
         animation.frame_info.current_frame_index = 0;
         animation.frame_info.loop_once = false;
 
-        animation.pivot.x = 0.0f;
-        animation.pivot.y = 0.0f;
+        animation.pivot.x = 0.5f;
+        animation.pivot.y = 0.5f;
 
         for (size_t sprite_index = 0; sprite_index < animation.frame_info.num_of_sprites; sprite_index++)
         {
@@ -43,7 +42,8 @@ void initialize_object(
                 C2D_SpriteSetScale(sprite, 1.0f, -1.0f);
             }
         }
-        C2D_SpriteFromSheet(&object->static_animation, object->animations[0].sprite_sheet, 0);
+        object->static_animation = object->animations[0].sprites[0];
+        
         if (x_flip)
         {
             C2D_SpriteSetScale(&object->static_animation, -1.0f, 1.0f);
@@ -73,12 +73,11 @@ void update_animation(object_2d_t *object, size_t animation_index)
     if (animation_index < MAX_SPRITE_SHEETS)
     {
         animation_t *animation = &object->animations[animation_index];
-        object->rotation += object->rotation_velocity;
 
         for (size_t sprite_index = 0; sprite_index < animation->frame_info.num_of_sprites; sprite_index++)
         {
             C2D_SpriteSetPos(&(animation->sprites[sprite_index]), object->position.x, object->position.y);
-            C2D_SpriteSetRotationDegrees(&(animation->sprites[sprite_index]), object->rotation);
+            C2D_SpriteSetRotationDegrees(&(animation->sprites[sprite_index]), object->rotation * 180 / M_PI);
         }
     }
 }
@@ -86,6 +85,7 @@ void update_animation(object_2d_t *object, size_t animation_index)
 void update_static(object_2d_t *object)
 {
     C2D_SpriteSetPos(&object->static_animation, object->position.x, object->position.y);
+    C2D_SpriteSetRotationDegrees(&object->static_animation, object->rotation * 180 / M_PI);
 }
 
 void update_object(object_2d_t *object, size_t animation_index)
@@ -146,11 +146,47 @@ void draw_sprite(object_2d_t *object, size_t animation_index)
     }
 }
 
+void update_wizard(Wizard *wizard, EventType event)
+{
+    if (event == AIRBORN)
+    {
+        wizard->entity.sprite_info.currentAnimationType = JUMP_ANIMATION;
+        wizard->staff.entity.sprite_info.currentAnimationType = JUMP_ANIMATION;
+    }
+    else if (event == LAND)
+    {
+        if (wizard->body->GetLinearVelocity().x == 0)
+        {
+            wizard->entity.sprite_info.currentAnimationType = STATIC_ANIMATION;
+            wizard->staff.entity.sprite_info.currentAnimationType = STATIC_ANIMATION;
+        }
+        else
+        {
+            wizard->entity.sprite_info.currentAnimationType = MOVE_ANIMATION;
+            wizard->staff.entity.sprite_info.currentAnimationType = MOVE_ANIMATION;
+        }
+    }
+    else if (event == MOVE_STOP && wizard->num_foot_contacts > 0)
+    {
+        wizard->entity.sprite_info.currentAnimationType = STATIC_ANIMATION;
+        wizard->staff.entity.sprite_info.currentAnimationType = STATIC_ANIMATION;
+    }
+    else if ((event == ANIMATE_LEFT || event == ANIMATE_RIGHT) && wizard->num_foot_contacts > 0)
+    {
+        wizard->entity.sprite_info.currentAnimationType = MOVE_ANIMATION;
+        wizard->staff.entity.sprite_info.currentAnimationType = MOVE_ANIMATION;
+    }
+
+    wizard->entity.object->reset_animation = true;
+    wizard->staff.entity.object->reset_animation = true;
+}
+
+
 SpriteAnimation::SpriteAnimation(ISubject &subject) : subject_(subject)
 {
     this->subject_.Subscribe(MOVE_STOP, this);
-    this->subject_.Subscribe(MOVE_RIGHT, this);
-    this->subject_.Subscribe(MOVE_LEFT, this);
+    this->subject_.Subscribe(ANIMATE_LEFT, this);
+    this->subject_.Subscribe(ANIMATE_RIGHT, this);
     this->subject_.Subscribe(AIRBORN, this);
     this->subject_.Subscribe(LAND, this);
 }
@@ -159,31 +195,13 @@ SpriteAnimation::~SpriteAnimation() {}
 
 void SpriteAnimation::Update(EventType event, void *callback)
 {
-    Wizard *wizard = (Wizard *)callback;
-
-    if (event == AIRBORN)
+    Entity *entity = static_cast<Entity *>(callback);
+    switch (entity->entity_type)
     {
-        wizard->entity.sprite_info.currentAnimationType = JUMP_ANIMATION;
+    case WIZARD_:
+        update_wizard(static_cast<Wizard *>(entity->sub_struct), event);
+        break;
+    default:
+        break;
     }
-    else if (event == LAND)
-    {
-        if (wizard->body->GetLinearVelocity().x == 0)
-        {
-            wizard->entity.sprite_info.currentAnimationType = STATIC_ANIMATION;
-        }
-        else
-        {
-            wizard->entity.sprite_info.currentAnimationType = MOVE_ANIMATION;
-        }
-    }
-    else if (event == MOVE_STOP && wizard->num_foot_contacts > 0)
-    {
-        wizard->entity.sprite_info.currentAnimationType = STATIC_ANIMATION;
-    }
-    else if ((event == MOVE_LEFT || event == MOVE_RIGHT) && wizard->num_foot_contacts > 0)
-    {
-        wizard->entity.sprite_info.currentAnimationType = MOVE_ANIMATION;
-    }
-
-    wizard->entity.object->reset_animation = true;
 }

@@ -28,7 +28,11 @@ static C3D_RenderTarget *top = NULL;
 
 FooDraw fooDrawInstance;
 
+
 bool paused = false;
+
+float purple_desired_angle = 0.0f;
+float yellow_desired_angle = 0.0f;
 
 typedef enum
 {
@@ -107,6 +111,25 @@ bool loadLevelFromFile(ifstream *file, Level* level)
     return i == LEVEL_HEIGHT;
 }
 
+void initialize_staff_fixture(Wizard* wizard)
+{
+    for (b2Fixture* fixture = wizard->body->GetFixtureList(); fixture; fixture = fixture->GetNext())
+    {
+        if (fixture->GetUserData().pointer != 0)
+        {
+            Entity* entity = reinterpret_cast<Entity*>(fixture->GetUserData().pointer);
+            if (entity->entity_type == STAFF_)
+            {
+                loadStaffHitbox(
+                    wizard->staff.body->GetPosition().x + wizard->staff.offset_x,
+                    wizard->staff.body->GetPosition().y + wizard->staff.offset_y,
+                    &wizard->staff
+                );
+            }
+        }
+    }
+}
+
 void loadPhysics()
 {
     b2Vec2 gravity(0.0f, 9.8);
@@ -179,36 +202,6 @@ bool levelInit(C3D_RenderTarget *target)
 
 void levelCleanup()
 {
-    if (atlas_dungeon)
-    {
-        C2D_SpriteSheetFree(atlas_dungeon);
-        atlas_dungeon = NULL;
-    }
-    if (atlas_purple_wizard_static)
-    {
-        C2D_SpriteSheetFree(atlas_purple_wizard_static);
-        atlas_purple_wizard_static = NULL;
-    }
-    if (atlas_purple_wizard_jump)
-    {
-        C2D_SpriteSheetFree(atlas_purple_wizard_jump);
-        atlas_purple_wizard_jump = NULL;
-    }
-    if (atlas_yellow_wizard_static)
-    {
-        C2D_SpriteSheetFree(atlas_yellow_wizard_static);
-        atlas_yellow_wizard_static = NULL;
-    }
-    if (atlas_yellow_wizard_jump)
-    {
-        C2D_SpriteSheetFree(atlas_yellow_wizard_jump);
-        atlas_yellow_wizard_jump = NULL;
-    }
-    if (atlas_staff)
-    {
-        C2D_SpriteSheetFree(atlas_staff);
-        atlas_staff = NULL;
-    }
     for (Block *block : blockList)
     {
         delete block;
@@ -232,22 +225,35 @@ void levelCleanup()
     top = NULL;
 }
 
+void updateWizard(Wizard* wizard)
+{
+    float desired_angle = wizard->x_flip ? purple_desired_angle : yellow_desired_angle;
+    wizard->entity.object->position.x = metersToPixels(wizard->body->GetPosition().x); 
+    wizard->entity.object->position.y = metersToPixels(wizard->body->GetPosition().y); 
+    wizard->staff.entity.object->position.x = metersToPixels(wizard->body->GetPosition().x + pixelsToMeters(wizard->staff.offset_x)); 
+    wizard->staff.entity.object->position.y = metersToPixels(wizard->body->GetPosition().y + pixelsToMeters(wizard->staff.offset_y));
+    wizard->staff.entity.object->rotation = desired_angle;
+
+    wizard->staff.body->SetTransform({
+        wizard->body->GetPosition().x + pixelsToMeters(wizard->staff.offset_x),
+        wizard->body->GetPosition().y + pixelsToMeters(wizard->staff.offset_y)
+    }, desired_angle);
+}
+
 Scene levelUpdate(u32 kDown)
 {
     if (paused){
         return pauseUpdate(kDown);
     }
     updatePhysics();
-    b2Vec2 wizardPurple = purpleWizard.body->GetPosition();
-    b2Vec2 wizardYellow = yellowWizard.body->GetPosition();
 
-    purpleWizard.entity.object->position.x = metersToPixels(wizardPurple.x) - purpleWizard.entity.body_properties.width / 2;
-    purpleWizard.entity.object->position.y = metersToPixels(wizardPurple.y) - purpleWizard.entity.body_properties.height / 2;
-    yellowWizard.entity.object->position.x = metersToPixels(wizardYellow.x)- yellowWizard.entity.body_properties.width / 2;
-    yellowWizard.entity.object->position.y = metersToPixels(wizardYellow.y)- yellowWizard.entity.body_properties.height / 2;
+    updateWizard(&purpleWizard);
+    updateWizard(&yellowWizard);
 
     update_object(purpleWizard.entity.object, purpleWizard.entity.animation_map[purpleWizard.entity.sprite_info.currentAnimationType]);
     update_object(yellowWizard.entity.object, yellowWizard.entity.animation_map[yellowWizard.entity.sprite_info.currentAnimationType]);
+    update_object(purpleWizard.staff.entity.object, purpleWizard.staff.entity.animation_map[purpleWizard.staff.entity.sprite_info.currentAnimationType]);
+    update_object(yellowWizard.staff.entity.object, yellowWizard.staff.entity.animation_map[yellowWizard.staff.entity.sprite_info.currentAnimationType]);
     return SCENE_LEVEL;
 }
 
@@ -309,6 +315,21 @@ void levelDraw()
 
     draw_sprite(purpleWizard.entity.object, purpleWizard.entity.animation_map[purpleWizard.entity.sprite_info.currentAnimationType]);
     draw_sprite(yellowWizard.entity.object, yellowWizard.entity.animation_map[yellowWizard.entity.sprite_info.currentAnimationType]);
+    draw_sprite(purpleWizard.staff.entity.object, purpleWizard.staff.entity.animation_map[purpleWizard.staff.entity.sprite_info.currentAnimationType]);
+    draw_sprite(yellowWizard.staff.entity.object, yellowWizard.staff.entity.animation_map[yellowWizard.staff.entity.sprite_info.currentAnimationType]);
+    
+    
+    if(DEBUG_RAYCAST)
+    {
+        for (size_t i = 0; i < CIRCLE_STEPS; i++)
+        {
+            C2D_DrawLine(
+                metersToPixels(segments.at(i).p1.x), metersToPixels(segments.at(i).p1.y), C2D_Color32f(1.0f, 1.0f, 1.0f, 0.2f),
+                metersToPixels(segments.at(i).p2.x), metersToPixels(segments.at(i).p2.y), C2D_Color32f(1.0f, 1.0f, 1.0f, 0.2f),
+                1.0f, 0.0f
+            );
+        }
+    }
 
     fooDrawInstance.SetFlags(b2Draw::e_shapeBit);
     if (showDebug)
@@ -319,12 +340,33 @@ void levelDraw()
     C2D_Flush();
 }
 
+void rotate_staff()
+{
+    purple_desired_angle = atan2f(
+        yellowWizard.body->GetPosition().y - purpleWizard.body->GetPosition().y,
+        yellowWizard.body->GetPosition().x - purpleWizard.body->GetPosition().x
+    ) + M_PI / 2;
+
+    yellow_desired_angle = atan2f(
+        purpleWizard.body->GetPosition().y - yellowWizard.body->GetPosition().y,
+        purpleWizard.body->GetPosition().x - yellowWizard.body->GetPosition().x
+    ) + M_PI / 2;
+}
+
+void reset_staff()
+{
+    purple_desired_angle = 0.0f;
+    yellow_desired_angle = 0.0f;
+}
+
 LevelClass::LevelClass(ISubject &subject) : subject_(subject)
 {
     subject.Subscribe(WIN, this);
     subject.Subscribe(PUASE, this);
     subject.Subscribe(DEATH, this);
     subject.Subscribe(DEBUG, this);
+    subject.Subscribe(WIZARD_DETECTED, this);
+    subject.Subscribe(WIZARD_UNDETECTED, this);
 }
 
 void LevelClass::Update(EventType event, void* callback)
@@ -332,6 +374,7 @@ void LevelClass::Update(EventType event, void* callback)
     switch (event)
     {
     case WIN:
+    printf("Level won!\n");
         break;
     case PUASE:
         paused = !paused;
@@ -339,7 +382,24 @@ void LevelClass::Update(EventType event, void* callback)
     case DEATH:
         break;
     case DEBUG:
-        showDebug == true ? showDebug = false : showDebug = true;
+        showDebug = !showDebug;
+        break;
+    case WIZARD_DETECTED:
+        rotate_staff();
+        if (purpleWizard.staff.offset_x < 3.0f)
+        {
+            purpleWizard.staff.offset_x += 3.0f;
+        }
+        if (yellowWizard.staff.offset_x > -3.0f)
+        {
+            yellowWizard.staff.offset_x -= 3.0f;
+        }
+        break;
+    case WIZARD_UNDETECTED:
+        reset_staff();
+        purpleWizard.staff.offset_x -= 3.0f;
+        yellowWizard.staff.offset_x += 3.0f;
+        break;
     default: break;
     }
 }
