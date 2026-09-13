@@ -5,7 +5,7 @@
 #ifndef PAUSE_H
 #define PAUSE_H
 
-bool pauseInit(C3D_RenderTarget* target);
+bool pauseInit(C3D_RenderTarget* targetTop, C3D_RenderTarget* targetBottom);
 Scene pauseUpdate(u32 kDown);
 void pauseDraw(void);
 void pauseExit(void);

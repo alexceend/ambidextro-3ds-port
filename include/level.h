@@ -14,12 +14,12 @@ extern std::array<Segment, CIRCLE_STEPS> segments;
 
 extern bool paused;
 
-bool levelInit(C3D_RenderTarget *target);
+bool levelInit(C3D_RenderTarget *targetTop, C3D_RenderTarget *targetBottom);
 void levelDraw(void);
 Scene levelUpdate(u32 kDown);
 void levelCleanup(void);
 
-void restartLevel(C3D_RenderTarget *target);
+void restartLevel(C3D_RenderTarget *targetTop, C3D_RenderTarget *targetBottom);
 
 class LevelClass : public IObserver
 {

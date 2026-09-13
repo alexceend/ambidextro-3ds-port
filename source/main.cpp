@@ -35,7 +35,10 @@ int main(int argc, char** argv)
     C3D_RenderTarget* top =
         C2D_CreateScreenTarget(GFX_TOP, GFX_LEFT);
 
-    if (!top)
+    C3D_RenderTarget* bottom =
+        C2D_CreateScreenTarget(GFX_BOTTOM, GFX_LEFT);
+
+    if (!top || !bottom)
     {
         C2D_Fini();
         C3D_Fini();
@@ -44,7 +47,7 @@ int main(int argc, char** argv)
         return -1;
     }
 
-    log_message("[INFO]: C2D, and top prepared and initialized");
+    log_message("[INFO]: C2D, top and bottom prepared and initialized");
 
     /* AUDIO */
 
@@ -63,7 +66,7 @@ int main(int argc, char** argv)
     /* MENU */
 
     Scene currentScene = SCENE_MENU;
-    if (!menuInit(top))
+    if (!menuInit(top, bottom))
     {
         printf("ERROR: no se pudo inicializar el menu\n");
 
@@ -115,7 +118,7 @@ int main(int argc, char** argv)
         }
         
         sceneUpdate(&currentScene, &nextScene, kDown);
-        sceneChange(&currentScene, &nextScene, top);
+        sceneChange(&currentScene, &nextScene, top, bottom);
 
         C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
 

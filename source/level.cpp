@@ -25,6 +25,7 @@
 #define EMPTY_TILE -1
 
 static C3D_RenderTarget *top = NULL;
+static C3D_RenderTarget *bottom = NULL;
 
 FooDraw fooDrawInstance;
 
@@ -164,9 +165,10 @@ void loadPhysics()
     loadWizardHitbox(level.spawns[1].spawnX, level.spawns[1].spawnY, &yellowWizard);
 }
 
-bool levelInit(C3D_RenderTarget *target)
+bool levelInit(C3D_RenderTarget *targetTop, C3D_RenderTarget *targetBottom)
 {
-    top = target;
+    top = targetTop;
+    bottom = targetBottom;
 
     string filePath = "romfs:levels/level" + to_string(currentLevel) + ".txt";
    
@@ -195,7 +197,7 @@ bool levelInit(C3D_RenderTarget *target)
 
     loadPhysics();
 
-    pauseInit(target);
+    pauseInit(targetTop, targetBottom);
   
     return true;
 }
@@ -404,8 +406,8 @@ void LevelClass::Update(EventType event, void* callback)
     }
 }
 
-void restartLevel(C3D_RenderTarget *target)
+void restartLevel(C3D_RenderTarget *targetTop, C3D_RenderTarget *targetBottom)
 {
     levelCleanup();
-    levelInit(target);
+    levelInit(targetTop, targetBottom);
 }

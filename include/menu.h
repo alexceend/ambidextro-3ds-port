@@ -9,7 +9,7 @@
 extern "C"
 {
 #endif
-    bool menuInit(C3D_RenderTarget* target);
+    bool menuInit(C3D_RenderTarget* targetTop, C3D_RenderTarget* targetBottom);
     Scene menuUpdate(u32 kDown);
     void menuDraw(void);
     void menuExit(void);
