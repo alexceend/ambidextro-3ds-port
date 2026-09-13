@@ -9,7 +9,8 @@
 std::unique_ptr<b2World> world = NULL;
 ContactListener contactListener;
 float timeStep = 1.0f / 60.0f;
-// RayCastCallback rayCastCallback = {};
+b2Fixture* fixture_a;
+b2Fixture* fixture_b;
 
 enum _entityCategory {
     WIZARD_BITS_ = 0x0001,
@@ -138,10 +139,6 @@ void loadWizardHitbox(float pos_x, float pos_y, Wizard *wizard)
     float staff_y_pos = pos_y + wizard->staff.offset_y;
 
     loadStaffHitbox(staff_x_pos, staff_y_pos, &wizard->staff);
-
-    //loadWizardFootSensor(wizard->foot_sensor.entity.body_properties.width, wizard->foot_sensor.entity.body_properties.height, &wizard->foot_sensor, &dynamicBox, &fixtureDef, body);
-    //loadStaff(staff_x, staff_y, &wizard->staff, &dynamicBox, &fixtureDef, body);
-    //loadStaffHitbox(staff_x, staff_y, &wizard->staff);
 }
 
 void preSolve(b2Contact *contact)
@@ -211,8 +208,10 @@ void manageSensorContact(uintptr_t data, bool beginContact)
 void ContactListener::BeginContact(b2Contact *contact)
 {
     preSolve(contact);
-    uintptr_t data_A = contact->GetFixtureA()->GetUserData().pointer;
-    uintptr_t data_B = contact->GetFixtureB()->GetUserData().pointer;
+    fixture_a = contact->GetFixtureA();
+    fixture_b = contact->GetFixtureB();
+    uintptr_t data_A = fixture_a->GetUserData().pointer;
+    uintptr_t data_B = fixture_b->GetUserData().pointer;
     
     manageSensorContact(data_A, true);
     manageSensorContact(data_B, true);
@@ -254,4 +253,15 @@ bool fixtureIsWizard(b2Fixture *fixture)
         return entity->entity_type == WIZARD_;
     }
     return false;
+}
+
+void Subject::victoryLogger()
+{
+    Entity* entity_a = reinterpret_cast<Entity*>(fixture_a->GetUserData().pointer);
+    Entity* entity_b = reinterpret_cast<Entity*>(fixture_b->GetUserData().pointer);
+
+    if (entity_a != nullptr && entity_a->entity_type == STAFF_ && entity_b != nullptr && entity_b->entity_type == STAFF_)
+    {
+        Notify(WIN, nullptr);
+    }
 }

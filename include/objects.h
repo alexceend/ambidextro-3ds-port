@@ -56,6 +56,8 @@ typedef struct Staff
 {
     Entity entity;
     b2Body* body;
+    float pos_x;
+    float pos_y;
     float offset_x;
     float offset_y;
 } Staff;

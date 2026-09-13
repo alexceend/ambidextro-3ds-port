@@ -120,8 +120,11 @@ void initialize_staff_fixture(Wizard* wizard)
             Entity* entity = reinterpret_cast<Entity*>(fixture->GetUserData().pointer);
             if (entity->entity_type == STAFF_)
             {
-                loadStaffHitbox(wizard->staff.body->GetPosition().x, wizard->staff.body->GetPosition().y, &wizard->staff);
-                //wizard->staff.body.fixture = fixture;
+                loadStaffHitbox(
+                    wizard->staff.body->GetPosition().x + wizard->staff.offset_x,
+                    wizard->staff.body->GetPosition().y + wizard->staff.offset_y,
+                    &wizard->staff
+                );
             }
         }
     }
@@ -159,8 +162,6 @@ void loadPhysics()
 
     loadWizardHitbox(level.spawns[0].spawnX, level.spawns[0].spawnY, &purpleWizard);
     loadWizardHitbox(level.spawns[1].spawnX, level.spawns[1].spawnY, &yellowWizard);
-    //initialize_staff_fixture(&purpleWizard);
-    //initialize_staff_fixture(&yellowWizard);
 }
 
 bool levelInit(C3D_RenderTarget *target)
@@ -229,11 +230,14 @@ void updateWizard(Wizard* wizard)
     float desired_angle = wizard->x_flip ? purple_desired_angle : yellow_desired_angle;
     wizard->entity.object->position.x = metersToPixels(wizard->body->GetPosition().x); 
     wizard->entity.object->position.y = metersToPixels(wizard->body->GetPosition().y); 
-    wizard->staff.entity.object->position.x = metersToPixels(wizard->body->GetPosition().x); 
-    wizard->staff.entity.object->position.y = metersToPixels(wizard->body->GetPosition().y);
+    wizard->staff.entity.object->position.x = metersToPixels(wizard->body->GetPosition().x + pixelsToMeters(wizard->staff.offset_x)); 
+    wizard->staff.entity.object->position.y = metersToPixels(wizard->body->GetPosition().y + pixelsToMeters(wizard->staff.offset_y));
     wizard->staff.entity.object->rotation = desired_angle;
 
-    wizard->staff.body->SetTransform({wizard->body->GetPosition().x, wizard->body->GetPosition().y}, desired_angle);
+    wizard->staff.body->SetTransform({
+        wizard->body->GetPosition().x + pixelsToMeters(wizard->staff.offset_x),
+        wizard->body->GetPosition().y + pixelsToMeters(wizard->staff.offset_y)
+    }, desired_angle);
 }
 
 Scene levelUpdate(u32 kDown)
@@ -370,6 +374,7 @@ void LevelClass::Update(EventType event, void* callback)
     switch (event)
     {
     case WIN:
+    printf("Level won!\n");
         break;
     case PUASE:
         paused = !paused;
@@ -381,9 +386,19 @@ void LevelClass::Update(EventType event, void* callback)
         break;
     case WIZARD_DETECTED:
         rotate_staff();
+        if (purpleWizard.staff.offset_x < 3.0f)
+        {
+            purpleWizard.staff.offset_x += 3.0f;
+        }
+        if (yellowWizard.staff.offset_x > -3.0f)
+        {
+            yellowWizard.staff.offset_x -= 3.0f;
+        }
         break;
     case WIZARD_UNDETECTED:
         reset_staff();
+        purpleWizard.staff.offset_x -= 3.0f;
+        yellowWizard.staff.offset_x += 3.0f;
         break;
     default: break;
     }
