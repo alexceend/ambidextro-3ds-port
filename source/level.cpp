@@ -67,6 +67,11 @@ Level level;
 int8_t currentLevel = 1;
 bool showDebug = true;
 
+static C2D_TextBuf textBuf;
+static C2D_Font font;
+static C2D_Text labels[1];
+
+
 using namespace std;
 
 bool loadLevelFromFile(ifstream *file, Level* level)
@@ -196,11 +201,25 @@ bool levelInit(C3D_RenderTarget *targetTop, C3D_RenderTarget *targetBottom)
             level.spawns[1].spawnY = y;
         }else if (line.find("time") != string::npos)
         {
-            sscanf(line.c_str(), "time %d", &time_limit);
+            sscanf(line.c_str(), "time %hhd", &time_limit);
             level.time_limit = time_limit;
         }
     }
 
+    textBuf = C2D_TextBufNew(256);
+    font = C2D_FontLoadSystem(CFG_REGION_USA);
+
+    std::string timeString = std::to_string(level.time_limit);
+
+    C2D_TextFontParse(
+        &labels[0],
+        font,
+        textBuf,
+        timeString.c_str()
+    );
+
+    C2D_TextOptimize(&labels[0]);
+        
 
     loadPhysics();
 
@@ -232,6 +251,7 @@ void levelCleanup()
         world.reset();
     }
     top = NULL;
+    bottom = NULL;
 }
 
 void updateWizard(Wizard* wizard)
@@ -345,7 +365,25 @@ void levelDraw()
     {
         world->DebugDraw();
     }
+
+    C2D_Flush();
+
+    // Draw on bottom:
+    C2D_TargetClear(bottom, C2D_Color32(20, 20, 40, 255));
+    C2D_SceneBegin(bottom);
+
+    C2D_DrawText(
+            &labels[0],
+            C2D_WithColor,
+            100,
+            50,
+            0.0f,
+            1.0f,
+            1.0f,
+            C2D_Color32(230, 230, 230, 255)
+    );
     
+
     C2D_Flush();
 }
 
