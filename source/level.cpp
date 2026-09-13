@@ -451,6 +451,7 @@ void LevelClass::Update(EventType event, void* callback)
         paused = !paused;
         break;
     case DEATH:
+        restartLevel(top, bottom);
         break;
     case DEBUG:
         showDebug = !showDebug;
