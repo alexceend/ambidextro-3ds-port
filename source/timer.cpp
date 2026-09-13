@@ -1,5 +1,7 @@
 #include "timer.h"
 
+Timer levelTimer(0);
+
 Timer::Timer(int seconds) : duration_sec_(seconds) {}
 
 void Timer::start()

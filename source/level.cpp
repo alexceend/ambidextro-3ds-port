@@ -63,8 +63,6 @@ typedef struct
     int8_t time_limit;
 } Level;
 
-static Timer levelTimer(0);
-
 std::list<Block *> blockList;
 Level level;
 int8_t currentLevel = 1;
