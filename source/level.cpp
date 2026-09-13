@@ -13,6 +13,7 @@
 #include "pause.h"
 #include <filesystem>
 #include <array>
+#include "timer.h"
 
 #define SCREEN_WIDTH 400
 #define SCREEN_HEIGHT 240
@@ -61,6 +62,8 @@ typedef struct
     Spawn spawns[2];
     int8_t time_limit;
 } Level;
+
+static Timer levelTimer(0);
 
 std::list<Block *> blockList;
 Level level;
@@ -203,6 +206,7 @@ bool levelInit(C3D_RenderTarget *targetTop, C3D_RenderTarget *targetBottom)
         {
             sscanf(line.c_str(), "time %hhd", &time_limit);
             level.time_limit = time_limit;
+            levelTimer.reset(level.time_limit);
         }
     }
 
@@ -414,6 +418,10 @@ LevelClass::LevelClass(ISubject &subject) : subject_(subject)
     subject.Subscribe(DEBUG, this);
     subject.Subscribe(WIZARD_DETECTED, this);
     subject.Subscribe(WIZARD_UNDETECTED, this);
+
+    subject.Subscribe(PUASE, &levelTimer);
+    subject.Subscribe(WIN, &levelTimer);
+    subject.Subscribe(DEATH, &levelTimer);
 }
 
 void LevelClass::Update(EventType event, void* callback)
