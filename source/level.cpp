@@ -70,9 +70,10 @@ bool showDebug = true;
 static C2D_TextBuf textBuf;
 static C2D_Font font;
 
-static C2D_Text timeLabel;
 static C2D_Text levelLabel;
 static C2D_Text retriesLabel;
+
+static float initialTime = 0.0f;
 
 static int lastTimeShown = -1;
 
@@ -202,12 +203,6 @@ void updateHUD()
 
         C2D_TextBufClear(textBuf);
 
-        char timeString[32];
-        snprintf(timeString, sizeof(timeString), "Time: %d", remaining);
-
-        C2D_TextFontParse(&timeLabel, font, textBuf, timeString);
-        C2D_TextOptimize(&timeLabel);
-
         updateLevelText();
         updateRetriesText();
     }
@@ -246,6 +241,7 @@ bool levelInit(C3D_RenderTarget *targetTop, C3D_RenderTarget *targetBottom)
             sscanf(line.c_str(), "time %hhd", &time_limit);
             level.time_limit = time_limit;
             levelTimer.reset(level.time_limit);
+            initialTime = static_cast<float>(level.time_limit);
         }
     }
 
@@ -408,16 +404,35 @@ void levelDraw()
     C2D_TargetClear(bottom, C2D_Color32(20, 20, 40, 255));
     C2D_SceneBegin(bottom);
 
-    C2D_DrawText(
-            &timeLabel,
-            C2D_WithColor,
-            100,
-            50,
-            0.0f,
-            1.0f,
-            1.0f,
-            C2D_Color32(230, 230, 230, 255)
+    //Barra tiempo
+    float barX = 50.0f;
+    float barY = 50.0f;
+    float barWidth = 200.0f;
+    float barHeight = 12.0f;
+    float remaining = levelTimer.getRemainingTime();
+    float ratio = remaining / initialTime;
+    if (ratio < 0.0f) ratio = 0.0f;
+    if (ratio > 1.0f) ratio = 1.0f;
+    float currentWidth = barWidth * ratio;
+    
+    C2D_DrawRectSolid(
+        barX,
+        barY,
+        0.0f,
+        barWidth,
+        barHeight,
+        C2D_Color32(60, 60, 60, 255)
     );
+    C2D_DrawRectSolid(
+        barX,
+        barY,
+        0.0f,
+        currentWidth,
+        barHeight,
+        C2D_Color32(230, 230, 230, 255)
+    );
+
+    //Textos de nivel y reintentos
 
     C2D_DrawText(
             &levelLabel,
