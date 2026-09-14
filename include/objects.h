@@ -8,9 +8,12 @@
 #include <physics.h>
 #include <map>
 
+struct Wizard;
+
 typedef enum
 {
     WIZARD_,
+    WIZARD_FOOT_,
     STAFF_
 } EntityType;
 
@@ -49,9 +52,30 @@ typedef struct Entity
     std::map<AnimationType, size_t> animation_map;
 } Entity;
 
+typedef struct Staff
+{
+    Entity entity;
+    b2Body* body;
+    float pos_x;
+    float pos_y;
+    float offset_x;
+    float offset_y;
+} Staff;
+
+typedef struct FootSensor
+{
+    Entity entity;
+    Wizard* wizard;
+    b2Fixture* fixture;
+    float offset_x;
+    float offset_y;
+} FootSensor;
+
 typedef struct Wizard
 {
     Entity entity;
+    Staff staff;
+    FootSensor foot_sensor;
     WizardType wizard_type;
     b2Body* body;
     int num_foot_contacts;
@@ -60,13 +84,5 @@ typedef struct Wizard
     bool current_air;
     bool prev_air;
 } Wizard;
-
-typedef struct Staff
-{
-    b2Body* body;
-    Entity entity;
-    float offset_x;
-    float offset_y;
-} Staff;
 
 #endif

@@ -28,11 +28,11 @@ typedef struct
 extern "C"
 {
     #endif
-    bool sceneInit(Scene* current, C3D_RenderTarget* target);
+    bool sceneInit(Scene* current, C3D_RenderTarget* targetTop, C3D_RenderTarget* targetBottom);
     void sceneUpdate(Scene* current, Scene* nextScene, u32 kDown);
     void sceneDraw(Scene* current);
     void sceneExit(Scene* current);
-    void sceneChange(Scene* current, Scene* nextScene, C3D_RenderTarget* target);
+    void sceneChange(Scene* current, Scene* nextScene, C3D_RenderTarget* targetTop, C3D_RenderTarget* targetBottom);
 
 #ifdef __cplusplus
 }

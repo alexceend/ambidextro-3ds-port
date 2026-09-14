@@ -5,13 +5,13 @@
 #include "physics.h"
 #include "pause.h"
 
-bool sceneInit(Scene* current, C3D_RenderTarget* target)
+bool sceneInit(Scene* current, C3D_RenderTarget* targetTop, C3D_RenderTarget* targetBottom)
 {
     switch (*current)
     {
-        case SCENE_MENU: return menuInit(target); break;
-        case SCENE_LEVEL: return levelInit(target); break;
-        //case SCENE_PAUSE: return pauseInit(target); break;
+        case SCENE_MENU: return menuInit(targetTop, targetBottom); break;
+        case SCENE_LEVEL: return levelInit(targetTop, targetBottom); break;
+        //case SCENE_PAUSE: return pauseInit(targetTop, targetBottom); break;
         default: break;
     }
     return false;
@@ -50,11 +50,11 @@ void sceneExit(Scene* current)
     }
 }
 
-void sceneChange(Scene* current, Scene* nextScene, C3D_RenderTarget* target)
+void sceneChange(Scene* current, Scene* nextScene, C3D_RenderTarget* targetTop, C3D_RenderTarget* targetBottom)
 {
     if (*nextScene != SCENE_NONE && *nextScene != *current)
         {
-            sceneInit(nextScene, target);
+            sceneInit(nextScene, targetTop, targetBottom);
 
             switch (*current)
             {

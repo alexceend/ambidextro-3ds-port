@@ -26,7 +26,7 @@ int main(int argc, char** argv)
 
     romfsInit();
     gfxInitDefault();
-    consoleInit(GFX_BOTTOM, NULL);
+    //consoleInit(GFX_BOTTOM, NULL);
 
     C3D_Init(C3D_DEFAULT_CMDBUF_SIZE);
     C2D_Init(C2D_DEFAULT_MAX_OBJECTS);
@@ -35,7 +35,10 @@ int main(int argc, char** argv)
     C3D_RenderTarget* top =
         C2D_CreateScreenTarget(GFX_TOP, GFX_LEFT);
 
-    if (!top)
+    C3D_RenderTarget* bottom =
+        C2D_CreateScreenTarget(GFX_BOTTOM, GFX_LEFT);
+
+    if (!top || !bottom)
     {
         C2D_Fini();
         C3D_Fini();
@@ -44,7 +47,7 @@ int main(int argc, char** argv)
         return -1;
     }
 
-    log_message("[INFO]: C2D, and top prepared and initialized");
+    log_message("[INFO]: C2D, top and bottom prepared and initialized");
 
     /* AUDIO */
 
@@ -63,7 +66,7 @@ int main(int argc, char** argv)
     /* MENU */
 
     Scene currentScene = SCENE_MENU;
-    if (!menuInit(top))
+    if (!menuInit(top, bottom))
     {
         printf("ERROR: no se pudo inicializar el menu\n");
 
@@ -103,17 +106,19 @@ int main(int argc, char** argv)
 
         u32 kUp = hidKeysUp();
 
+        u32 kHeld = hidKeysHeld();
+
         //if (kDown & KEY_START) break;
 
         Scene nextScene = SCENE_NONE;
 
         if (currentScene == SCENE_LEVEL)
         {
-            gameManager.ManageGame(kDown, kUp);
+            gameManager.ManageGame(kHeld, kDown, kUp);
         }
         
         sceneUpdate(&currentScene, &nextScene, kDown);
-        sceneChange(&currentScene, &nextScene, top);
+        sceneChange(&currentScene, &nextScene, top, bottom);
 
         C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
 
@@ -130,6 +135,8 @@ int main(int argc, char** argv)
 
     cfguExit();
     audioExit();
+
+    clearAssets();
 
     C2D_Fini();
     C3D_Fini();

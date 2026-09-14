@@ -12,6 +12,7 @@
 #define NUM_OPTIONS 4
 
 static C3D_RenderTarget* top = NULL;
+static C3D_RenderTarget* bottom = NULL;
 
 static C2D_SpriteSheet spriteSheet;
 
@@ -28,9 +29,10 @@ static float labelH[NUM_OPTIONS];
 
 static int selectedIndex = 0;
 
-bool pauseInit(C3D_RenderTarget* target)
+bool pauseInit(C3D_RenderTarget* targetTop, C3D_RenderTarget* targetBottom)
 {
-    top = target;
+    top = targetTop;
+    bottom = targetBottom;
 
     spriteSheet =
         C2D_SpriteSheetLoad("romfs:/gfx/sprites.t3x");
@@ -136,7 +138,7 @@ Scene pauseUpdate(u32 kDown)
             case 1:
                 printf("RESTART selected\n");
                 paused = false;
-                restartLevel(top);
+                restartLevel(top, bottom);
                 return SCENE_LEVEL;
             case 2:
                 printf("OPTIONS selected\n");
