@@ -18,5 +18,8 @@
 extern Wizard purpleWizard;
 extern Wizard yellowWizard;
 
+extern uint8_t currentLevel;
+extern int retries;
+
 
 #endif

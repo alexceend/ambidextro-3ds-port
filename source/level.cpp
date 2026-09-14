@@ -65,14 +65,16 @@ typedef struct
 
 std::list<Block *> blockList;
 Level level;
-int8_t currentLevel = 1;
 bool showDebug = true;
 
 static C2D_TextBuf textBuf;
 static C2D_Font font;
-static C2D_Text labels[1];
-static int lastTimeShown = -1;
 
+static C2D_Text timeLabel;
+static C2D_Text levelLabel;
+static C2D_Text retriesLabel;
+
+static int lastTimeShown = -1;
 
 
 using namespace std;
@@ -174,6 +176,43 @@ void loadPhysics()
     loadWizardHitbox(level.spawns[1].spawnX, level.spawns[1].spawnY, &yellowWizard);
 }
 
+void updateLevelText()
+{
+    char levelString[8];
+    snprintf(levelString, sizeof(levelString), "%03d/100", currentLevel);
+    C2D_TextFontParse(&levelLabel, font, textBuf, levelString);
+    C2D_TextOptimize(&levelLabel);
+}
+
+void updateRetriesText()
+{
+    char retriesString[8];
+    snprintf(retriesString, sizeof(retriesString), "%d", retries);
+    C2D_TextFontParse(&retriesLabel, font, textBuf, retriesString);
+    C2D_TextOptimize(&retriesLabel);
+}
+
+void updateHUD()
+{
+    int remaining = levelTimer.getRemainingTimeInSeconds();
+
+    if (remaining != lastTimeShown)
+    {
+        lastTimeShown = remaining;
+
+        C2D_TextBufClear(textBuf);
+
+        char timeString[32];
+        snprintf(timeString, sizeof(timeString), "Time: %d", remaining);
+
+        C2D_TextFontParse(&timeLabel, font, textBuf, timeString);
+        C2D_TextOptimize(&timeLabel);
+
+        updateLevelText();
+        updateRetriesText();
+    }
+}
+
 bool levelInit(C3D_RenderTarget *targetTop, C3D_RenderTarget *targetBottom)
 {
     top = targetTop;
@@ -213,17 +252,7 @@ bool levelInit(C3D_RenderTarget *targetTop, C3D_RenderTarget *targetBottom)
     textBuf = C2D_TextBufNew(256);
     font = C2D_FontLoadSystem(CFG_REGION_USA);
 
-    std::string timeString = std::to_string(level.time_limit);
-
-    C2D_TextFontParse(
-        &labels[0],
-        font,
-        textBuf,
-        timeString.c_str()
-    );
-
-    C2D_TextOptimize(&labels[0]);
-        
+    updateHUD();
 
     loadPhysics();
 
@@ -273,19 +302,6 @@ void updateWizard(Wizard* wizard)
     }, desired_angle);
 }
 
-void updateTimerText()
-{
-    int remaining = levelTimer.getRemainingTimeInSeconds();
-    if (remaining == lastTimeShown) return;
-    lastTimeShown = remaining;
-
-    C2D_TextBufClear(textBuf);
-    std::string s = "Time: " + std::to_string(remaining);
-    C2D_TextFontParse(&labels[0], font, textBuf, s.c_str());
-    C2D_TextOptimize(&labels[0]);
-}
-
-
 Scene levelUpdate(u32 kDown)
 {
     if (paused){
@@ -301,7 +317,7 @@ Scene levelUpdate(u32 kDown)
     update_object(purpleWizard.staff.entity.object, purpleWizard.staff.entity.animation_map[purpleWizard.staff.entity.sprite_info.currentAnimationType]);
     update_object(yellowWizard.staff.entity.object, yellowWizard.staff.entity.animation_map[yellowWizard.staff.entity.sprite_info.currentAnimationType]);
 
-    updateTimerText();
+    updateHUD();
 
     return SCENE_LEVEL;
 }
@@ -393,10 +409,32 @@ void levelDraw()
     C2D_SceneBegin(bottom);
 
     C2D_DrawText(
-            &labels[0],
+            &timeLabel,
             C2D_WithColor,
             100,
             50,
+            0.0f,
+            1.0f,
+            1.0f,
+            C2D_Color32(230, 230, 230, 255)
+    );
+
+    C2D_DrawText(
+            &levelLabel,
+            C2D_WithColor,
+            10,
+            10,
+            0.0f,
+            1.0f,
+            1.0f,
+            C2D_Color32(230, 230, 230, 255)
+    );
+
+    C2D_DrawText(
+            &retriesLabel,
+            C2D_WithColor,
+            300,
+            10,
             0.0f,
             1.0f,
             1.0f,
@@ -445,12 +483,15 @@ void LevelClass::Update(EventType event, void* callback)
     switch (event)
     {
     case WIN:
-    printf("Level won!\n");
+        printf("Level won!\n");
+        currentLevel++;
+        restartLevel(top, bottom);
         break;
     case PUASE:
         paused = !paused;
         break;
     case DEATH:
+        retries++; 
         restartLevel(top, bottom);
         break;
     case DEBUG:

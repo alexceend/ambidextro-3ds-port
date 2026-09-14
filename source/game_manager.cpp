@@ -26,6 +26,9 @@ bool raycast_wizard_prev = false;
 C2D_Sprite purple_sprite;
 C2D_Sprite yellow_sprite;
 
+uint8_t currentLevel = 1;
+int retries = 0;
+
 void createWizards()
 {
     purpleWizard = {
