@@ -246,7 +246,7 @@ bool levelInit(C3D_RenderTarget *targetTop, C3D_RenderTarget *targetBottom)
     }
 
     textBuf = C2D_TextBufNew(256);
-    font = C2D_FontLoadSystem(CFG_REGION_USA);
+    font = C2D_FontLoad("romfs:/fonts/byte_bounce/bytebounce.medium.bcfnt");
 
     updateHUD();
 

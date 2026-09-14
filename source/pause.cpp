@@ -64,7 +64,7 @@ bool pauseInit(C3D_RenderTarget* targetTop, C3D_RenderTarget* targetBottom)
         return false;
     }
 
-    font = C2D_FontLoadSystem(CFG_REGION_USA);
+    font = C2D_FontLoad("romfs:/fonts/byte_bounce/bytebounce.medium.bcfnt");
 
     const char* labelStrings[NUM_OPTIONS] =
     {
