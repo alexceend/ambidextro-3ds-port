@@ -257,6 +257,8 @@ bool fixtureIsWizard(b2Fixture *fixture)
 
 void Subject::victoryLogger()
 {
+    if(fixture_a == nullptr || fixture_b == nullptr) return;
+    
     Entity* entity_a = reinterpret_cast<Entity*>(fixture_a->GetUserData().pointer);
     Entity* entity_b = reinterpret_cast<Entity*>(fixture_b->GetUserData().pointer);
 
