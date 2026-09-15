@@ -28,9 +28,9 @@
 
 static C3D_RenderTarget *top = NULL;
 static C3D_RenderTarget *bottom = NULL;
+char *debugString = NULL;
 
 FooDraw fooDrawInstance;
-
 
 bool paused = false;
 
@@ -48,8 +48,7 @@ typedef enum
 std::map<TileType, std::array<int, 4>> tile = {
     {TILE_WALL, {14, 14, 0, 0}},
     {TILE_FLOOR_SLAB, {14, 3, 0, 12}},
-    {TILE_FLOOR, {14, 14, 0, 0}}
-};
+    {TILE_FLOOR, {14, 14, 0, 0}}};
 
 typedef struct
 {
@@ -73,6 +72,7 @@ static C2D_Font font;
 
 static C2D_Text levelLabel;
 static C2D_Text retriesLabel;
+static C2D_Text debugLabel;
 
 static C2D_Image hourGlass;
 static C2D_Image hourGlassBorder;
@@ -81,10 +81,11 @@ static float initialTime = 0.0f;
 
 static int lastTimeShown = -1;
 
+char debug_buffer[50];
 
 using namespace std;
 
-bool loadLevelFromFile(ifstream *file, Level* level)
+bool loadLevelFromFile(ifstream *file, Level *level)
 {
 
     if (!file)
@@ -128,20 +129,19 @@ bool loadLevelFromFile(ifstream *file, Level* level)
     return i == LEVEL_HEIGHT;
 }
 
-void initialize_staff_fixture(Wizard* wizard)
+void initialize_staff_fixture(Wizard *wizard)
 {
-    for (b2Fixture* fixture = wizard->body->GetFixtureList(); fixture; fixture = fixture->GetNext())
+    for (b2Fixture *fixture = wizard->body->GetFixtureList(); fixture; fixture = fixture->GetNext())
     {
         if (fixture->GetUserData().pointer != 0)
         {
-            Entity* entity = reinterpret_cast<Entity*>(fixture->GetUserData().pointer);
+            Entity *entity = reinterpret_cast<Entity *>(fixture->GetUserData().pointer);
             if (entity->entity_type == STAFF_)
             {
                 loadStaffHitbox(
                     wizard->staff.body->GetPosition().x + wizard->staff.offset_x,
                     wizard->staff.body->GetPosition().y + wizard->staff.offset_y,
-                    &wizard->staff
-                );
+                    &wizard->staff);
             }
         }
     }
@@ -167,12 +167,10 @@ void loadPhysics()
                 block->width = tile.at(type).at(0);
                 block->height = tile.at(type).at(1);
                 blockList.push_front(block);
-                loadStaticObject(getAtlasTexture
-                    (atlas_dungeon, level.tiles[i][j]),
-                    block,
-                    tile.at(type).at(2),
-                    tile.at(type).at(3)
-                );
+                loadStaticObject(getAtlasTexture(atlas_dungeon, level.tiles[i][j]),
+                                 block,
+                                 tile.at(type).at(2),
+                                 tile.at(type).at(3));
             }
         }
     }
@@ -197,6 +195,12 @@ void updateRetriesText()
     C2D_TextOptimize(&retriesLabel);
 }
 
+void updateDebugText()
+{
+    C2D_TextFontParse(&debugLabel, font, textBuf, debugString);
+    C2D_TextOptimize(&debugLabel);
+}
+
 void updateHUD()
 {
     int remaining = levelTimer.getRemainingTimeInSeconds();
@@ -209,6 +213,7 @@ void updateHUD()
 
         updateLevelText();
         updateRetriesText();
+        updateDebugText();
     }
 }
 
@@ -218,7 +223,7 @@ bool levelInit(C3D_RenderTarget *targetTop, C3D_RenderTarget *targetBottom)
     bottom = targetBottom;
 
     string filePath = "romfs:levels/level" + to_string(currentLevel) + ".txt";
-   
+
     ifstream file(filePath);
 
     loadLevelFromFile(&file, &level);
@@ -240,7 +245,8 @@ bool levelInit(C3D_RenderTarget *targetTop, C3D_RenderTarget *targetBottom)
             sscanf(line.c_str(), "spawnYellow %d %d", &x, &y);
             level.spawns[1].spawnX = x;
             level.spawns[1].spawnY = y;
-        }else if (line.find("time") != string::npos)
+        }
+        else if (line.find("time") != string::npos)
         {
             sscanf(line.c_str(), "time %hhd", &time_limit);
             level.time_limit = time_limit;
@@ -260,7 +266,7 @@ bool levelInit(C3D_RenderTarget *targetTop, C3D_RenderTarget *targetBottom)
     loadPhysics();
 
     pauseInit(targetTop, targetBottom);
-  
+
     return true;
 }
 
@@ -290,24 +296,24 @@ void levelCleanup()
     bottom = NULL;
 }
 
-void updateWizard(Wizard* wizard)
+void updateWizard(Wizard *wizard)
 {
     float desired_angle = wizard->x_flip ? purple_desired_angle : yellow_desired_angle;
-    wizard->entity.object->position.x = metersToPixels(wizard->body->GetPosition().x); 
-    wizard->entity.object->position.y = metersToPixels(wizard->body->GetPosition().y); 
-    wizard->staff.entity.object->position.x = metersToPixels(wizard->body->GetPosition().x + pixelsToMeters(wizard->staff.offset_x)); 
+    wizard->entity.object->position.x = metersToPixels(wizard->body->GetPosition().x);
+    wizard->entity.object->position.y = metersToPixels(wizard->body->GetPosition().y);
+    wizard->staff.entity.object->position.x = metersToPixels(wizard->body->GetPosition().x + pixelsToMeters(wizard->staff.offset_x));
     wizard->staff.entity.object->position.y = metersToPixels(wizard->body->GetPosition().y + pixelsToMeters(wizard->staff.offset_y));
     wizard->staff.entity.object->rotation = desired_angle;
 
-    wizard->staff.body->SetTransform({
-        wizard->body->GetPosition().x + pixelsToMeters(wizard->staff.offset_x),
-        wizard->body->GetPosition().y + pixelsToMeters(wizard->staff.offset_y)
-    }, desired_angle);
+    wizard->staff.body->SetTransform({wizard->body->GetPosition().x + pixelsToMeters(wizard->staff.offset_x),
+                                      wizard->body->GetPosition().y + pixelsToMeters(wizard->staff.offset_y)},
+                                     desired_angle);
 }
 
 Scene levelUpdate(u32 kDown)
 {
-    if (paused){
+    if (paused)
+    {
         return pauseUpdate(kDown);
     }
     updatePhysics();
@@ -379,23 +385,21 @@ void drawTimeBar()
 
     float currentWidth = barWidth * ratio;
 
-    //Fondos
+    // Fondos
     C2D_DrawRectSolid(
         leftBarX,
         barY,
         0.0f,
         barWidth,
         barHeight,
-        C2D_Color32(60, 60, 60, 255)
-    );
+        C2D_Color32(60, 60, 60, 255));
     C2D_DrawRectSolid(
         rightBarX,
         barY,
         0.0f,
         barWidth,
         barHeight,
-        C2D_Color32(60, 60, 60, 255)
-    );
+        C2D_Color32(60, 60, 60, 255));
 
     // Barra izquierda:
     C2D_DrawRectSolid(
@@ -404,8 +408,7 @@ void drawTimeBar()
         0.0f,
         currentWidth,
         barHeight,
-        C2D_Color32(255, 127, 0, 255)
-    );
+        C2D_Color32(255, 127, 0, 255));
 
     // Barra derecha:
     C2D_DrawRectSolid(
@@ -414,10 +417,8 @@ void drawTimeBar()
         0.0f,
         currentWidth,
         barHeight,
-        C2D_Color32(255, 127, 0, 255)
-    );
+        C2D_Color32(255, 127, 0, 255));
 
-    
     float hourGlassX = centerX;
     float hourGlassY = barY + barHeight / 2.0f;
 
@@ -428,8 +429,7 @@ void drawTimeBar()
         0.0f,
         NULL,
         1.0f,
-        1.0f
-    );
+        1.0f);
 
     C2D_DrawImageAt(
         hourGlassBorder,
@@ -438,8 +438,20 @@ void drawTimeBar()
         0.0f,
         NULL,
         1.0f,
-        1.0f
-    );
+        1.0f);
+}
+
+void bottomDebugDraw()
+{
+    C2D_DrawText(
+        &debugLabel,
+        C2D_WithColor,
+        80.0f,
+        80.0f,
+        0.0f,
+        0.3f,
+        0.3f,
+        C2D_Color32(255, 255, 255, 255));
 }
 
 void levelDraw()
@@ -447,7 +459,8 @@ void levelDraw()
     C2D_TargetClear(top, C2D_Color32(20, 20, 40, 255));
     C2D_SceneBegin(top);
 
-    if (paused){ 
+    if (paused)
+    {
         pauseDraw();
         return;
     }
@@ -470,17 +483,15 @@ void levelDraw()
     draw_sprite(yellowWizard.entity.object, yellowWizard.entity.animation_map[yellowWizard.entity.sprite_info.currentAnimationType]);
     draw_sprite(purpleWizard.staff.entity.object, purpleWizard.staff.entity.animation_map[purpleWizard.staff.entity.sprite_info.currentAnimationType]);
     draw_sprite(yellowWizard.staff.entity.object, yellowWizard.staff.entity.animation_map[yellowWizard.staff.entity.sprite_info.currentAnimationType]);
-    
-    
-    if(DEBUG_RAYCAST)
+
+    if (DEBUG_RAYCAST)
     {
         for (size_t i = 0; i < CIRCLE_STEPS; i++)
         {
             C2D_DrawLine(
                 metersToPixels(segments.at(i).p1.x), metersToPixels(segments.at(i).p1.y), C2D_Color32f(1.0f, 1.0f, 1.0f, 0.2f),
                 metersToPixels(segments.at(i).p2.x), metersToPixels(segments.at(i).p2.y), C2D_Color32f(1.0f, 1.0f, 1.0f, 0.2f),
-                1.0f, 0.0f
-            );
+                1.0f, 0.0f);
         }
     }
 
@@ -496,33 +507,32 @@ void levelDraw()
     C2D_TargetClear(bottom, C2D_Color32(20, 20, 40, 255));
     C2D_SceneBegin(bottom);
 
-    //Barra tiempo
+    // Barra tiempo
     drawTimeBar();
 
-    //Textos de nivel y reintentos
+    // Textos de nivel y reintentos
 
     C2D_DrawText(
-            &levelLabel,
-            C2D_WithColor,
-            10,
-            10,
-            0.0f,
-            1.0f,
-            1.0f,
-            C2D_Color32(230, 230, 230, 255)
-    );
+        &levelLabel,
+        C2D_WithColor,
+        10,
+        10,
+        0.0f,
+        1.0f,
+        1.0f,
+        C2D_Color32(230, 230, 230, 255));
 
     C2D_DrawText(
-            &retriesLabel,
-            C2D_WithColor,
-            300,
-            10,
-            0.0f,
-            1.0f,
-            1.0f,
-            C2D_Color32(230, 230, 230, 255)
-    );
-    
+        &retriesLabel,
+        C2D_WithColor,
+        300,
+        10,
+        0.0f,
+        1.0f,
+        1.0f,
+        C2D_Color32(230, 230, 230, 255));
+
+    bottomDebugDraw();
 
     C2D_Flush();
 }
@@ -530,14 +540,20 @@ void levelDraw()
 void rotate_staff()
 {
     purple_desired_angle = atan2f(
-        yellowWizard.body->GetPosition().y - purpleWizard.body->GetPosition().y,
-        yellowWizard.body->GetPosition().x - purpleWizard.body->GetPosition().x
-    ) + M_PI / 2;
+                               yellowWizard.body->GetPosition().y - purpleWizard.body->GetPosition().y,
+                               yellowWizard.body->GetPosition().x - purpleWizard.body->GetPosition().x) +
+                           M_PI / 2;
 
     yellow_desired_angle = atan2f(
-        purpleWizard.body->GetPosition().y - yellowWizard.body->GetPosition().y,
-        purpleWizard.body->GetPosition().x - yellowWizard.body->GetPosition().x
-    ) + M_PI / 2;
+                               purpleWizard.body->GetPosition().y - yellowWizard.body->GetPosition().y,
+                               purpleWizard.body->GetPosition().x - yellowWizard.body->GetPosition().x) +
+                           M_PI / 2;
+
+    // I do not get why cosf is taking "y" coord instead of "x" one
+    purpleWizard.staff.offset_y = -cosf(purple_desired_angle) * STAFF_PIVOT_LENGTH;
+    purpleWizard.staff.offset_x = sinf(purple_desired_angle) * STAFF_PIVOT_LENGTH;
+    yellowWizard.staff.offset_y = -cosf(yellow_desired_angle) * STAFF_PIVOT_LENGTH;
+    yellowWizard.staff.offset_x = sinf(yellow_desired_angle) * STAFF_PIVOT_LENGTH;
 }
 
 void reset_staff()
@@ -560,7 +576,7 @@ LevelClass::LevelClass(ISubject &subject) : subject_(subject)
     subject.Subscribe(DEATH, &levelTimer);
 }
 
-void LevelClass::Update(EventType event, void* callback)
+void LevelClass::Update(EventType event, void *callback)
 {
     switch (event)
     {
@@ -573,7 +589,7 @@ void LevelClass::Update(EventType event, void* callback)
         paused = !paused;
         break;
     case DEATH:
-        retries++; 
+        retries++;
         restartLevel(top, bottom);
         break;
     case DEBUG:
@@ -581,21 +597,17 @@ void LevelClass::Update(EventType event, void* callback)
         break;
     case WIZARD_DETECTED:
         rotate_staff();
-        if (purpleWizard.staff.offset_x < 3.0f)
-        {
-            purpleWizard.staff.offset_x += 3.0f;
-        }
-        if (yellowWizard.staff.offset_x > -3.0f)
-        {
-            yellowWizard.staff.offset_x -= 3.0f;
-        }
+
+        snprintf(debug_buffer, sizeof(debug_buffer), "Offset_Y: %.3f | Offset_X: %.3f", cosf(purple_desired_angle) * 2.0f, sinf(purple_desired_angle) * 2.0f);
+        debugString = debug_buffer;
         break;
     case WIZARD_UNDETECTED:
         reset_staff();
         purpleWizard.staff.offset_x -= 3.0f;
         yellowWizard.staff.offset_x += 3.0f;
         break;
-    default: break;
+    default:
+        break;
     }
 }
 

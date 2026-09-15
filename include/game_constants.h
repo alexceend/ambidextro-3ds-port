@@ -5,6 +5,7 @@
 #define MAX_SPRITES 15
 #define CIRCLE_STEPS 120
 #define PIXELS_PER_METER 32.0f
+#define STAFF_PIVOT_LENGTH 3.0f
 
 #define DEBUG_RAYCAST false
 
