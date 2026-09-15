@@ -8,6 +8,7 @@ C2D_SpriteSheet atlas_yellow_wizard_static = NULL;
 C2D_SpriteSheet atlas_yellow_wizard_jump = NULL;
 C2D_SpriteSheet atlas_staff_static = NULL;
 C2D_SpriteSheet atlas_staff_jump = NULL;
+C2D_SpriteSheet props_16 = NULL;
 
 bool loadAssets()
 {
@@ -18,7 +19,7 @@ bool loadAssets()
     atlas_yellow_wizard_jump = C2D_SpriteSheetLoad("romfs:/gfx/yellow_wizard_jump_atlas.t3x");
     atlas_staff_static = C2D_SpriteSheetLoad("romfs:/gfx/staff_static_atlas.t3x");
     atlas_staff_jump = C2D_SpriteSheetLoad("romfs:/gfx/staff_jump_atlas.t3x");
-
+    props_16 = C2D_SpriteSheetLoad("romfs:/gfx/props_16_atlas.t3x");
     if (!atlas_dungeon)
     {
         printf("ERROR: Failed to load dungeon atlas\n");
@@ -61,6 +62,12 @@ bool loadAssets()
         return false;
     }
 
+    if (!props_16)
+    {
+        printf("ERROR: Failed to load props 16 atlas\n");
+        return false;
+    }
+
     return true;
 }
 
@@ -100,5 +107,10 @@ void clearAssets()
     {
         C2D_SpriteSheetFree(atlas_staff_jump);
         atlas_staff_jump = NULL;
+    }
+    if (props_16)
+    {
+        C2D_SpriteSheetFree(props_16);
+        props_16 = NULL;
     }
 }

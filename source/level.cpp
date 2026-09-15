@@ -17,6 +17,7 @@
 
 #define SCREEN_WIDTH 400
 #define SCREEN_HEIGHT 240
+#define BOTTOM_SCREEN_WIDTH 320
 #define GRID_COLS (SCREEN_WIDTH / TILE_SIZE)
 #define GRID_ROWS (SCREEN_HEIGHT / TILE_SIZE)
 
@@ -72,6 +73,9 @@ static C2D_Font font;
 
 static C2D_Text levelLabel;
 static C2D_Text retriesLabel;
+
+static C2D_Image hourGlass;
+static C2D_Image hourGlassBorder;
 
 static float initialTime = 0.0f;
 
@@ -248,6 +252,9 @@ bool levelInit(C3D_RenderTarget *targetTop, C3D_RenderTarget *targetBottom)
     textBuf = C2D_TextBufNew(256);
     font = C2D_FontLoad("romfs:/fonts/byte_bounce/bytebounce.medium.bcfnt");
 
+    hourGlass = getAtlasTexture(props_16, 0);
+    hourGlassBorder = getAtlasTexture(props_16, 63);
+
     updateHUD();
 
     loadPhysics();
@@ -350,6 +357,91 @@ void FooDraw::DrawSolidPolygon(const b2Vec2 *vertices, int32 vertexCount, const 
     }
 }
 
+void drawTimeBar()
+{
+    float centerX = BOTTOM_SCREEN_WIDTH / 2.0f;
+
+    float barWidth = BOTTOM_SCREEN_WIDTH * 0.25f;
+    float barHeight = 10.0f;
+    float barY = 50.0f;
+
+    float leftBarX = centerX - barWidth;
+    float rightBarX = centerX;
+
+    float remaining = levelTimer.getRemainingTime();
+    float ratio = remaining / initialTime;
+
+    if (ratio < 0.0f)
+        ratio = 0.0f;
+
+    if (ratio > 1.0f)
+        ratio = 1.0f;
+
+    float currentWidth = barWidth * ratio;
+
+    //Fondos
+    C2D_DrawRectSolid(
+        leftBarX,
+        barY,
+        0.0f,
+        barWidth,
+        barHeight,
+        C2D_Color32(60, 60, 60, 255)
+    );
+    C2D_DrawRectSolid(
+        rightBarX,
+        barY,
+        0.0f,
+        barWidth,
+        barHeight,
+        C2D_Color32(60, 60, 60, 255)
+    );
+
+    // Barra izquierda:
+    C2D_DrawRectSolid(
+        leftBarX + (barWidth - currentWidth),
+        barY,
+        0.0f,
+        currentWidth,
+        barHeight,
+        C2D_Color32(255, 127, 0, 255)
+    );
+
+    // Barra derecha:
+    C2D_DrawRectSolid(
+        rightBarX,
+        barY,
+        0.0f,
+        currentWidth,
+        barHeight,
+        C2D_Color32(255, 127, 0, 255)
+    );
+
+    
+    float hourGlassX = centerX;
+    float hourGlassY = barY + barHeight / 2.0f;
+
+    C2D_DrawImageAt(
+        hourGlass,
+        hourGlassX - 9.0f,
+        hourGlassY - 9.0f,
+        0.0f,
+        NULL,
+        1.0f,
+        1.0f
+    );
+
+    C2D_DrawImageAt(
+        hourGlassBorder,
+        hourGlassX - 9.0f,
+        hourGlassY - 9.0f,
+        0.0f,
+        NULL,
+        1.0f,
+        1.0f
+    );
+}
+
 void levelDraw()
 {
     C2D_TargetClear(top, C2D_Color32(20, 20, 40, 255));
@@ -405,32 +497,7 @@ void levelDraw()
     C2D_SceneBegin(bottom);
 
     //Barra tiempo
-    float barX = 50.0f;
-    float barY = 50.0f;
-    float barWidth = 200.0f;
-    float barHeight = 12.0f;
-    float remaining = levelTimer.getRemainingTime();
-    float ratio = remaining / initialTime;
-    if (ratio < 0.0f) ratio = 0.0f;
-    if (ratio > 1.0f) ratio = 1.0f;
-    float currentWidth = barWidth * ratio;
-    
-    C2D_DrawRectSolid(
-        barX,
-        barY,
-        0.0f,
-        barWidth,
-        barHeight,
-        C2D_Color32(60, 60, 60, 255)
-    );
-    C2D_DrawRectSolid(
-        barX,
-        barY,
-        0.0f,
-        currentWidth,
-        barHeight,
-        C2D_Color32(230, 230, 230, 255)
-    );
+    drawTimeBar();
 
     //Textos de nivel y reintentos
 

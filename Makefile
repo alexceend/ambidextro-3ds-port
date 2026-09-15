@@ -44,7 +44,8 @@ ATLASES		:=	\
 			atlas/yellow_wizard/move_yellow \
 			atlas/yellow_wizard/jump_yellow \
 			atlas/staff/staff_jump \
-			atlas/staff/staff_static
+			atlas/staff/staff_static \
+			atlas/props_16_margin
 #GFXBUILD	:=	$(BUILD)
 ROMFS		:=	romfs
 GFXBUILD	:=	$(ROMFS)/gfx
