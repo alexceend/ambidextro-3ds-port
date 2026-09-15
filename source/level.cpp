@@ -603,8 +603,8 @@ void LevelClass::Update(EventType event, void *callback)
         break;
     case WIZARD_UNDETECTED:
         reset_staff();
-        purpleWizard.staff.offset_x -= 3.0f;
-        yellowWizard.staff.offset_x += 3.0f;
+        purpleWizard.staff.offset_x = .0f;
+        yellowWizard.staff.offset_y = .0f;
         break;
     default:
         break;
