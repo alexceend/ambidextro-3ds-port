@@ -8,6 +8,7 @@
 
 #define SCREEN_WIDTH 400
 #define SCREEN_HEIGHT 240
+#define BOTTOM_SCREEN_WIDTH 320
 #define NUM_OPTIONS 4
 
 static C3D_RenderTarget* top = NULL;
@@ -18,6 +19,7 @@ static C2D_SpriteSheet spriteSheet;
 static C2D_Sprite wizardsUnited;
 static C2D_Sprite titleLogo;
 static C2D_Sprite selectionArrow;
+static C2D_Sprite majorariattoLogo;
 
 static C2D_TextBuf textBuf;
 static C2D_Font font;
@@ -62,6 +64,13 @@ bool menuInit(C3D_RenderTarget* targetTop, C3D_RenderTarget* targetBottom)
         sprites_menu_selection_arrow_idx
     );
 
+    C2D_SpriteFromSheet(
+        &majorariattoLogo,
+        spriteSheet,
+        sprites_majorariatto_logo_pixel_idx
+    );
+
+
     C2D_SpriteSetCenter(
         &wizardsUnited,
         0.5f,
@@ -90,6 +99,18 @@ bool menuInit(C3D_RenderTarget* targetTop, C3D_RenderTarget* targetBottom)
         &selectionArrow,
         0.5f,
         0.5f
+    );
+
+    C2D_SpriteSetCenter(
+        &majorariattoLogo,
+        0.5f,
+        0.5f
+    );
+
+    C2D_SpriteSetPos(
+        &majorariattoLogo,
+        BOTTOM_SCREEN_WIDTH / 2,
+        200
     );
 
     textBuf = C2D_TextBufNew(256);
@@ -228,6 +249,12 @@ void menuDraw(void)
     C2D_DrawSprite(&selectionArrow);
 
     C2D_Flush();
+
+    //Draw on bottom:
+    C2D_TargetClear(bottom, C2D_Color32(20, 20, 40, 255));
+    C2D_SceneBegin(bottom);
+
+    C2D_DrawSprite(&majorariattoLogo);
 }
 
 void menuExit(void)
