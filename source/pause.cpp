@@ -6,9 +6,8 @@
 
 #include "scene.h"
 #include "level.h"
+#include "game_constants.h"
 
-#define SCREEN_WIDTH 400
-#define SCREEN_HEIGHT 240
 #define NUM_OPTIONS 4
 
 static C3D_RenderTarget* top = NULL;

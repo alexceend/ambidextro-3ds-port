@@ -14,10 +14,8 @@
 #include <filesystem>
 #include <array>
 #include "timer.h"
+#include "game_constants.h"
 
-#define SCREEN_WIDTH 400
-#define SCREEN_HEIGHT 240
-#define BOTTOM_SCREEN_WIDTH 320
 #define GRID_COLS (SCREEN_WIDTH / TILE_SIZE)
 #define GRID_ROWS (SCREEN_HEIGHT / TILE_SIZE)
 

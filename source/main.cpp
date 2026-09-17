@@ -10,14 +10,11 @@
 #include "menu.h"
 #include "assets_loader.h"
 #include "game_manager.h"
+#include "game_constants.h"
 #include "movement.h"
 #include "level.h"
 
 #include "log.h"
-
-#define SCREEN_WIDTH 400
-#define SCREEN_HEIGHT 240
-
 
 
 int main(int argc, char** argv)
