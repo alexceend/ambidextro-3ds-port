@@ -13,4 +13,6 @@
 #define SCREEN_HEIGHT 240
 #define BOTTOM_SCREEN_WIDTH 320
 
+#define TIME_INFINITE -99
+
 #endif

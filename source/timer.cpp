@@ -17,6 +17,7 @@ void Timer::reset(int seconds)
 {
     // -1 reuses last timer;
     if (seconds > 0) duration_sec_ = seconds;
+    else if (seconds == TIME_INFINITE) duration_sec_ = std::numeric_limits<float>::infinity();
     start();
 }
 

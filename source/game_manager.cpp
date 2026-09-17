@@ -251,7 +251,7 @@ void Subject::pauseLogger(u32 kDown)
 
 void Subject::timerLogger()
 {
-    if (levelTimer.getRemainingTime() <= 0.0f)
+    if (levelTimer.isRunning() && levelTimer.getRemainingTime() <= 0.0f)
     {
         Notify(DEATH, nullptr);
     }
