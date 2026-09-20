@@ -153,51 +153,51 @@ void update_wizard(Wizard *wizard, EventType event)
 {
     if (event == AIRBORN)
     {
-        wizard->entity.sprite_info.currentAnimationType = JUMP_ANIMATION;
-        wizard->staff.entity.sprite_info.currentAnimationType = JUMP_ANIMATION;
+        wizard->entity.entity_animation.sprite_info.currentAnimationType = JUMP_ANIMATION;
+        wizard->staff.entity.entity_animation.sprite_info.currentAnimationType = JUMP_ANIMATION;
     }
     else if (event == LAND)
     {
         if (wizard->body->GetLinearVelocity().x == 0)
         {
-            wizard->entity.sprite_info.currentAnimationType = STATIC_ANIMATION;
-            wizard->staff.entity.sprite_info.currentAnimationType = STATIC_ANIMATION;
+            wizard->entity.entity_animation.sprite_info.currentAnimationType = STATIC_ANIMATION;
+            wizard->staff.entity.entity_animation.sprite_info.currentAnimationType = STATIC_ANIMATION;
         }
         else
         {
-            wizard->entity.sprite_info.currentAnimationType = MOVE_ANIMATION;
-            wizard->staff.entity.sprite_info.currentAnimationType = MOVE_ANIMATION;
+            wizard->entity.entity_animation.sprite_info.currentAnimationType = MOVE_ANIMATION;
+            wizard->staff.entity.entity_animation.sprite_info.currentAnimationType = MOVE_ANIMATION;
         }
     }
     else if (event == MOVE_STOP && wizard->num_foot_contacts > 0)
     {
-        wizard->entity.sprite_info.currentAnimationType = STATIC_ANIMATION;
-        wizard->staff.entity.sprite_info.currentAnimationType = STATIC_ANIMATION;
+        wizard->entity.entity_animation.sprite_info.currentAnimationType = STATIC_ANIMATION;
+        wizard->staff.entity.entity_animation.sprite_info.currentAnimationType = STATIC_ANIMATION;
     }
     else if ((event == ANIMATE_LEFT || event == ANIMATE_RIGHT) && wizard->num_foot_contacts > 0)
     {
-        wizard->entity.sprite_info.currentAnimationType = MOVE_ANIMATION;
-        wizard->staff.entity.sprite_info.currentAnimationType = MOVE_ANIMATION;
+        wizard->entity.entity_animation.sprite_info.currentAnimationType = MOVE_ANIMATION;
+        wizard->staff.entity.entity_animation.sprite_info.currentAnimationType = MOVE_ANIMATION;
     }
     else if (event == WIZARD_DETECTED)
     {
         locked_animation_staff = true;
-        wizard->staff.entity.sprite_info.currentAnimationType = STATIC_ANIMATION;
+        wizard->staff.entity.entity_animation.sprite_info.currentAnimationType = STATIC_ANIMATION;
     }
     else if (event == WIZARD_UNDETECTED)
     {
         locked_animation_staff = false;
     }
 
-    wizard->entity.object->reset_animation = true;
-    wizard->staff.entity.object->reset_animation = true;
+    wizard->entity.entity_animation.object->reset_animation = true;
+    wizard->staff.entity.entity_animation.object->reset_animation = true;
 }
 
 void update_staff(Staff *staff)
 {
     if (!locked_animation_staff && staff_animation != nullptr)
     {
-        staff->entity.sprite_info.currentAnimationType = *staff_animation;
+        staff->entity.entity_animation.sprite_info.currentAnimationType = *staff_animation;
     }
 }
 

@@ -14,6 +14,8 @@
 #define STAFF_HEIGHT 13.0f
 #define STAFF_WIDTH 3.0f
 #define GRAVITY b2Vec2(0.0f, 9.8f)
+#define WIZARD_ANIMATIONS 2
+#define STAFF_ANIMATIONS 2
 
 extern Wizard purpleWizard;
 extern Wizard yellowWizard;

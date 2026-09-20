@@ -135,8 +135,8 @@ void loadWizardHitbox(float pos_x, float pos_y, Wizard *wizard)
 
     // STAFF
 
-    float staff_x_pos = pos_x + wizard->staff.offset_x;
-    float staff_y_pos = pos_y + wizard->staff.offset_y;
+    float staff_x_pos = pos_x + wizard->staff.staff_position.offset_x;
+    float staff_y_pos = pos_y + wizard->staff.staff_position.offset_y;
 
     loadStaffHitbox(staff_x_pos, staff_y_pos, &wizard->staff);
 }

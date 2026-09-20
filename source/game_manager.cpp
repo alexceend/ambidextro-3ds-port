@@ -29,143 +29,202 @@ C2D_Sprite yellow_sprite;
 uint8_t currentLevel = 1;
 int retries = 0;
 
-void createEntity(EntityType entity_type, void* sub_struct, body_properties_t body_properties)
+body_properties_t createBodyProperties(float width, float height, float velocity)
 {
-
+    return {
+        width,
+        height,
+        velocity};
 }
 
-void createWizards()
+sprite_info_t createSpriteInfoPurpleWizard()
+{
+    sprite_info_t info =
+        {
+            STATIC_ANIMATION,
+            STATIC_ANIMATION,
+            WIZARD_ANIMATIONS};
+
+    info.spriteSheets[0] = atlas_purple_wizard_static;
+    info.spriteSheets[1] = atlas_purple_wizard_jump;
+    info.animations_refresh_ms_time[0] = 20;
+    info.animations_refresh_ms_time[1] = 20;
+
+    return info;
+}
+
+sprite_info_t createSpriteInfoYellowWizard()
+{
+    sprite_info_t info =
+        {
+            STATIC_ANIMATION,
+            STATIC_ANIMATION,
+            WIZARD_ANIMATIONS};
+
+    info.spriteSheets[0] = atlas_yellow_wizard_static;
+    info.spriteSheets[1] = atlas_yellow_wizard_jump;
+    info.animations_refresh_ms_time[0] = 20;
+    info.animations_refresh_ms_time[1] = 20;
+
+    return info;
+}
+
+sprite_info_t createSpriteInfoStaff()
+{
+    sprite_info_t info =
+        {
+            STATIC_ANIMATION,
+            STATIC_ANIMATION,
+            WIZARD_ANIMATIONS};
+
+    info.spriteSheets[0] = atlas_staff_static;
+    info.spriteSheets[1] = atlas_staff_jump;
+    info.animations_refresh_ms_time[0] = 20;
+    info.animations_refresh_ms_time[1] = 20;
+
+    return info;
+}
+
+entity_animation_t createEntityAnimation(bool is_wizard, bool purple)
+{
+    sprite_info_t sprite_info;
+    if (is_wizard)
+    {
+        if (purple)
+        {
+            sprite_info = createSpriteInfoPurpleWizard();
+        }
+        else
+        {
+            sprite_info = createSpriteInfoYellowWizard();
+        }
+    }
+    else
+    {
+        sprite_info = createSpriteInfoStaff();
+    }
+
+    return {
+        sprite_info,
+        new object_2d_t,
+        {{STATIC_ANIMATION, MAX_SPRITE_SHEETS}, {MOVE_ANIMATION, 0}, {JUMP_ANIMATION, 1}}};
+}
+
+Entity createStaffEntity(Wizard *wizard, bool purple, bool is_wizard)
+{
+    return {
+        STAFF_,
+        &wizard->staff,
+        createBodyProperties(STAFF_WIDTH, STAFF_HEIGHT, WIZARD_SPEED),
+        createEntityAnimation(is_wizard, purple)};
+}
+
+staff_position_t createStaffPosition(Wizard *wizard)
+{
+    return {
+        wizard->body->GetPosition().x,
+        wizard->body->GetPosition().y,
+        1.0f,
+        1.0f};
+}
+
+Staff createStaff(Wizard *wizard, bool purple)
+{
+    return {
+        createStaffEntity(wizard, purple, false),
+        nullptr,
+        createStaffPosition(wizard),
+        // TODO: Assign extend sprite
+        nullptr};
+}
+
+Entity createFootSensorEntity(Wizard *wizard)
+{
+    return {
+        WIZARD_FOOT_,
+        &wizard->foot_sensor,
+        createBodyProperties(WIZARD_WIDTH / 4, 2.0f, WIZARD_SPEED),
+        {}};
+}
+
+FootSensor createFootSensor(Wizard *wizard)
+{
+    return {
+        createFootSensorEntity(wizard),
+        wizard,
+        nullptr,
+        0,
+        WIZARD_HEIGHT / 2};
+}
+
+Entity createWizardEntity(Wizard *wizard, bool purple)
+{
+    return {
+        WIZARD_,
+        wizard,
+        createBodyProperties(WIZARD_WIDTH, WIZARD_HEIGHT, WIZARD_SPEED),
+        createEntityAnimation(true, purple)};
+}
+
+void createPurpleWizard()
 {
     purpleWizard = {
-        {WIZARD_,
-         &purpleWizard,
-         {WIZARD_WIDTH,
-          WIZARD_HEIGHT,
-          WIZARD_SPEED},
-
-         {STATIC_ANIMATION,
-          STATIC_ANIMATION,
-          2,
-          {atlas_purple_wizard_static, atlas_purple_wizard_jump},
-          {20, 20}},
-
-         new object_2d_t{},
-
-         {{STATIC_ANIMATION, MAX_SPRITE_SHEETS}, {MOVE_ANIMATION, 0}, {JUMP_ANIMATION, 1}}},
-        {{
-             STAFF_,
-             &purpleWizard.staff,
-             {STAFF_WIDTH,
-              STAFF_HEIGHT,
-              WIZARD_SPEED},
-             {STATIC_ANIMATION,
-              STATIC_ANIMATION,
-              2,
-              {atlas_staff_static, atlas_staff_jump},
-              {20, 20}},
-             new object_2d_t{},
-             {{STATIC_ANIMATION, MAX_SPRITE_SHEETS}, {MOVE_ANIMATION, 0}, {JUMP_ANIMATION, 1}},
-
-         },
-         NULL,
-         1.0f,
-         1.0f},
-
-        {{WIZARD_FOOT_,
-          &purpleWizard.foot_sensor,
-          {WIZARD_WIDTH / 4,
-           2.0f,
-           WIZARD_SPEED},
-          {},
-          NULL,
-          {}},
-         &purpleWizard,
-         NULL,
-         0,
-         WIZARD_HEIGHT / 2},
-
+        createWizardEntity(&purpleWizard, true),
+        createStaff(&purpleWizard, true),
+        createFootSensor(&purpleWizard),
         PURPLE,
-        NULL,
+        nullptr,
         0,
         true,
         false,
         false,
         false};
-    yellowWizard = {
-        {WIZARD_,
-         &yellowWizard,
-         {WIZARD_WIDTH,
-          WIZARD_HEIGHT,
-          WIZARD_SPEED},
+}
 
-         {STATIC_ANIMATION,
-          STATIC_ANIMATION,
-          2,
-          {atlas_yellow_wizard_static, atlas_yellow_wizard_jump},
-          {20, 20}},
+void createYellowWizard()
+{
+    yellowWizard =
+        {
+            createWizardEntity(&yellowWizard, false),
+            createStaff(&yellowWizard, false),
+            createFootSensor(&yellowWizard),
+            YELLOW,
+            nullptr,
+            0,
+            false,
+            false,
+            false,
+            false};
+}
 
-         new object_2d_t{},
-
-         {{STATIC_ANIMATION, MAX_SPRITE_SHEETS}, {MOVE_ANIMATION, 0}, {JUMP_ANIMATION, 1}}},
-        {{STAFF_,
-          &yellowWizard.staff,
-          {STAFF_WIDTH,
-           STAFF_HEIGHT,
-           WIZARD_SPEED},
-          {STATIC_ANIMATION,
-           STATIC_ANIMATION,
-           2,
-           {atlas_staff_static, atlas_staff_jump},
-           {20, 20}},
-          new object_2d_t{},
-          {{STATIC_ANIMATION, MAX_SPRITE_SHEETS}, {MOVE_ANIMATION, 0}, {JUMP_ANIMATION, 1}}},
-         NULL,
-         1.0f,
-         1.0f},
-        {{WIZARD_FOOT_,
-          &yellowWizard.foot_sensor,
-          {WIZARD_WIDTH / 4,
-           2.0f,
-           WIZARD_SPEED},
-          {},
-          NULL,
-          {}},
-         &yellowWizard,
-         NULL,
-         0,
-         WIZARD_HEIGHT / 2},
-        YELLOW,
-        NULL,
-        0,
-        false,
-        false,
-        false,
-        false};
+void createWizards()
+{
+    createPurpleWizard();
+    createYellowWizard();
 }
 
 Subject::Subject()
 {
     createWizards();
 
-
     initialize_object(
-        purpleWizard.entity.object, purpleWizard.entity.sprite_info.num_animations,
-        purpleWizard.entity.sprite_info.spriteSheets, purpleWizard.entity.sprite_info.animations_refresh_ms_time,
+        purpleWizard.entity.entity_animation.object, purpleWizard.entity.entity_animation.sprite_info.num_animations,
+        purpleWizard.entity.entity_animation.sprite_info.spriteSheets, purpleWizard.entity.entity_animation.sprite_info.animations_refresh_ms_time,
         0.0f, 0.0f,
         purpleWizard.x_flip, purpleWizard.y_flip);
     initialize_object(
-        yellowWizard.entity.object, yellowWizard.entity.sprite_info.num_animations,
-        yellowWizard.entity.sprite_info.spriteSheets, yellowWizard.entity.sprite_info.animations_refresh_ms_time,
+        yellowWizard.entity.entity_animation.object, yellowWizard.entity.entity_animation.sprite_info.num_animations,
+        yellowWizard.entity.entity_animation.sprite_info.spriteSheets, yellowWizard.entity.entity_animation.sprite_info.animations_refresh_ms_time,
         0.0f, 0.0f,
         yellowWizard.x_flip, yellowWizard.y_flip);
     initialize_object(
-        purpleWizard.staff.entity.object, purpleWizard.staff.entity.sprite_info.num_animations,
-        purpleWizard.staff.entity.sprite_info.spriteSheets, purpleWizard.staff.entity.sprite_info.animations_refresh_ms_time,
+        purpleWizard.staff.entity.entity_animation.object, purpleWizard.staff.entity.entity_animation.sprite_info.num_animations,
+        purpleWizard.staff.entity.entity_animation.sprite_info.spriteSheets, purpleWizard.staff.entity.entity_animation.sprite_info.animations_refresh_ms_time,
         0.0f, 0.0f,
         purpleWizard.x_flip, purpleWizard.y_flip);
     initialize_object(
-        yellowWizard.staff.entity.object, yellowWizard.staff.entity.sprite_info.num_animations,
-        yellowWizard.staff.entity.sprite_info.spriteSheets, yellowWizard.staff.entity.sprite_info.animations_refresh_ms_time,
+        yellowWizard.staff.entity.entity_animation.object, yellowWizard.staff.entity.entity_animation.sprite_info.num_animations,
+        yellowWizard.staff.entity.entity_animation.sprite_info.spriteSheets, yellowWizard.staff.entity.entity_animation.sprite_info.animations_refresh_ms_time,
         0.0f, 0.0f,
         yellowWizard.x_flip, yellowWizard.y_flip);
 

@@ -137,8 +137,8 @@ void initialize_staff_fixture(Wizard *wizard)
             if (entity->entity_type == STAFF_)
             {
                 loadStaffHitbox(
-                    wizard->staff.body->GetPosition().x + wizard->staff.offset_x,
-                    wizard->staff.body->GetPosition().y + wizard->staff.offset_y,
+                    wizard->staff.body->GetPosition().x + wizard->staff.staff_position.offset_x,
+                    wizard->staff.body->GetPosition().y + wizard->staff.staff_position.offset_y,
                     &wizard->staff);
             }
         }
@@ -310,14 +310,14 @@ void levelCleanup()
 void updateWizard(Wizard *wizard)
 {
     float desired_angle = wizard->x_flip ? purple_desired_angle : yellow_desired_angle;
-    wizard->entity.object->position.x = metersToPixels(wizard->body->GetPosition().x);
-    wizard->entity.object->position.y = metersToPixels(wizard->body->GetPosition().y);
-    wizard->staff.entity.object->position.x = metersToPixels(wizard->body->GetPosition().x + pixelsToMeters(wizard->staff.offset_x));
-    wizard->staff.entity.object->position.y = metersToPixels(wizard->body->GetPosition().y + pixelsToMeters(wizard->staff.offset_y));
-    wizard->staff.entity.object->rotation = desired_angle;
+    wizard->entity.entity_animation.object->position.x = metersToPixels(wizard->body->GetPosition().x);
+    wizard->entity.entity_animation.object->position.y = metersToPixels(wizard->body->GetPosition().y);
+    wizard->staff.entity.entity_animation.object->position.x = metersToPixels(wizard->body->GetPosition().x + pixelsToMeters(wizard->staff.staff_position.offset_x));
+    wizard->staff.entity.entity_animation.object->position.y = metersToPixels(wizard->body->GetPosition().y + pixelsToMeters(wizard->staff.staff_position.offset_y));
+    wizard->staff.entity.entity_animation.object->rotation = desired_angle;
 
-    wizard->staff.body->SetTransform({wizard->body->GetPosition().x + pixelsToMeters(wizard->staff.offset_x),
-                                      wizard->body->GetPosition().y + pixelsToMeters(wizard->staff.offset_y)},
+    wizard->staff.body->SetTransform({wizard->body->GetPosition().x + pixelsToMeters(wizard->staff.staff_position.offset_x),
+                                      wizard->body->GetPosition().y + pixelsToMeters(wizard->staff.staff_position.offset_y)},
                                      desired_angle);
 }
 
@@ -332,10 +332,10 @@ Scene levelUpdate(u32 kDown)
     updateWizard(&purpleWizard);
     updateWizard(&yellowWizard);
 
-    update_object(purpleWizard.entity.object, purpleWizard.entity.animation_map[purpleWizard.entity.sprite_info.currentAnimationType]);
-    update_object(yellowWizard.entity.object, yellowWizard.entity.animation_map[yellowWizard.entity.sprite_info.currentAnimationType]);
-    update_object(purpleWizard.staff.entity.object, purpleWizard.staff.entity.animation_map[purpleWizard.staff.entity.sprite_info.currentAnimationType]);
-    update_object(yellowWizard.staff.entity.object, yellowWizard.staff.entity.animation_map[yellowWizard.staff.entity.sprite_info.currentAnimationType]);
+    update_object(purpleWizard.entity.entity_animation.object, purpleWizard.entity.entity_animation.animation_map[purpleWizard.entity.entity_animation.sprite_info.currentAnimationType]);
+    update_object(yellowWizard.entity.entity_animation.object, yellowWizard.entity.entity_animation.animation_map[yellowWizard.entity.entity_animation.sprite_info.currentAnimationType]);
+    update_object(purpleWizard.staff.entity.entity_animation.object, purpleWizard.staff.entity.entity_animation.animation_map[purpleWizard.staff.entity.entity_animation.sprite_info.currentAnimationType]);
+    update_object(yellowWizard.staff.entity.entity_animation.object, yellowWizard.staff.entity.entity_animation.animation_map[yellowWizard.staff.entity.entity_animation.sprite_info.currentAnimationType]);
 
     updateHUD();
 
@@ -490,10 +490,10 @@ void levelDraw()
         }
     }
 
-    draw_sprite(purpleWizard.entity.object, purpleWizard.entity.animation_map[purpleWizard.entity.sprite_info.currentAnimationType]);
-    draw_sprite(yellowWizard.entity.object, yellowWizard.entity.animation_map[yellowWizard.entity.sprite_info.currentAnimationType]);
-    draw_sprite(purpleWizard.staff.entity.object, purpleWizard.staff.entity.animation_map[purpleWizard.staff.entity.sprite_info.currentAnimationType]);
-    draw_sprite(yellowWizard.staff.entity.object, yellowWizard.staff.entity.animation_map[yellowWizard.staff.entity.sprite_info.currentAnimationType]);
+    draw_sprite(purpleWizard.entity.entity_animation.object, purpleWizard.entity.entity_animation.animation_map[purpleWizard.entity.entity_animation.sprite_info.currentAnimationType]);
+    draw_sprite(yellowWizard.entity.entity_animation.object, yellowWizard.entity.entity_animation.animation_map[yellowWizard.entity.entity_animation.sprite_info.currentAnimationType]);
+    draw_sprite(purpleWizard.staff.entity.entity_animation.object, purpleWizard.staff.entity.entity_animation.animation_map[purpleWizard.staff.entity.entity_animation.sprite_info.currentAnimationType]);
+    draw_sprite(yellowWizard.staff.entity.entity_animation.object, yellowWizard.staff.entity.entity_animation.animation_map[yellowWizard.staff.entity.entity_animation.sprite_info.currentAnimationType]);
 
     if (DEBUG_RAYCAST)
     {
@@ -561,10 +561,10 @@ void rotate_staff()
                            M_PI / 2;
 
     // I do not get why cosf is taking "y" coord instead of "x" one
-    purpleWizard.staff.offset_y = -cosf(purple_desired_angle) * STAFF_PIVOT_LENGTH;
-    purpleWizard.staff.offset_x = sinf(purple_desired_angle) * STAFF_PIVOT_LENGTH;
-    yellowWizard.staff.offset_y = -cosf(yellow_desired_angle) * STAFF_PIVOT_LENGTH;
-    yellowWizard.staff.offset_x = sinf(yellow_desired_angle) * STAFF_PIVOT_LENGTH;
+    purpleWizard.staff.staff_position.offset_y = -cosf(purple_desired_angle) * STAFF_PIVOT_LENGTH;
+    purpleWizard.staff.staff_position.offset_x = sinf(purple_desired_angle) * STAFF_PIVOT_LENGTH;
+    yellowWizard.staff.staff_position.offset_y = -cosf(yellow_desired_angle) * STAFF_PIVOT_LENGTH;
+    yellowWizard.staff.staff_position.offset_x = sinf(yellow_desired_angle) * STAFF_PIVOT_LENGTH;
 }
 
 void reset_staff()
@@ -614,8 +614,8 @@ void LevelClass::Update(EventType event, void *callback)
         break;
     case WIZARD_UNDETECTED:
         reset_staff();
-        purpleWizard.staff.offset_x = .0f;
-        yellowWizard.staff.offset_y = .0f;
+        purpleWizard.staff.staff_position.offset_x = .0f;
+        yellowWizard.staff.staff_position.offset_y = .0f;
         break;
     default:
         break;
