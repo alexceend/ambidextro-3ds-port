@@ -449,13 +449,14 @@ std::array<Segment, CIRCLE_STEPS> Subject::wizardDetectionLogger(b2Vec2 p1, floa
 
     if (wizard_detected)
     {
-        Notify(WIZARD_DETECTED, nullptr);
+        Notify(WIZARD_DETECTED, &purpleWizard);
+        Notify(WIZARD_DETECTED, &yellowWizard);
     }
 
     if (!wizard_detected && raycast_wizard_prev)
     {
-        Notify(WIZARD_UNDETECTED, nullptr);
-        printf("Wizrad undetected\n");
+        Notify(WIZARD_UNDETECTED, &purpleWizard);
+        Notify(WIZARD_UNDETECTED, &yellowWizard);
     }
 
     raycast_wizard_prev = wizard_detected;

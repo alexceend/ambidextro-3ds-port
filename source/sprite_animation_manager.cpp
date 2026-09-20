@@ -1,6 +1,9 @@
 #include "sprite_animation_manager.h"
 #include "objects.h"
 
+bool locked_animation_staff = false;
+AnimationType *staff_animation;
+
 void initialize_object(
     object_2d_t *object,
     size_t num_sprite_sheets,
@@ -43,7 +46,7 @@ void initialize_object(
             }
         }
         object->static_animation = object->animations[0].sprites[0];
-        
+
         if (x_flip)
         {
             C2D_SpriteSetScale(&object->static_animation, -1.0f, 1.0f);
@@ -176,11 +179,27 @@ void update_wizard(Wizard *wizard, EventType event)
         wizard->entity.sprite_info.currentAnimationType = MOVE_ANIMATION;
         wizard->staff.entity.sprite_info.currentAnimationType = MOVE_ANIMATION;
     }
+    else if (event == WIZARD_DETECTED)
+    {
+        locked_animation_staff = true;
+        wizard->staff.entity.sprite_info.currentAnimationType = STATIC_ANIMATION;
+    }
+    else if (event == WIZARD_UNDETECTED)
+    {
+        locked_animation_staff = false;
+    }
 
     wizard->entity.object->reset_animation = true;
     wizard->staff.entity.object->reset_animation = true;
 }
 
+void update_staff(Staff *staff)
+{
+    if (!locked_animation_staff && staff_animation != nullptr)
+    {
+        staff->entity.sprite_info.currentAnimationType = *staff_animation;
+    }
+}
 
 SpriteAnimation::SpriteAnimation(ISubject &subject) : subject_(subject)
 {
@@ -189,6 +208,8 @@ SpriteAnimation::SpriteAnimation(ISubject &subject) : subject_(subject)
     this->subject_.Subscribe(ANIMATE_RIGHT, this);
     this->subject_.Subscribe(AIRBORN, this);
     this->subject_.Subscribe(LAND, this);
+    this->subject_.Subscribe(WIZARD_DETECTED, this);
+    this->subject_.Subscribe(WIZARD_UNDETECTED, this);
 }
 
 SpriteAnimation::~SpriteAnimation() {}
@@ -196,11 +217,17 @@ SpriteAnimation::~SpriteAnimation() {}
 void SpriteAnimation::Update(EventType event, void *callback)
 {
     Entity *entity = static_cast<Entity *>(callback);
+    if (entity == nullptr)
+        return;
     switch (entity->entity_type)
     {
     case WIZARD_:
-        update_wizard(static_cast<Wizard *>(entity->sub_struct), event);
+    {
+        Wizard *wizard = static_cast<Wizard *>(entity->sub_struct);
+        update_wizard(wizard, event);
+        update_staff(&wizard->staff);
         break;
+    }
     default:
         break;
     }

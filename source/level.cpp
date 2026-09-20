@@ -147,6 +147,7 @@ void initialize_staff_fixture(Wizard *wizard)
 
 void loadPhysics()
 {
+    printf("Called!\n");
     b2Vec2 gravity(0.0f, 9.8);
     world = createWorld(gravity);
     world->SetContactListener(&contactListener);
@@ -195,8 +196,11 @@ void updateRetriesText()
 
 void updateDebugText()
 {
-    C2D_TextFontParse(&debugLabel, font, textBuf, debugString);
-    C2D_TextOptimize(&debugLabel);
+    if (debugString != NULL)
+    {
+        C2D_TextFontParse(&debugLabel, font, textBuf, debugString);
+        C2D_TextOptimize(&debugLabel);
+    }
 }
 
 void updateHUD()
@@ -252,7 +256,8 @@ bool levelInit(C3D_RenderTarget *targetTop, C3D_RenderTarget *targetBottom)
                 level.time_limit = time_limit;
                 levelTimer.reset(level.time_limit);
                 initialTime = static_cast<float>(level.time_limit);
-            }else
+            }
+            else
             {
                 level.time_limit = TIME_INFINITE;
                 levelTimer.stop();

@@ -249,10 +249,12 @@ void menuDraw(void)
     C2D_Flush();
 
     //Draw on bottom:
-    C2D_TargetClear(bottom, C2D_Color32(20, 20, 40, 255));
+    
+    // C2D_TargetClear(bottom, C2D_Color32(20, 20, 40, 255));
     C2D_SceneBegin(bottom);
 
-    C2D_DrawSprite(&majorariattoLogo);
+    // C2D_DrawSprite(&majorariattoLogo);
+    
 }
 
 void menuExit(void)
