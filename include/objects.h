@@ -42,24 +42,37 @@ typedef struct body_properties
     
 } body_properties_t;
 
+typedef struct entity_animation
+{
+    sprite_info_t sprite_info;
+    object_2d_t* object;
+    std::map<AnimationType, size_t> animation_map;
+
+} entity_animation_t;
+
 typedef struct Entity
 {
     EntityType entity_type;
     void* sub_struct;
     body_properties_t body_properties;
-    sprite_info_t sprite_info;
-    object_2d_t* object;
-    std::map<AnimationType, size_t> animation_map;
+    entity_animation_t entity_animation;
 } Entity;
+
+typedef struct staff_position
+{
+    float pos_x;
+    float pos_y;
+    float offset_x;
+    float offset_y;
+
+} staff_position_t;
 
 typedef struct Staff
 {
     Entity entity;
     b2Body* body;
-    float pos_x;
-    float pos_y;
-    float offset_x;
-    float offset_y;
+    staff_position_t staff_position;
+    C2D_Sprite* extend_sprite;
 } Staff;
 
 typedef struct FootSensor

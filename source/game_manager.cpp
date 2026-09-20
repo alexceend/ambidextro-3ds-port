@@ -29,6 +29,11 @@ C2D_Sprite yellow_sprite;
 uint8_t currentLevel = 1;
 int retries = 0;
 
+void createEntity(EntityType entity_type, void* sub_struct, body_properties_t body_properties)
+{
+
+}
+
 void createWizards()
 {
     purpleWizard = {

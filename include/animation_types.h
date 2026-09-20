@@ -5,7 +5,8 @@ typedef enum
 {
     STATIC_ANIMATION,
     MOVE_ANIMATION,
-    JUMP_ANIMATION
+    JUMP_ANIMATION,
+    
 } AnimationType;
 
 #endif
