@@ -47,6 +47,7 @@ typedef struct entity_animation
     sprite_info_t sprite_info;
     object_2d_t* object;
     std::map<AnimationType, size_t> animation_map;
+    bool locked_animation;
 
 } entity_animation_t;
 
@@ -72,7 +73,6 @@ typedef struct Staff
     Entity entity;
     b2Body* body;
     staff_position_t staff_position;
-    C2D_Sprite* extend_sprite;
 } Staff;
 
 typedef struct FootSensor

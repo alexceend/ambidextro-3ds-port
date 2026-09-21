@@ -1,7 +1,6 @@
 #include "sprite_animation_manager.h"
 #include "objects.h"
 
-bool locked_animation_staff = false;
 AnimationType staff_animation;
 
 void initialize_object(
@@ -151,6 +150,8 @@ void draw_sprite(object_2d_t *object, size_t animation_index)
 
 void update_wizard(Wizard *wizard, EventType event)
 {
+    bool& staff_locked_animation = wizard->staff.entity.entity_animation.locked_animation;
+
     if (event == AIRBORN)
     {
         wizard->entity.entity_animation.sprite_info.currentAnimationType = JUMP_ANIMATION;
@@ -179,15 +180,15 @@ void update_wizard(Wizard *wizard, EventType event)
         wizard->entity.entity_animation.sprite_info.currentAnimationType = MOVE_ANIMATION;
         staff_animation = MOVE_ANIMATION;
     }
-    else if (event == WIZARD_DETECTED && !locked_animation_staff)
+    else if (event == WIZARD_DETECTED && !staff_locked_animation)
     {
-        locked_animation_staff = true;
+        staff_locked_animation = true;
         wizard->staff.entity.entity_animation.sprite_info.currentAnimationType = STATIC_ANIMATION;
         wizard->staff.entity.entity_animation.object->static_animation_index = 2;
     }
     else if (event == WIZARD_UNDETECTED)
     {
-        locked_animation_staff = false;
+        staff_locked_animation = false;
         wizard->staff.entity.entity_animation.object->static_animation_index = 0;
     }
 
@@ -197,7 +198,7 @@ void update_wizard(Wizard *wizard, EventType event)
 
 void update_staff(Staff *staff)
 {
-    if (!locked_animation_staff)
+    if (!staff->entity.entity_animation.locked_animation)
     {
         staff->entity.entity_animation.sprite_info.currentAnimationType = staff_animation;
     }

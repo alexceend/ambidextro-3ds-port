@@ -107,7 +107,8 @@ entity_animation_t createEntityAnimation(bool is_wizard, bool purple)
     return {
         sprite_info,
         new object_2d_t,
-        {{STATIC_ANIMATION, MAX_SPRITE_SHEETS}, {MOVE_ANIMATION, 0}, {JUMP_ANIMATION, 1}}};
+        {{STATIC_ANIMATION, MAX_SPRITE_SHEETS}, {MOVE_ANIMATION, 0}, {JUMP_ANIMATION, 1}},
+        false};
 }
 
 Entity createStaffEntity(Wizard *wizard, bool purple, bool is_wizard)
@@ -133,9 +134,7 @@ Staff createStaff(Wizard *wizard, bool purple)
     return {
         createStaffEntity(wizard, purple, false),
         nullptr,
-        createStaffPosition(wizard),
-        // TODO: Assign extend sprite
-        nullptr};
+        createStaffPosition(wizard)};
 }
 
 Entity createFootSensorEntity(Wizard *wizard)
@@ -227,9 +226,6 @@ Subject::Subject()
         yellowWizard.staff.entity.entity_animation.sprite_info.spriteSheets, yellowWizard.staff.entity.entity_animation.sprite_info.animations_refresh_ms_time,
         0.0f, 0.0f,
         yellowWizard.x_flip, yellowWizard.y_flip);
-    
-    purpleWizard.staff.extend_sprite = &purpleWizard.staff.entity.entity_animation.object->animations[0].sprites[2];
-    yellowWizard.staff.extend_sprite = &yellowWizard.staff.entity.entity_animation.object->animations[0].sprites[2];
 
     purpleWizard.prev_air = purple_current_air == true ? false : true;
     yellowWizard.prev_air = yellow_current_air == true ? false : true;
