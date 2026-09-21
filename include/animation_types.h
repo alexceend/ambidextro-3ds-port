@@ -4,6 +4,7 @@
 typedef enum
 {
     STATIC_ANIMATION,
+    STATIC_ANIMATION_EXTENDED,
     MOVE_ANIMATION,
     JUMP_ANIMATION,
     

@@ -56,7 +56,7 @@ typedef struct object_2d
     float rotation_velocity;
 
     animation_t animations[MAX_SPRITE_SHEETS];
-    C2D_Sprite static_animation;
+    size_t static_animation_index;
     bool reset_animation;
 } object_2d_t;
 

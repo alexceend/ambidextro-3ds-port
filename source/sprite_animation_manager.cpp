@@ -2,7 +2,7 @@
 #include "objects.h"
 
 bool locked_animation_staff = false;
-AnimationType *staff_animation;
+AnimationType staff_animation;
 
 void initialize_object(
     object_2d_t *object,
@@ -45,15 +45,15 @@ void initialize_object(
                 C2D_SpriteSetScale(sprite, 1.0f, -1.0f);
             }
         }
-        object->static_animation = object->animations[0].sprites[0];
+        object->static_animation_index = 0;
 
         if (x_flip)
         {
-            C2D_SpriteSetScale(&object->static_animation, -1.0f, 1.0f);
+            C2D_SpriteSetScale(&object->animations[0].sprites[object->static_animation_index], -1.0f, 1.0f);
         }
         if (y_flip)
         {
-            C2D_SpriteSetScale(&object->static_animation, 1.0f, -1.0f);
+            C2D_SpriteSetScale(&object->animations[0].sprites[object->static_animation_index], 1.0f, -1.0f);
         }
 
         animation.refresh_info.start = osGetTime();
@@ -87,8 +87,8 @@ void update_animation(object_2d_t *object, size_t animation_index)
 
 void update_static(object_2d_t *object)
 {
-    C2D_SpriteSetPos(&object->static_animation, object->position.x, object->position.y);
-    C2D_SpriteSetRotationDegrees(&object->static_animation, object->rotation * 180 / M_PI);
+    C2D_SpriteSetPos(&object->animations[0].sprites[object->static_animation_index], object->position.x, object->position.y);
+    C2D_SpriteSetRotationDegrees(&object->animations[0].sprites[object->static_animation_index], object->rotation * 180 / M_PI);
 }
 
 void update_object(object_2d_t *object, size_t animation_index)
@@ -134,7 +134,7 @@ void draw_sprite_animation(object_2d_t *object, size_t animation_index)
 
 void draw_sprite_static(object_2d_t *object)
 {
-    C2D_DrawSprite(&object->static_animation);
+    C2D_DrawSprite(&object->animations[0].sprites[object->static_animation_index]);
 }
 
 void draw_sprite(object_2d_t *object, size_t animation_index)
@@ -154,39 +154,41 @@ void update_wizard(Wizard *wizard, EventType event)
     if (event == AIRBORN)
     {
         wizard->entity.entity_animation.sprite_info.currentAnimationType = JUMP_ANIMATION;
-        wizard->staff.entity.entity_animation.sprite_info.currentAnimationType = JUMP_ANIMATION;
+        staff_animation = JUMP_ANIMATION;
     }
     else if (event == LAND)
     {
         if (wizard->body->GetLinearVelocity().x == 0)
         {
             wizard->entity.entity_animation.sprite_info.currentAnimationType = STATIC_ANIMATION;
-            wizard->staff.entity.entity_animation.sprite_info.currentAnimationType = STATIC_ANIMATION;
+            staff_animation = STATIC_ANIMATION;
         }
         else
         {
             wizard->entity.entity_animation.sprite_info.currentAnimationType = MOVE_ANIMATION;
-            wizard->staff.entity.entity_animation.sprite_info.currentAnimationType = MOVE_ANIMATION;
+            staff_animation = MOVE_ANIMATION;
         }
     }
     else if (event == MOVE_STOP && wizard->num_foot_contacts > 0)
     {
         wizard->entity.entity_animation.sprite_info.currentAnimationType = STATIC_ANIMATION;
-        wizard->staff.entity.entity_animation.sprite_info.currentAnimationType = STATIC_ANIMATION;
+        staff_animation = STATIC_ANIMATION;
     }
     else if ((event == ANIMATE_LEFT || event == ANIMATE_RIGHT) && wizard->num_foot_contacts > 0)
     {
         wizard->entity.entity_animation.sprite_info.currentAnimationType = MOVE_ANIMATION;
-        wizard->staff.entity.entity_animation.sprite_info.currentAnimationType = MOVE_ANIMATION;
+        staff_animation = MOVE_ANIMATION;
     }
-    else if (event == WIZARD_DETECTED)
+    else if (event == WIZARD_DETECTED && !locked_animation_staff)
     {
         locked_animation_staff = true;
         wizard->staff.entity.entity_animation.sprite_info.currentAnimationType = STATIC_ANIMATION;
+        wizard->staff.entity.entity_animation.object->static_animation_index = 2;
     }
     else if (event == WIZARD_UNDETECTED)
     {
         locked_animation_staff = false;
+        wizard->staff.entity.entity_animation.object->static_animation_index = 0;
     }
 
     wizard->entity.entity_animation.object->reset_animation = true;
@@ -195,11 +197,12 @@ void update_wizard(Wizard *wizard, EventType event)
 
 void update_staff(Staff *staff)
 {
-    if (!locked_animation_staff && staff_animation != nullptr)
+    if (!locked_animation_staff)
     {
-        staff->entity.entity_animation.sprite_info.currentAnimationType = *staff_animation;
+        staff->entity.entity_animation.sprite_info.currentAnimationType = staff_animation;
     }
 }
+
 
 SpriteAnimation::SpriteAnimation(ISubject &subject) : subject_(subject)
 {

@@ -227,6 +227,9 @@ Subject::Subject()
         yellowWizard.staff.entity.entity_animation.sprite_info.spriteSheets, yellowWizard.staff.entity.entity_animation.sprite_info.animations_refresh_ms_time,
         0.0f, 0.0f,
         yellowWizard.x_flip, yellowWizard.y_flip);
+    
+    purpleWizard.staff.extend_sprite = &purpleWizard.staff.entity.entity_animation.object->animations[0].sprites[2];
+    yellowWizard.staff.extend_sprite = &yellowWizard.staff.entity.entity_animation.object->animations[0].sprites[2];
 
     purpleWizard.prev_air = purple_current_air == true ? false : true;
     yellowWizard.prev_air = yellow_current_air == true ? false : true;
