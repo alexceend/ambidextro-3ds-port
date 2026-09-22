@@ -13,6 +13,7 @@ typedef enum
     SCENE_NONE = -1,
     SCENE_MENU,
     SCENE_LEVEL,
+    SCENE_TRANSITION,
     SCENE_PAUSE
 } Scene;
 
