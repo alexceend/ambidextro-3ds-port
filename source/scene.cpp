@@ -68,7 +68,17 @@ void sceneChange(Scene* current, Scene* nextScene, C3D_RenderTarget* targetTop, 
         }
 }
 
-void loadStaticObject(C2D_Image img, Block* block, int offset_x, int offset_y)
+void loadStaticObject(C2D_Image img, Block* block, int offset_x, int offset_y, CollisionShape shape)
 {
-    loadGroundBox(block->col * TILE_SIZE + OFFSET_X, block->row * TILE_SIZE + OFFSET_Y, block->width, block->height, offset_x, offset_y);
+    switch (shape)
+    {
+    case RECTANGLE_SHAPE:
+        loadGroundBox(block->col * TILE_SIZE + OFFSET_X, block->row * TILE_SIZE + OFFSET_Y, block->width, block->height, offset_x, offset_y);
+        break;
+    case TRIANGLE_SHAPE:
+        loadTriangleBox(block->col * TILE_SIZE + OFFSET_X, block->row * TILE_SIZE + OFFSET_Y, block->width, block->height, offset_x, offset_y);
+        break;
+    default:
+        break;
+    }
 }

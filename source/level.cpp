@@ -15,6 +15,7 @@
 #include <array>
 #include "timer.h"
 #include "game_constants.h"
+#include "game_structs.h"
 
 #define GRID_COLS (SCREEN_WIDTH / TILE_SIZE)
 #define GRID_ROWS (SCREEN_HEIGHT / TILE_SIZE)
@@ -42,13 +43,18 @@ typedef enum
     TILE_FLOOR_HALF_BLOCK = 1,
     TILE_FLOOR = 2,
     TILE_WALL = 15,
+    TILE_STAIR_UP_LEFT = 47,
+    TILE_STAIR_UP_RIGHT = 46,
 } TileType;
 
-std::map<TileType, std::array<int, 4>> tile = {
-    {TILE_WALL, {14, 14, 0, 0}},
-    {TILE_FLOOR_SLAB, {14, 3, 0, 12}},
-    {TILE_FLOOR_HALF_BLOCK, {14, 7, 0, 7}},
-    {TILE_FLOOR, {14, 14, 0, 0}}};
+
+std::map<TileType, TileInfo> tile = {
+    {TILE_WALL, {14, 14, 0, 0, RECTANGLE_SHAPE}},
+    {TILE_FLOOR_SLAB, {14, 3, 0, 12, RECTANGLE_SHAPE}},
+    {TILE_FLOOR_HALF_BLOCK, {14, 7, 0, 7, RECTANGLE_SHAPE}},
+    {TILE_FLOOR, {14, 14, 0, 0, RECTANGLE_SHAPE}},
+    {TILE_STAIR_UP_LEFT, {14, 14, 0, 0, TRIANGLE_SHAPE}},
+    {TILE_STAIR_UP_RIGHT, {14, 14, 0, 0, TRIANGLE_SHAPE}}};
 
 typedef struct
 {
@@ -121,6 +127,12 @@ bool loadLevelFromFile(ifstream *file, Level *level)
             case 15:
                 level->tiles[i][j] = TILE_WALL;
                 break;
+            case 46:
+                level->tiles[i][j] = TILE_STAIR_UP_RIGHT;
+                break;
+            case 47:
+                level->tiles[i][j] = TILE_STAIR_UP_LEFT;
+                break;
             default:
                 level->tiles[i][j] = TILE_EMPTY;
                 break;
@@ -152,7 +164,6 @@ void initialize_staff_fixture(Wizard *wizard)
 
 void loadPhysics()
 {
-    printf("Called!\n");
     b2Vec2 gravity(0.0f, 9.8);
     world = createWorld(gravity);
     world->SetContactListener(&contactListener);
@@ -167,14 +178,21 @@ void loadPhysics()
                 Block *block = new Block;
                 block->row = i;
                 block->col = j;
+
                 TileType type = static_cast<TileType>(level.tiles[i][j]);
-                block->width = tile.at(type).at(0);
-                block->height = tile.at(type).at(1);
+
+                TileInfo info = tile.at(type);
+
+                block->width = info.width;
+                block->height = info.height;
+
                 blockList.push_front(block);
+
                 loadStaticObject(getAtlasTexture(atlas_dungeon, level.tiles[i][j]),
                                  block,
-                                 tile.at(type).at(2),
-                                 tile.at(type).at(3));
+                                 info.offsetX,
+                                 info.offsetY,
+                                 info.collisionShape);
             }
         }
     }

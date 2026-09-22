@@ -4,6 +4,7 @@
 #include <3ds.h>
 #include <citro2d.h>
 #include <stdbool.h>
+#include "game_structs.h"
 
 #define OFFSET_X 4
 #define OFFSET_Y 8
@@ -39,6 +40,6 @@ extern "C"
 }
 #endif
 
-void loadStaticObject(C2D_Image img, Block* block, int offset_x, int offset_y);
+void loadStaticObject(C2D_Image img, Block* block, int offset_x, int offset_y, CollisionShape shape);
 
 #endif
