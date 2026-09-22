@@ -2,11 +2,11 @@
 
 #define GAME_MANAGER_H
 
-#include <map>
+#include "objects.h"
 #include "physics.h"
 #include <list>
+#include <map>
 #include <string>
-#include "objects.h"
 
 #define WIZARD_HEIGHT 13.0f
 #define WIZARD_WIDTH 11.0f
@@ -22,6 +22,5 @@ extern Wizard yellowWizard;
 
 extern uint8_t currentLevel;
 extern int retries;
-
 
 #endif

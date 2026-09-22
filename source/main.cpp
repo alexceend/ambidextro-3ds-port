@@ -1,139 +1,63 @@
 #include <citro2d.h>
 
+#include "assets_loader.h"
+#include "audio_core.h"
+#include "game_constants.h"
+#include "game_manager.h"
+#include "level.h"
+#include "menu.h"
+#include "movement.h"
+#include "sprites.h"
 #include <assert.h>
-#include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
-#include "sprites.h"
-#include "audio_core.h"
-#include "menu.h"
-#include "assets_loader.h"
-#include "game_manager.h"
-#include "game_constants.h"
-#include "movement.h"
-#include "level.h"
 
 #include "log.h"
 
+int main(int argc, char **argv) {
+  log_message("-- BEGIN LOG --");
 
-int main(int argc, char** argv)
-{
-    log_message("-- BEGIN LOG --");
+  romfsInit();
+  gfxInitDefault();
+  // consoleInit(GFX_BOTTOM, NULL);
 
-    romfsInit();
-    gfxInitDefault();
-    //consoleInit(GFX_BOTTOM, NULL);
+  C3D_Init(C3D_DEFAULT_CMDBUF_SIZE);
+  C2D_Init(C2D_DEFAULT_MAX_OBJECTS);
+  C2D_Prepare();
 
-    C3D_Init(C3D_DEFAULT_CMDBUF_SIZE);
-    C2D_Init(C2D_DEFAULT_MAX_OBJECTS);
-	C2D_Prepare();
+  C3D_RenderTarget *top = C2D_CreateScreenTarget(GFX_TOP, GFX_LEFT);
 
-    C3D_RenderTarget* top =
-        C2D_CreateScreenTarget(GFX_TOP, GFX_LEFT);
+  C3D_RenderTarget *bottom = C2D_CreateScreenTarget(GFX_BOTTOM, GFX_LEFT);
 
-    C3D_RenderTarget* bottom =
-        C2D_CreateScreenTarget(GFX_BOTTOM, GFX_LEFT);
+  if (!top || !bottom) {
+    C2D_Fini();
+    C3D_Fini();
+    gfxExit();
+    romfsExit();
+    return -1;
+  }
 
-    if (!top || !bottom)
-    {
-        C2D_Fini();
-        C3D_Fini();
-        gfxExit();
-        romfsExit();
-        return -1;
-    }
+  log_message("[INFO]: C2D, top and bottom prepared and initialized");
 
-    log_message("[INFO]: C2D, top and bottom prepared and initialized");
+  /* AUDIO */
 
-    /* AUDIO */
+  if (!audioInit()) {
+    printf("ERROR: no se pudo inicializar el audio\n");
+  } else if (!audioPlayMusic("romfs:/audio/menu.wav")) {
+    printf("ERROR: no se pudo reproducir romfs:/audio/menu.wav\n");
+  }
 
-    if (!audioInit())
-    {
-        printf("ERROR: no se pudo inicializar el audio\n");
-    }else if (!audioPlayMusic("romfs:/audio/menu.wav"))
-    {
-        printf("ERROR: no se pudo reproducir romfs:/audio/menu.wav\n");
-    }
+  log_message("[INFO]: Audio initialized");
 
-    log_message("[INFO]: Audio initialized");
+  /* MENU */
 
-    
+  Scene currentScene = SCENE_TRANSITION;
+  if (!menuInit(top, bottom)) {
+    printf("ERROR: no se pudo inicializar el menu\n");
 
-    /* MENU */
-
-    Scene currentScene = SCENE_MENU;
-    if (!menuInit(top, bottom))
-    {
-        printf("ERROR: no se pudo inicializar el menu\n");
-
-        audioExit();
-
-        C2D_Fini();
-        C3D_Fini();
-
-        gfxExit();
-        romfsExit();
-
-        return -1;
-    }
-
-    log_message("[INFO]: Menu initialized");
-
-    /* TEXTURES */
-    if (!loadAssets())
-    {
-        printf("Failed to load assets!\n");
-        return -1;
-    }
-
-    /* BUCLE PRINCIPAL */
-
-
-    Subject gameManager;
-    new Movement(gameManager);
-    new LevelClass(gameManager);
-    new SpriteAnimation(gameManager);
-    
-    while (aptMainLoop())
-    {
-        hidScanInput();
-
-        u32 kDown = hidKeysDown();
-
-        u32 kUp = hidKeysUp();
-
-        u32 kHeld = hidKeysHeld();
-
-        //if (kDown & KEY_START) break;
-
-        Scene nextScene = SCENE_NONE;
-
-        if (currentScene == SCENE_LEVEL)
-        {
-            gameManager.ManageGame(kHeld, kDown, kUp);
-        }
-        
-        sceneUpdate(&currentScene, &nextScene, kDown);
-        sceneChange(&currentScene, &nextScene, top, bottom);
-
-        C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
-
-
-        sceneDraw(&currentScene);
-
-
-        C3D_FrameEnd(0);
-    }
-
-    sceneExit(&currentScene);
-
-    /* CLEANUP */
-
-    cfguExit();
     audioExit();
-
-    clearAssets();
 
     C2D_Fini();
     C3D_Fini();
@@ -141,5 +65,65 @@ int main(int argc, char** argv)
     gfxExit();
     romfsExit();
 
-    return 0;
+    return -1;
+  }
+
+  log_message("[INFO]: Menu initialized");
+
+  /* TEXTURES */
+  if (!loadAssets()) {
+    printf("Failed to load assets!\n");
+    return -1;
+  }
+
+  /* BUCLE PRINCIPAL */
+
+  Subject gameManager;
+  new Movement(gameManager);
+  new LevelClass(gameManager);
+  new SpriteAnimation(gameManager);
+
+  while (aptMainLoop()) {
+    hidScanInput();
+
+    u32 kDown = hidKeysDown();
+
+    u32 kUp = hidKeysUp();
+
+    u32 kHeld = hidKeysHeld();
+
+    // if (kDown & KEY_START) break;
+
+    Scene nextScene = SCENE_NONE;
+
+    if (currentScene == SCENE_LEVEL) {
+      gameManager.ManageGame(kHeld, kDown, kUp);
+    }
+
+    sceneUpdate(&currentScene, &nextScene, kDown);
+    sceneChange(&currentScene, &nextScene, top, bottom);
+
+    C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
+
+    sceneDraw(&currentScene);
+
+    C3D_FrameEnd(0);
+  }
+
+  sceneExit(&currentScene);
+
+  /* CLEANUP */
+
+  cfguExit();
+  audioExit();
+
+  clearAssets();
+
+  C2D_Fini();
+  C3D_Fini();
+
+  gfxExit();
+  romfsExit();
+
+  return 0;
 }
