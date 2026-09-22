@@ -39,6 +39,7 @@ typedef enum
 {
     TILE_EMPTY = -1,
     TILE_FLOOR_SLAB = 0,
+    TILE_FLOOR_HALF_BLOCK = 1,
     TILE_FLOOR = 2,
     TILE_WALL = 15,
 } TileType;
@@ -46,6 +47,7 @@ typedef enum
 std::map<TileType, std::array<int, 4>> tile = {
     {TILE_WALL, {14, 14, 0, 0}},
     {TILE_FLOOR_SLAB, {14, 3, 0, 12}},
+    {TILE_FLOOR_HALF_BLOCK, {14, 7, 0, 7}},
     {TILE_FLOOR, {14, 14, 0, 0}}};
 
 typedef struct
@@ -109,6 +111,9 @@ bool loadLevelFromFile(ifstream *file, Level *level)
                 break;
             case 0:
                 level->tiles[i][j] = TILE_FLOOR_SLAB;
+                break;
+            case 1:
+                level->tiles[i][j] = TILE_FLOOR_HALF_BLOCK;
                 break;
             case 2:
                 level->tiles[i][j] = TILE_FLOOR;
