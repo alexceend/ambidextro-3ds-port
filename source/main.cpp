@@ -53,7 +53,7 @@ int main(int argc, char **argv) {
 
   /* MENU */
 
-  Scene currentScene = SCENE_TRANSITION;
+  Scene currentScene = SCENE_MENU;
   sceneInit(&currentScene, top, bottom);
   
   if (!menuInit(top, bottom)) {
