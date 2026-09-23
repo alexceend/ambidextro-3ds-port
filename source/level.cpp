@@ -49,12 +49,15 @@ typedef enum
 
 
 std::map<TileType, TileInfo> tile = {
-    {TILE_WALL, {14, 14, 0, 0, RECTANGLE_SHAPE}},
-    {TILE_FLOOR_SLAB, {14, 3, 0, 12, RECTANGLE_SHAPE}},
-    {TILE_FLOOR_HALF_BLOCK, {14, 7, 0, 7, RECTANGLE_SHAPE}},
-    {TILE_FLOOR, {14, 14, 0, 0, RECTANGLE_SHAPE}},
-    {TILE_STAIR_UP_LEFT, {14, 14, 0, 0, TRIANGLE_SHAPE}},
-    {TILE_STAIR_UP_RIGHT, {14, 14, 0, 0, TRIANGLE_SHAPE}}};
+
+    {TILE_WALL,{0, 0,Rectangle{14, 14}}},
+    {TILE_FLOOR_SLAB,{0, 12,Rectangle{14, 3}}},
+    {TILE_FLOOR_HALF_BLOCK,{0, 7, Rectangle{14, 7}}},
+    {TILE_FLOOR,{0, 0, Rectangle{14, 14}}},
+    {TILE_STAIR_UP_LEFT,{0, 0,Triangle{{{0, 0},{14, 0},{0, 14}}}}},
+    {TILE_STAIR_UP_RIGHT,{0, 0,Triangle{{{0, 0},{14, 0},{14, 14}}}}}
+};
+
 
 typedef struct
 {
@@ -183,16 +186,11 @@ void loadPhysics()
 
                 TileInfo info = tile.at(type);
 
-                block->width = info.width;
-                block->height = info.height;
-
                 blockList.push_front(block);
 
                 loadStaticObject(getAtlasTexture(atlas_dungeon, level.tiles[i][j]),
                                  block,
-                                 info.offsetX,
-                                 info.offsetY,
-                                 info.collisionShape);
+                                 info);
             }
         }
     }

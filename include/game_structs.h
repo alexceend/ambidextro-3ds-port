@@ -2,6 +2,23 @@
 #define GAME_STRUCTS_H
 
 #include <box2d/box2d.h>
+#include <variant>
+
+struct Rectangle
+{
+    float width;
+    float height;
+};
+
+struct Triangle
+{
+    b2Vec2 vertices[3];
+};
+
+struct Circle
+{
+    float radius;
+};
 
 typedef  struct
 {
@@ -10,19 +27,17 @@ typedef  struct
 } Segment;
 
 
-enum CollisionShape
-{
-    RECTANGLE_SHAPE,
-    TRIANGLE_SHAPE,
-};
+using CollisionGeometry = std::variant<
+    Rectangle,
+    Triangle,
+    Circle
+>;
 
 struct TileInfo
 {
-    int width;
-    int height;
     int offsetX;
     int offsetY;
-    CollisionShape collisionShape;
+    CollisionGeometry geometry;
 };
 
 

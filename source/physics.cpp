@@ -52,38 +52,33 @@ void loadGroundBox(int pos_x, int pos_y, int width, int height, int offset_x, in
     groundBody->CreateFixture(&fixtureDef);
 }
 
-void loadTriangleBox(int pos_x, int pos_y, int width, int height, int offset_x, int offset_y)
+void loadTriangleBox(int pos_x, int pos_y, const Triangle& triangle, int offset_x, int offset_y)
 {
-    b2BodyDef triangleBodyDef;
-    triangleBodyDef.position.Set(pixelsToMeters((pos_x + width / 2) + offset_x), pixelsToMeters((pos_y + height / 2) + offset_y));
+    b2BodyDef bodyDef;
+    bodyDef.position.Set(pixelsToMeters(pos_x + offset_x), pixelsToMeters(pos_y + offset_y));
 
-    b2Body *triangleBody = world->CreateBody(&triangleBodyDef);
-    b2PolygonShape triangleBox;
+    b2Body *body = world->CreateBody(&bodyDef);
+    b2PolygonShape shape;
 
-    b2Vec2 vertices[3] = {
-        {
-            pixelsToMeters(0.0f),
-            pixelsToMeters(0.0f)
-        },
-        {
-            pixelsToMeters(width),
-            pixelsToMeters(0.0f)
-        },
-        {
-            pixelsToMeters(0.0f),
-            pixelsToMeters(height)
-        }
-    };
+    b2Vec2 vertices[3];
 
-    triangleBox.Set(vertices, 3);
+    for (int i = 0; i < 3; i++)
+    {
+        vertices[i].Set(
+            pixelsToMeters(triangle.vertices[i].x),
+            pixelsToMeters(triangle.vertices[i].y)
+        );
+    }
+
+    shape.Set(vertices, 3);
 
     b2FixtureDef fixtureDef;
     fixtureDef.density = 1.0f;
-    fixtureDef.shape = &triangleBox;
+    fixtureDef.shape = &shape;
     fixtureDef.filter.categoryBits = GROUND_BITS_;
     fixtureDef.filter.maskBits = WIZARD_BITS_ | WIZARD_FOOT_BITS_;
 
-    triangleBody->CreateFixture(&fixtureDef);
+    body->CreateFixture(&fixtureDef);
 }
 
 void loadWizardFootSensor(float footSensorX, float footSensorY, FootSensor* foot_sensor, b2PolygonShape *dynamicBox, b2FixtureDef *fixtureDef, b2Body *body)

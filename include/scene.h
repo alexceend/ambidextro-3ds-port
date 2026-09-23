@@ -40,6 +40,6 @@ extern "C"
 }
 #endif
 
-void loadStaticObject(C2D_Image img, Block* block, int offset_x, int offset_y, CollisionShape shape);
+void loadStaticObject(C2D_Image img, Block* block, const TileInfo& info);
 
 #endif

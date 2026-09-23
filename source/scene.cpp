@@ -101,17 +101,35 @@ void sceneChange(Scene *current, Scene *nextScene, C3D_RenderTarget *targetTop,
   }
 }
 
-void loadStaticObject(C2D_Image img, Block* block, int offset_x, int offset_y, CollisionShape shape)
+void loadStaticObject(C2D_Image img, Block* block, const TileInfo& info)
 {
-    switch (shape)
-    {
-    case RECTANGLE_SHAPE:
-        loadGroundBox(block->col * TILE_SIZE + OFFSET_X, block->row * TILE_SIZE + OFFSET_Y, block->width, block->height, offset_x, offset_y);
-        break;
-    case TRIANGLE_SHAPE:
-        loadTriangleBox(block->col * TILE_SIZE + OFFSET_X, block->row * TILE_SIZE + OFFSET_Y, block->width, block->height, offset_x, offset_y);
-        break;
-    default:
-        break;
-    }
+    std::visit(
+        [&](auto&& geometry)
+        {
+            using T = std::decay_t<decltype(geometry)>;
+
+            if constexpr (std::is_same_v<T, Rectangle>)
+            {
+                loadGroundBox(
+                    block->col * TILE_SIZE + OFFSET_X,
+                    block->row * TILE_SIZE + OFFSET_Y,
+                    geometry.width,
+                    geometry.height,
+                    info.offsetX,
+                    info.offsetY
+                );
+            }
+            else if constexpr (std::is_same_v<T, Triangle>)
+            {
+                loadTriangleBox(
+                    block->col * TILE_SIZE + OFFSET_X,
+                    block->row * TILE_SIZE + OFFSET_Y,
+                    geometry,
+                    info.offsetX,
+                    info.offsetY
+                );
+            }
+        },
+        info.geometry
+    );
 }
