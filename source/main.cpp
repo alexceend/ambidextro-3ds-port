@@ -54,6 +54,8 @@ int main(int argc, char **argv) {
   /* MENU */
 
   Scene currentScene = SCENE_TRANSITION;
+  sceneInit(&currentScene, top, bottom);
+  
   if (!menuInit(top, bottom)) {
     printf("ERROR: no se pudo inicializar el menu\n");
 
@@ -67,8 +69,9 @@ int main(int argc, char **argv) {
 
     return -1;
   }
+    
 
-  log_message("[INFO]: Menu initialized");
+ log_message("[INFO]: Menu initialized");
 
   /* TEXTURES */
   if (!loadAssets()) {
@@ -101,6 +104,7 @@ int main(int argc, char **argv) {
     }
 
     sceneUpdate(&currentScene, &nextScene, kDown);
+    log_message("SCENE_UPDATE");
     sceneChange(&currentScene, &nextScene, top, bottom);
 
     C3D_FrameBegin(C3D_FRAME_SYNCDRAW);

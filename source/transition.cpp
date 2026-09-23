@@ -50,8 +50,8 @@ string numberToString(size_t number) {
 
 bool transitionInit(C3D_RenderTarget *targetTop, C3D_RenderTarget *targetBottom,
                     uint8_t currentLevel, uint8_t nextLevel) {
-  targetTop = top;
-  targetBottom = bottom;
+  top = targetTop;
+  bottom = targetBottom;
   string currentLevelString;
   string lastLevelString;
 
@@ -113,6 +113,8 @@ Scene transitionUpdate() {
 }
 
 void transitionDraw() {
+  C2D_TargetClear(top, C2D_Color32(0, 0, 0, 255));
+  C2D_SceneBegin(top);
   for (size_t i = 0; i < LEVEL_TEXT_UNITS; i++) {
     C2D_DrawText(&currentLevelLabel[i], C2D_WithColor, labelX[i], labelY[i],
                  0.0f, 1.0f, 1.0f, C2D_Color32(255, 255, 255, 255));
@@ -126,6 +128,7 @@ void transitionDraw() {
                  lastLabelY[i], 0.0f, 1.0f, 1.0f,
                  C2D_Color32(255, 255, 255, 255));
   }
+  C2D_Flush();
 }
 
 void transitionCleanup() {
