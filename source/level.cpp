@@ -271,7 +271,7 @@ bool levelInit(C3D_RenderTarget *targetTop, C3D_RenderTarget *targetBottom)
         }
         else if (line.find("time") != string::npos)
         {
-            sscanf(line.c_str(), "time %u", &time_limit);
+            sscanf(line.c_str(), "time %d", &time_limit);
             if (time_limit > 0)
             {
                 level.time_limit = time_limit;
@@ -604,8 +604,6 @@ LevelClass::LevelClass(ISubject &subject) : subject_(subject)
     subject.Subscribe(WIZARD_UNDETECTED, this);
 
     subject.Subscribe(PUASE, &levelTimer);
-    subject.Subscribe(WIN, &levelTimer);
-    subject.Subscribe(DEATH, &levelTimer);
 }
 
 void LevelClass::Update(EventType event, void *callback)
