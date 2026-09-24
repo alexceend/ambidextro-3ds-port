@@ -1,10 +1,18 @@
+#include <stdarg.h>
 #include <stdio.h>
-#include <time.h>
 
-void log_message(const char* msg) {
-    FILE* f = fopen("sdmc:/log.txt", "a");
-    if (f) {
-        fprintf(f, "%s\n", msg);
-        fclose(f);
-    }
+void log_message(const char *format, ...) {
+  FILE *f = fopen("sdmc:/log.txt", "a");
+  if (!f)
+    return;
+
+  va_list args;
+  va_start(args, format);
+
+  vfprintf(f, format, args);
+  fprintf(f, "\n");
+
+  va_end(args);
+
+  fclose(f);
 }

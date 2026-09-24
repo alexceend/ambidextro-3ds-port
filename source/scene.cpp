@@ -91,7 +91,7 @@ void sceneChange(Scene *current, Scene *nextScene, C3D_RenderTarget *targetTop,
       break;
     // case SCENE_PAUSE: pauseExit(); break;
     case SCENE_TRANSITION:
-      transitionCleanup();
+      //transitionCleanup();
       break;
     default:
       break;
