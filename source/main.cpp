@@ -104,7 +104,6 @@ int main(int argc, char **argv) {
     }
 
     sceneUpdate(&currentScene, &nextScene, kDown);
-    log_message("SCENE_UPDATE");
     sceneChange(&currentScene, &nextScene, top, bottom);
 
     C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
