@@ -169,7 +169,7 @@ void createPurpleWizard()
 {
     purpleWizard = {
         createWizardEntity(&purpleWizard, true),
-        createStaff(&purpleWizard, true),
+        {},
         createFootSensor(&purpleWizard),
         PURPLE,
         nullptr,
@@ -178,6 +178,7 @@ void createPurpleWizard()
         false,
         false,
         false};
+    purpleWizard.staff = createStaff(&purpleWizard, true);
 }
 
 void createYellowWizard()
@@ -185,7 +186,7 @@ void createYellowWizard()
     yellowWizard =
         {
             createWizardEntity(&yellowWizard, false),
-            createStaff(&yellowWizard, false),
+            {},
             createFootSensor(&yellowWizard),
             YELLOW,
             nullptr,
@@ -194,6 +195,8 @@ void createYellowWizard()
             false,
             false,
             false};
+
+    yellowWizard.staff = createStaff(&yellowWizard, false);
 }
 
 void createWizards()

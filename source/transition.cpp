@@ -121,7 +121,7 @@ Scene transitionUpdate()
   time_stop = osGetTime();
   time_elapsed = time_stop - time_start;
 
-  if (time_elapsed >= TRANSITION_TIMER)
+  if (time_elapsed >= SCENE_TIMER)
   {
     return SCENE_MENU;
   }
