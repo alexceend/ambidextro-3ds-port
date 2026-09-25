@@ -156,8 +156,9 @@ bool transitionInit(C3D_RenderTarget *targetTop, C3D_RenderTarget *targetBottom,
   return true;
 }
 
-void animateDigits(uint64_t current_time, float *current_y, float target_y)
+void animateDigits(float current_time, float *current_y, float target_y)
 {
+  log_message(to_string(current_time).c_str());
   float normalized_y = (3 * current_time * current_time) - (2 * current_time * current_time * current_time);
 
   *current_y += normalized_y * target_y;
@@ -174,7 +175,7 @@ Scene transitionUpdate()
   {
     return SCENE_MENU;
   }
-  animateDigits(time_elapsed / TRANSITION_TIMER, &current_y_digit, labelY[0] - 100.0f);
+  animateDigits((float)time_elapsed / (float)TRANSITION_TIMER, &current_y_digit, labelY[0] - 100.0f);
   return SCENE_NONE;
 }
 
