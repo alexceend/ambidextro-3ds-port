@@ -26,6 +26,10 @@ static float lastLabelY[LEVEL_TEXT_UNITS];
 static float nextLevelX[LEVEL_TEXT_UNITS];
 static float nextLevelY[LEVEL_TEXT_UNITS];
 
+int current_opacities[LEVEL_TEXT_UNITS];
+int next_opacities[LEVEL_TEXT_UNITS];
+
+float digit_start_y;
 float target_time;
 float current_y_digit;
 char* replaced_digits[LEVEL_TEXT_UNITS];
@@ -69,6 +73,7 @@ void setNextLevelDigits()
     {
       nextLevelX[i] = labelX[i];
       nextLevelY[i] = labelY[i] - 100.0f;
+      next_opacities[i] = 255;
       C2D_TextFontParse(&nextLevelLabel[i], font, textBuf, &replaced_digits[i][0]);
     }
   }
@@ -108,12 +113,8 @@ bool transitionInit(C3D_RenderTarget *targetTop, C3D_RenderTarget *targetBottom,
 
   currentLevelString = numberToString(currentLevel);
   nextLevelString = numberToString(nextLevel);
-
-  log_message(currentLevelString.c_str());
-
   lastLevelString = numberToString(LAST_LEVEL);
 
-  log_message(lastLevelString.c_str());
 
   for (size_t i = 0; i < LEVEL_TEXT_UNITS; i++)
   {
@@ -126,6 +127,7 @@ bool transitionInit(C3D_RenderTarget *targetTop, C3D_RenderTarget *targetBottom,
     C2D_TextGetDimensions(&currentLevelLabel[i], 1.0f, 1.0f, &text_width, &text_height);
     labelX[i] = (SCREEN_WIDTH / 2 - 80.0f) + 20 * i - text_width / 2;
     labelY[i] = SCREEN_HEIGHT / 2 - text_height / 2;
+    current_opacities[i] = 255;
     C2D_TextOptimize(&currentLevelLabel[i]);
   }
 
@@ -150,18 +152,37 @@ bool transitionInit(C3D_RenderTarget *targetTop, C3D_RenderTarget *targetBottom,
     C2D_TextOptimize(&lastLevelLabel[i]);
   }
 
+  digit_start_y = SCREEN_HEIGHT / 2 - text_height / 2;
   setReplacedDigits(currentLevelString, nextLevelString);
   setNextLevelDigits();
   time_start = osGetTime();
   return true;
 }
 
-void animateDigits(float current_time, float *current_y, float target_y)
+float smoothstep(float time)
 {
-  log_message(to_string(current_time).c_str());
-  float normalized_y = (3 * current_time * current_time) - (2 * current_time * current_time * current_time);
+  return (3 * time * time) - (2 * time * time * time);
+}
 
-  *current_y += normalized_y * target_y;
+void animateDigits(float current_time, float *current_y, float target_y_next_level, float target_y_current_level)
+{
+  if (current_time > 1.0f)
+  {
+    return;
+  }
+
+  float normalized_time = smoothstep(current_time);
+ 
+  *current_y = nextLevelY[0] + (target_y_next_level - nextLevelY[0]) * normalized_time;
+
+  if (current_time >= 0.6f)
+  {
+    float current_time_current = (current_time - 0.6f) / 0.4f;
+    float normalized_time_current = smoothstep(current_time_current);
+    current_opacities[2] = 255 - normalized_time_current * 255;
+    labelY[2] = digit_start_y + (target_y_current_level - digit_start_y) * normalized_time_current;
+  }
+
 }
 
 
@@ -175,7 +196,9 @@ Scene transitionUpdate()
   {
     return SCENE_MENU;
   }
-  animateDigits((float)time_elapsed / (float)TRANSITION_TIMER, &current_y_digit, labelY[0] - 100.0f);
+  float current_time = (float)time_elapsed / (float)TRANSITION_TIMER;
+
+  animateDigits(current_time, &current_y_digit, labelY[0], labelY[0] + 20.0f);
   return SCENE_NONE;
 }
 
@@ -193,7 +216,7 @@ void transitionDraw()
   for (i = 0; i < LEVEL_TEXT_UNITS; i++)
   {
     C2D_DrawText(&currentLevelLabel[i], C2D_WithColor, labelX[i], labelY[i],
-                 0.0f, 1.0f, 1.0f, C2D_Color32(255, 255, 255, 255));
+                 0.0f, 1.0f, 1.0f, C2D_Color32(255, 255, 255, current_opacities[i]));
   }
 
   C2D_TextGetDimensions(&slashLabel, 1.0f, 1.0f, &text_width, &text_height);
@@ -215,7 +238,7 @@ void transitionDraw()
     if (replaced_digits[i] != nullptr)
     {
       C2D_DrawText(&nextLevelLabel[i], C2D_WithColor, nextLevelX[i],
-        current_y_digit, 0.0f, 1.0f, 1.0f, C2D_Color32(255, 255, 255, 255));
+        current_y_digit, 0.0f, 1.0f, 1.0f, C2D_Color32(255, 255, 255, next_opacities[i]));
     }
   }
   C2D_Flush();

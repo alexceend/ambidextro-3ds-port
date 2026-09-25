@@ -7,9 +7,8 @@
 
 constexpr size_t LEVEL_TEXT_UNITS = 3;
 constexpr size_t LAST_LEVEL = 100;
-constexpr uint64_t SCENE_TIMER = 200000;
-constexpr uint64_t TRANSITION_TIMER = 2000;
-constexpr uint64_t TRANSITION_TIMER_HELPER = 1000;
+constexpr uint64_t SCENE_TIMER = 2000;
+constexpr uint64_t TRANSITION_TIMER = 1500;
 
 bool transitionInit(C3D_RenderTarget *targetTop, C3D_RenderTarget *targetBottom,
                     uint8_t currentLevel, uint8_t nextLevel);
