@@ -237,12 +237,12 @@ bool levelInit(C3D_RenderTarget *targetTop, C3D_RenderTarget *targetBottom) {
     int time_limit;
     if (line.find("spawnPurple") != string::npos) {
       sscanf(line.c_str(), "spawnPurple %d %d", &col, &row);
-      level.spawns[0].spawnX = col * 14;
-      level.spawns[0].spawnY = row * 14;
+      level.spawns[0].spawnX = col * TILE_SIZE + OFFSET_X;
+      level.spawns[0].spawnY = row * TILE_SIZE + OFFSET_Y;
     } else if (line.find("spawnYellow") != string::npos) {
       sscanf(line.c_str(), "spawnYellow %d %d", &col, &row);
-      level.spawns[1].spawnX = col * 14;
-      level.spawns[1].spawnY = row * 14;
+      level.spawns[1].spawnX = col * TILE_SIZE + OFFSET_X;
+      level.spawns[1].spawnY = row * TILE_SIZE + OFFSET_Y;
     } else if (line.find("time") != string::npos) {
       sscanf(line.c_str(), "time %d", &time_limit);
       if (time_limit > 0) {
