@@ -7,3 +7,8 @@ build/
 *.elf
 *.3dsx
 *.smdh
+
+
+#clangd related files
+.clangd
+compile_commands.json
