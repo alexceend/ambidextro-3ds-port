@@ -32,7 +32,7 @@ int next_opacities[LEVEL_TEXT_UNITS];
 float digit_start_y;
 float target_time;
 float current_y_digit;
-char* replaced_digits[LEVEL_TEXT_UNITS];
+char *replaced_digits[LEVEL_TEXT_UNITS];
 u64 time_start;
 u64 time_elapsed;
 u64 time_stop;
@@ -69,12 +69,13 @@ void setNextLevelDigits()
 {
   for (size_t i = 0; i < LEVEL_TEXT_UNITS; i++)
   {
-    if (replaced_digits[i] != NULL)
+    char digit[2] = {*replaced_digits[i], '\0'};
+    if (digit[0] != '\0')
     {
       nextLevelX[i] = labelX[i];
       nextLevelY[i] = labelY[i] - 100.0f;
       next_opacities[i] = 255;
-      C2D_TextFontParse(&nextLevelLabel[i], font, textBuf, &replaced_digits[i][0]);
+      C2D_TextFontParse(&nextLevelLabel[i], font, textBuf, digit);
     }
   }
 }
@@ -87,8 +88,13 @@ void setReplacedDigits(string current_level, string next_level)
     {
       replaced_digits[i] = &next_level[i];
     }
-    else replaced_digits[i] = nullptr;
+    else
+      replaced_digits[i] = nullptr;
   }
+  log_message("Replaced Digits");
+  log_message(replaced_digits[0]);
+  log_message(replaced_digits[1]);
+  log_message(replaced_digits[2]);
 }
 
 bool transitionInit(C3D_RenderTarget *targetTop, C3D_RenderTarget *targetBottom,
@@ -114,7 +120,6 @@ bool transitionInit(C3D_RenderTarget *targetTop, C3D_RenderTarget *targetBottom,
   currentLevelString = numberToString(currentLevel);
   nextLevelString = numberToString(nextLevel);
   lastLevelString = numberToString(LAST_LEVEL);
-
 
   for (size_t i = 0; i < LEVEL_TEXT_UNITS; i++)
   {
@@ -172,20 +177,23 @@ void animateDigits(float current_time, float *current_y, float target_y_next_lev
   }
 
   float normalized_time = smoothstep(current_time);
- 
+
   *current_y = nextLevelY[0] + (target_y_next_level - nextLevelY[0]) * normalized_time;
 
   if (current_time >= 0.6f)
   {
     float current_time_current = (current_time - 0.6f) / 0.4f;
     float normalized_time_current = smoothstep(current_time_current);
-    current_opacities[2] = 255 - normalized_time_current * 255;
-    labelY[2] = digit_start_y + (target_y_current_level - digit_start_y) * normalized_time_current;
+    for (size_t i = 0; i < LEVEL_TEXT_UNITS; i++)
+    {
+      if (replaced_digits[i] != nullptr)
+      {
+        current_opacities[i] = 255 - normalized_time_current * 255;
+        labelY[i] = digit_start_y + (target_y_current_level - digit_start_y) * normalized_time_current;
+      }
+    }
   }
-
 }
-
-
 
 Scene transitionUpdate()
 {
@@ -238,7 +246,7 @@ void transitionDraw()
     if (replaced_digits[i] != nullptr)
     {
       C2D_DrawText(&nextLevelLabel[i], C2D_WithColor, nextLevelX[i],
-        current_y_digit, 0.0f, 1.0f, 1.0f, C2D_Color32(255, 255, 255, next_opacities[i]));
+                   current_y_digit, 0.0f, 1.0f, 1.0f, C2D_Color32(255, 255, 255, next_opacities[i]));
     }
   }
   C2D_Flush();
