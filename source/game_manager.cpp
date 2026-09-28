@@ -1,15 +1,14 @@
+#include "game_manager.h"
+#include "log.h"
+#include "movement.h"
+#include "objects.h"
+#include "physics.h"
+#include "sprite_animation_manager.h"
+#include "timer.h"
 #include <iostream>
 #include <list>
-#include <string>
 #include <map>
-#include <list>
-#include "physics.h"
-#include "game_manager.h"
-#include "movement.h"
-#include "sprite_animation_manager.h"
-#include "objects.h"
-#include "timer.h"
-#include "log.h"    
+#include <string>
 
 std::array<Segment, CIRCLE_STEPS> segments;
 
@@ -30,520 +29,398 @@ C2D_Sprite yellow_sprite;
 uint8_t currentLevel = 1;
 int retries = 0;
 
-body_properties_t createBodyProperties(float width, float height, float velocity)
-{
-    return {
-        width,
-        height,
-        velocity};
+body_properties_t createBodyProperties(float width, float height,
+                                       float velocity) {
+  return {width, height, velocity};
 }
 
-sprite_info_t createSpriteInfoPurpleWizard()
-{
-    sprite_info_t info =
-        {
-            STATIC_ANIMATION,
-            STATIC_ANIMATION,
-            WIZARD_ANIMATIONS};
+sprite_info_t createSpriteInfoPurpleWizard() {
+  sprite_info_t info = {STATIC_ANIMATION, STATIC_ANIMATION, WIZARD_ANIMATIONS};
 
-    info.spriteSheets[0] = atlas_purple_wizard_static;
-    info.spriteSheets[1] = atlas_purple_wizard_jump;
-    info.animations_refresh_ms_time[0] = 20;
-    info.animations_refresh_ms_time[1] = 20;
+  info.spriteSheets[0] = atlas_purple_wizard_static;
+  info.spriteSheets[1] = atlas_purple_wizard_jump;
+  info.animations_refresh_ms_time[0] = 20;
+  info.animations_refresh_ms_time[1] = 20;
 
-    return info;
+  return info;
 }
 
-sprite_info_t createSpriteInfoYellowWizard()
-{
-    sprite_info_t info =
-        {
-            STATIC_ANIMATION,
-            STATIC_ANIMATION,
-            WIZARD_ANIMATIONS};
+sprite_info_t createSpriteInfoYellowWizard() {
+  sprite_info_t info = {STATIC_ANIMATION, STATIC_ANIMATION, WIZARD_ANIMATIONS};
 
-    info.spriteSheets[0] = atlas_yellow_wizard_static;
-    info.spriteSheets[1] = atlas_yellow_wizard_jump;
-    info.animations_refresh_ms_time[0] = 20;
-    info.animations_refresh_ms_time[1] = 20;
+  info.spriteSheets[0] = atlas_yellow_wizard_static;
+  info.spriteSheets[1] = atlas_yellow_wizard_jump;
+  info.animations_refresh_ms_time[0] = 20;
+  info.animations_refresh_ms_time[1] = 20;
 
-    return info;
+  return info;
 }
 
-sprite_info_t createSpriteInfoStaff()
-{
-    sprite_info_t info =
-        {
-            STATIC_ANIMATION,
-            STATIC_ANIMATION,
-            WIZARD_ANIMATIONS};
+sprite_info_t createSpriteInfoStaff() {
+  sprite_info_t info = {STATIC_ANIMATION, STATIC_ANIMATION, WIZARD_ANIMATIONS};
 
-    info.spriteSheets[0] = atlas_staff_static;
-    info.spriteSheets[1] = atlas_staff_jump;
-    info.animations_refresh_ms_time[0] = 20;
-    info.animations_refresh_ms_time[1] = 20;
+  info.spriteSheets[0] = atlas_staff_static;
+  info.spriteSheets[1] = atlas_staff_jump;
+  info.animations_refresh_ms_time[0] = 20;
+  info.animations_refresh_ms_time[1] = 20;
 
-    return info;
+  return info;
 }
 
-entity_animation_t createEntityAnimation(bool is_wizard, bool purple)
-{
-    sprite_info_t sprite_info;
-    if (is_wizard)
-    {
-        if (purple)
-        {
-            sprite_info = createSpriteInfoPurpleWizard();
-        }
-        else
-        {
-            sprite_info = createSpriteInfoYellowWizard();
-        }
+entity_animation_t createEntityAnimation(bool is_wizard, bool purple) {
+  sprite_info_t sprite_info;
+  if (is_wizard) {
+    if (purple) {
+      sprite_info = createSpriteInfoPurpleWizard();
+    } else {
+      sprite_info = createSpriteInfoYellowWizard();
     }
-    else
-    {
-        sprite_info = createSpriteInfoStaff();
-    }
+  } else {
+    sprite_info = createSpriteInfoStaff();
+  }
 
-    return {
-        sprite_info,
-        new object_2d_t,
-        {{STATIC_ANIMATION, MAX_SPRITE_SHEETS}, {MOVE_ANIMATION, 0}, {JUMP_ANIMATION, 1}},
-        false};
+  return {sprite_info,
+          new object_2d_t,
+          {{STATIC_ANIMATION, MAX_SPRITE_SHEETS},
+           {MOVE_ANIMATION, 0},
+           {JUMP_ANIMATION, 1}},
+          false};
 }
 
-Entity createStaffEntity(Wizard *wizard, bool purple, bool is_wizard)
-{
-    return {
-        STAFF_,
-        &wizard->staff,
-        createBodyProperties(STAFF_WIDTH, STAFF_HEIGHT, WIZARD_SPEED),
-        createEntityAnimation(is_wizard, purple)};
+Entity createStaffEntity(Wizard *wizard, bool purple, bool is_wizard) {
+  return {STAFF_, &wizard->staff,
+          createBodyProperties(STAFF_WIDTH, STAFF_HEIGHT, WIZARD_SPEED),
+          createEntityAnimation(is_wizard, purple)};
 }
 
-staff_position_t createStaffPosition(Wizard *wizard)
-{
-    return {
-        wizard->body->GetPosition().x,
-        wizard->body->GetPosition().y,
-        1.0f,
-        1.0f};
+staff_position_t createStaffPosition(Wizard *wizard) {
+  return {wizard->body->GetPosition().x, wizard->body->GetPosition().y, 1.0f,
+          1.0f};
 }
 
-Staff createStaff(Wizard *wizard, bool purple)
-{
-    return {
-        createStaffEntity(wizard, purple, false),
-        nullptr,
-        createStaffPosition(wizard)};
+Staff createStaff(Wizard *wizard, bool purple) {
+  return {createStaffEntity(wizard, purple, false), nullptr,
+          createStaffPosition(wizard)};
 }
 
-Entity createFootSensorEntity(Wizard *wizard)
-{
-    return {
-        WIZARD_FOOT_,
-        &wizard->foot_sensor,
-        createBodyProperties(WIZARD_WIDTH / 4, 2.0f, WIZARD_SPEED),
-        {}};
+Entity createFootSensorEntity(Wizard *wizard) {
+  return {WIZARD_FOOT_,
+          &wizard->foot_sensor,
+          createBodyProperties(WIZARD_WIDTH / 4, 2.0f, WIZARD_SPEED),
+          {}};
 }
 
-FootSensor createFootSensor(Wizard *wizard)
-{
-    return {
-        createFootSensorEntity(wizard),
-        wizard,
-        nullptr,
-        0,
-        WIZARD_HEIGHT / 2};
+FootSensor createFootSensor(Wizard *wizard) {
+  return {createFootSensorEntity(wizard), wizard, nullptr, 0,
+          WIZARD_HEIGHT / 2};
 }
 
-Entity createWizardEntity(Wizard *wizard, bool purple)
-{
-    return {
-        WIZARD_,
-        wizard,
-        createBodyProperties(WIZARD_WIDTH, WIZARD_HEIGHT, WIZARD_SPEED),
-        createEntityAnimation(true, purple)};
+Entity createWizardEntity(Wizard *wizard, bool purple) {
+  return {WIZARD_, wizard,
+          createBodyProperties(WIZARD_WIDTH, WIZARD_HEIGHT, WIZARD_SPEED),
+          createEntityAnimation(true, purple)};
 }
 
-void createPurpleWizard()
-{
-    purpleWizard = {
-        createWizardEntity(&purpleWizard, true),
-        {},
-        createFootSensor(&purpleWizard),
-        PURPLE,
-        nullptr,
-        0,
-        true,
-        false,
-        false,
-        false};
-    purpleWizard.staff = createStaff(&purpleWizard, true);
-    purpleWizard.body->SetGravityScale(3.118f);
+void createPurpleWizard() {
+  purpleWizard = {createWizardEntity(&purpleWizard, true),
+                  {},
+                  createFootSensor(&purpleWizard),
+                  PURPLE,
+                  nullptr,
+                  0,
+                  false,
+                  false,
+                  false,
+                  false};
+  purpleWizard.staff = createStaff(&purpleWizard, true);
+  purpleWizard.body->SetGravityScale(3.118f);
 }
 
-void createYellowWizard()
-{
-    yellowWizard =
-        {
-            createWizardEntity(&yellowWizard, false),
-            {},
-            createFootSensor(&yellowWizard),
-            YELLOW,
-            nullptr,
-            0,
-            false,
-            false,
-            false,
-            false};
+void createYellowWizard() {
+  yellowWizard = {createWizardEntity(&yellowWizard, false),
+                  {},
+                  createFootSensor(&yellowWizard),
+                  YELLOW,
+                  nullptr,
+                  0,
+                  true,
+                  false,
+                  false,
+                  false};
 
-    yellowWizard.staff = createStaff(&yellowWizard, false);
-    yellowWizard.body->SetGravityScale(3.118f);
+  yellowWizard.staff = createStaff(&yellowWizard, false);
+  yellowWizard.body->SetGravityScale(3.118f);
 }
 
-void createWizards()
-{
-    createPurpleWizard();
-    createYellowWizard();
+void createWizards() {
+  createPurpleWizard();
+  createYellowWizard();
 }
 
-Subject::Subject()
-{
-    createWizards();
+Subject::Subject() {
+  createWizards();
 
-    initialize_object(
-        purpleWizard.entity.entity_animation.object, purpleWizard.entity.entity_animation.sprite_info.num_animations,
-        purpleWizard.entity.entity_animation.sprite_info.spriteSheets, purpleWizard.entity.entity_animation.sprite_info.animations_refresh_ms_time,
-        0.0f, 0.0f,
-        purpleWizard.x_flip, purpleWizard.y_flip);
-    initialize_object(
-        yellowWizard.entity.entity_animation.object, yellowWizard.entity.entity_animation.sprite_info.num_animations,
-        yellowWizard.entity.entity_animation.sprite_info.spriteSheets, yellowWizard.entity.entity_animation.sprite_info.animations_refresh_ms_time,
-        0.0f, 0.0f,
-        yellowWizard.x_flip, yellowWizard.y_flip);
-    initialize_object(
-        purpleWizard.staff.entity.entity_animation.object, purpleWizard.staff.entity.entity_animation.sprite_info.num_animations,
-        purpleWizard.staff.entity.entity_animation.sprite_info.spriteSheets, purpleWizard.staff.entity.entity_animation.sprite_info.animations_refresh_ms_time,
-        0.0f, 0.0f,
-        purpleWizard.x_flip, purpleWizard.y_flip);
-    initialize_object(
-        yellowWizard.staff.entity.entity_animation.object, yellowWizard.staff.entity.entity_animation.sprite_info.num_animations,
-        yellowWizard.staff.entity.entity_animation.sprite_info.spriteSheets, yellowWizard.staff.entity.entity_animation.sprite_info.animations_refresh_ms_time,
-        0.0f, 0.0f,
-        yellowWizard.x_flip, yellowWizard.y_flip);
+  initialize_object(
+      purpleWizard.entity.entity_animation.object,
+      purpleWizard.entity.entity_animation.sprite_info.num_animations,
+      purpleWizard.entity.entity_animation.sprite_info.spriteSheets,
+      purpleWizard.entity.entity_animation.sprite_info
+          .animations_refresh_ms_time,
+      0.0f, 0.0f, purpleWizard.x_flip, purpleWizard.y_flip);
+  initialize_object(
+      yellowWizard.entity.entity_animation.object,
+      yellowWizard.entity.entity_animation.sprite_info.num_animations,
+      yellowWizard.entity.entity_animation.sprite_info.spriteSheets,
+      yellowWizard.entity.entity_animation.sprite_info
+          .animations_refresh_ms_time,
+      0.0f, 0.0f, yellowWizard.x_flip, yellowWizard.y_flip);
+  initialize_object(
+      purpleWizard.staff.entity.entity_animation.object,
+      purpleWizard.staff.entity.entity_animation.sprite_info.num_animations,
+      purpleWizard.staff.entity.entity_animation.sprite_info.spriteSheets,
+      purpleWizard.staff.entity.entity_animation.sprite_info
+          .animations_refresh_ms_time,
+      0.0f, 0.0f, purpleWizard.x_flip, purpleWizard.y_flip);
+  initialize_object(
+      yellowWizard.staff.entity.entity_animation.object,
+      yellowWizard.staff.entity.entity_animation.sprite_info.num_animations,
+      yellowWizard.staff.entity.entity_animation.sprite_info.spriteSheets,
+      yellowWizard.staff.entity.entity_animation.sprite_info
+          .animations_refresh_ms_time,
+      0.0f, 0.0f, yellowWizard.x_flip, yellowWizard.y_flip);
 
-    purpleWizard.prev_air = purple_current_air == true ? false : true;
-    yellowWizard.prev_air = yellow_current_air == true ? false : true;
+  purpleWizard.prev_air = purple_current_air == true ? false : true;
+  yellowWizard.prev_air = yellow_current_air == true ? false : true;
 }
 
 Subject::~Subject() {}
 
-void Subject::Subscribe(EventType event, IObserver *observer)
-{
-    bool subscribed = false;
-    std::list<IObserver *>::iterator it = observers[event].begin();
-    while (it != observers[event].end())
-    {
-        if (*it == observer)
-        {
-            subscribed = true;
-            break;
-        }
-        else
-            it++;
-    }
-    if (!subscribed)
-        observers[event].push_back(observer);
+void Subject::Subscribe(EventType event, IObserver *observer) {
+  bool subscribed = false;
+  std::list<IObserver *>::iterator it = observers[event].begin();
+  while (it != observers[event].end()) {
+    if (*it == observer) {
+      subscribed = true;
+      break;
+    } else
+      it++;
+  }
+  if (!subscribed)
+    observers[event].push_back(observer);
 }
 
-void Subject::Unsubscribe(EventType event, IObserver *observer)
-{
-    std::list<IObserver *>::iterator it = observers[event].begin();
-    while (it != observers[event].end())
-    {
-        if (*it == observer)
-        {
-            it = observers[event].erase(it);
-        }
-        else
-            it++;
-    }
+void Subject::Unsubscribe(EventType event, IObserver *observer) {
+  std::list<IObserver *>::iterator it = observers[event].begin();
+  while (it != observers[event].end()) {
+    if (*it == observer) {
+      it = observers[event].erase(it);
+    } else
+      it++;
+  }
 }
 
-void Subject::Notify(EventType event, void *callback)
-{
-    for (IObserver *observer : observers[event])
-    {
-        observer->Update(event, callback);
-    }
+void Subject::Notify(EventType event, void *callback) {
+  for (IObserver *observer : observers[event]) {
+    observer->Update(event, callback);
+  }
 }
 
-void Subject::Erase()
-{
-    for (auto &[event, observerList] : observers)
-    {
-        observerList.clear();
-    }
-    observers.clear();
+void Subject::Erase() {
+  for (auto &[event, observerList] : observers) {
+    observerList.clear();
+  }
+  observers.clear();
 }
 
-void Subject::ManageGame(u32 kHeld, u32 kDown, u32 kUp)
-{
-    keyLogger(kHeld, kDown, kUp);
-    airbornLogger();
-    segments = wizardDetectionLogger(
-        {purpleWizard.body->GetPosition().x,
-         purpleWizard.body->GetPosition().y},
-        1.0f);
-    victoryLogger();
-    timerLogger();
+void Subject::ManageGame(u32 kHeld, u32 kDown, u32 kUp) {
+  keyLogger(kHeld, kDown, kUp);
+  airbornLogger();
+  segments = wizardDetectionLogger(
+      {purpleWizard.body->GetPosition().x, purpleWizard.body->GetPosition().y},
+      1.0f);
+  victoryLogger();
+  timerLogger();
 }
 
-void Subject::keyLogger(u32 kHeld, u32 kDown, u32 kUp)
-{
-    movementLogger(kHeld, kDown, kUp);
-    jumpLogger(kDown);
-    landingLogger();
-    exitLogger(kDown);
-    debugLogger(kDown);
-    pauseLogger(kDown);
+void Subject::keyLogger(u32 kHeld, u32 kDown, u32 kUp) {
+  movementLogger(kHeld, kDown, kUp);
+  jumpLogger(kDown);
+  landingLogger();
+  exitLogger(kDown);
+  debugLogger(kDown);
+  pauseLogger(kDown);
 }
 
-void Subject::pauseLogger(u32 kDown)
-{
-    if (kDown & KEY_START)
-    {
-        printf("Notified pause\n");
-        Notify(PUASE, nullptr);
-    }
+void Subject::pauseLogger(u32 kDown) {
+  if (kDown & KEY_START) {
+    printf("Notified pause\n");
+    Notify(PUASE, nullptr);
+  }
 }
 
-void Subject::timerLogger()
-{
-    if (levelTimer.isRunning() && levelTimer.getRemainingTime() <= 0.0f)
-    {
-        Notify(DEATH, nullptr);
-    }
+void Subject::timerLogger() {
+  if (levelTimer.isRunning() && levelTimer.getRemainingTime() <= 0.0f) {
+    Notify(DEATH, nullptr);
+  }
 }
 
-void Subject::movementLogger(u32 kHeld, u32 kDown, u32 kUp)
-{
-    if (kHeld & KEY_LEFT && kHeld & KEY_RIGHT)
-    {
-        Notify(MOVE_STOP, &purpleWizard.entity);
-    }
-    else if (kHeld & KEY_LEFT)
-    {
-        Notify(MOVE_LEFT, &purpleWizard.entity);
-    }
-    else if (kHeld & KEY_RIGHT)
-    {
-        Notify(MOVE_RIGHT, &purpleWizard.entity);
-    }
+void Subject::movementLogger(u32 kHeld, u32 kDown, u32 kUp) {
+  if (kHeld & KEY_LEFT && kHeld & KEY_RIGHT) {
+    Notify(MOVE_STOP, &purpleWizard.entity);
+  } else if (kHeld & KEY_LEFT) {
+    Notify(MOVE_LEFT, &purpleWizard.entity);
+  } else if (kHeld & KEY_RIGHT) {
+    Notify(MOVE_RIGHT, &purpleWizard.entity);
+  }
 
-    if (kDown & KEY_LEFT)
-    {
-        Notify(ANIMATE_LEFT, &purpleWizard.entity);
-    }
-    else if (kDown & KEY_RIGHT)
-    {
-        Notify(ANIMATE_RIGHT, &purpleWizard.entity);
-    }
+  if (kDown & KEY_LEFT) {
+    Notify(ANIMATE_LEFT, &purpleWizard.entity);
+  } else if (kDown & KEY_RIGHT) {
+    Notify(ANIMATE_RIGHT, &purpleWizard.entity);
+  }
 
-    if (kUp & KEY_RIGHT)
-    {
-        if (kHeld & KEY_LEFT)
-        {
-            Notify(ANIMATE_LEFT, &purpleWizard.entity);
-        }
-        else
-        {
-            Notify(MOVE_STOP, &purpleWizard.entity);
-        }
+  if (kUp & KEY_RIGHT) {
+    if (kHeld & KEY_LEFT) {
+      Notify(ANIMATE_LEFT, &purpleWizard.entity);
+    } else {
+      Notify(MOVE_STOP, &purpleWizard.entity);
     }
+  }
 
-    if (kUp & KEY_LEFT)
-    {
-        if (kHeld & KEY_RIGHT)
-        {
-            Notify(MOVE_RIGHT, &purpleWizard.entity);
-        }
-        else
-        {
-            Notify(MOVE_STOP, &purpleWizard.entity);
-        }
+  if (kUp & KEY_LEFT) {
+    if (kHeld & KEY_RIGHT) {
+      Notify(MOVE_RIGHT, &purpleWizard.entity);
+    } else {
+      Notify(MOVE_STOP, &purpleWizard.entity);
     }
+  }
 
-    if (kHeld & KEY_A && kHeld & KEY_Y)
-    {
-        Notify(MOVE_STOP, &yellowWizard.entity);
-    }
-    else if (kHeld & KEY_A)
-    {
-        Notify(MOVE_RIGHT, &yellowWizard.entity);
-    }
-    else if (kHeld & KEY_Y)
-    {
-        Notify(MOVE_LEFT, &yellowWizard.entity);
-    }
+  if (kHeld & KEY_A && kHeld & KEY_Y) {
+    Notify(MOVE_STOP, &yellowWizard.entity);
+  } else if (kHeld & KEY_A) {
+    Notify(MOVE_RIGHT, &yellowWizard.entity);
+  } else if (kHeld & KEY_Y) {
+    Notify(MOVE_LEFT, &yellowWizard.entity);
+  }
 
-    if (kDown & KEY_A)
-    {
-        Notify(ANIMATE_RIGHT, &yellowWizard.entity);
-    }
-    else if (kDown & KEY_Y)
-    {
-        Notify(ANIMATE_LEFT, &yellowWizard.entity);
-    }
+  if (kDown & KEY_A) {
+    Notify(ANIMATE_RIGHT, &yellowWizard.entity);
+  } else if (kDown & KEY_Y) {
+    Notify(ANIMATE_LEFT, &yellowWizard.entity);
+  }
 
-    if (kUp & KEY_A)
-    {
-        if (kHeld & KEY_Y)
-        {
-            Notify(ANIMATE_LEFT, &yellowWizard.entity);
-        }
-        else
-        {
-            Notify(MOVE_STOP, &yellowWizard.entity);
-        }
+  if (kUp & KEY_A) {
+    if (kHeld & KEY_Y) {
+      Notify(ANIMATE_LEFT, &yellowWizard.entity);
+    } else {
+      Notify(MOVE_STOP, &yellowWizard.entity);
     }
+  }
 
-    if (kUp & KEY_Y)
-    {
-        if (kHeld & KEY_A)
-        {
-            Notify(ANIMATE_RIGHT, &yellowWizard.entity);
-        }
-        else
-        {
-            Notify(MOVE_STOP, &yellowWizard.entity);
-        }
+  if (kUp & KEY_Y) {
+    if (kHeld & KEY_A) {
+      Notify(ANIMATE_RIGHT, &yellowWizard.entity);
+    } else {
+      Notify(MOVE_STOP, &yellowWizard.entity);
     }
+  }
 }
 
-void Subject::jumpLogger(u32 kDown)
-{
-    if (kDown & KEY_UP && purpleWizard.num_foot_contacts >= 1)
-    {
-        Notify(JUMP, &purpleWizard.entity);
-        purple_current_air = true;
-    }
-    if (kDown & KEY_X && yellowWizard.num_foot_contacts >= 1)
-    {
-        Notify(JUMP, &yellowWizard.entity);
-        yellow_current_air = true;
-    }
+void Subject::jumpLogger(u32 kDown) {
+  if (kDown & KEY_UP && purpleWizard.num_foot_contacts >= 1) {
+    Notify(JUMP, &purpleWizard.entity);
+    purple_current_air = true;
+  }
+  if (kDown & KEY_X && yellowWizard.num_foot_contacts >= 1) {
+    Notify(JUMP, &yellowWizard.entity);
+    yellow_current_air = true;
+  }
 }
 
-void Subject::airbornLogger()
-{
-    if (purpleWizard.num_foot_contacts < 1)
-    {
-        purple_current_air = true;
-    }
-    else
-        purple_current_air = false;
-    if (yellowWizard.num_foot_contacts < 1)
-    {
-        yellow_current_air = true;
-    }
-    else
-        yellow_current_air = false;
+void Subject::airbornLogger() {
+  if (purpleWizard.num_foot_contacts < 1) {
+    purple_current_air = true;
+  } else
+    purple_current_air = false;
+  if (yellowWizard.num_foot_contacts < 1) {
+    yellow_current_air = true;
+  } else
+    yellow_current_air = false;
 
-    if (purple_prev_air != purple_current_air)
-    {
-        if (purple_prev_air == false)
-        {
-            Notify(AIRBORN, &purpleWizard.entity);
-            purple_prev_air = true;
-        }
-        else
-        {
-            Notify(LAND, &purpleWizard.entity);
-            Notify(RESET_GRAVITY, &purpleWizard.entity);
-            purple_prev_air = false;
-        }
+  if (purple_prev_air != purple_current_air) {
+    if (purple_prev_air == false) {
+      Notify(AIRBORN, &purpleWizard.entity);
+      purple_prev_air = true;
+    } else {
+      Notify(LAND, &purpleWizard.entity);
+      Notify(RESET_GRAVITY, &purpleWizard.entity);
+      purple_prev_air = false;
     }
+  }
 
-    if (yellow_prev_air != yellow_current_air)
-    {
-        if (yellow_prev_air == false)
-        {
-            Notify(AIRBORN, &yellowWizard.entity);
-            yellow_prev_air = true;
-        }
-        else
-        {
-            Notify(LAND, &yellowWizard.entity);
-            Notify(RESET_GRAVITY, &yellowWizard.entity);
-            yellow_prev_air = false;
-        }
+  if (yellow_prev_air != yellow_current_air) {
+    if (yellow_prev_air == false) {
+      Notify(AIRBORN, &yellowWizard.entity);
+      yellow_prev_air = true;
+    } else {
+      Notify(LAND, &yellowWizard.entity);
+      Notify(RESET_GRAVITY, &yellowWizard.entity);
+      yellow_prev_air = false;
     }
+  }
 }
 
-void Subject::landingLogger()
-{
-    if (purple_current_air && purpleWizard.body->GetLinearVelocity().y > 0)
-    {
-        Notify(MORE_GRAVITY, &purpleWizard.entity);
-    }
-    if (yellow_current_air && yellowWizard.body->GetLinearVelocity().y > 0)
-    {
-        Notify(MORE_GRAVITY, &yellowWizard.entity);
-    }
+void Subject::landingLogger() {
+  if (purple_current_air && purpleWizard.body->GetLinearVelocity().y > 0) {
+    Notify(MORE_GRAVITY, &purpleWizard.entity);
+  }
+  if (yellow_current_air && yellowWizard.body->GetLinearVelocity().y > 0) {
+    Notify(MORE_GRAVITY, &yellowWizard.entity);
+  }
 }
 
-void Subject::exitLogger(u32 kDown)
-{
-    if (kDown & KEY_START)
-    {
-        Notify(EXIT, NULL);
-    }
+void Subject::exitLogger(u32 kDown) {
+  if (kDown & KEY_START) {
+    Notify(EXIT, NULL);
+  }
 }
 
-void Subject::debugLogger(u32 kDown)
-{
-    if (kDown & KEY_DOWN)
-    {
-        Notify(DEBUG, NULL);
-    }
+void Subject::debugLogger(u32 kDown) {
+  if (kDown & KEY_DOWN) {
+    Notify(DEBUG, NULL);
+  }
 }
 
-std::array<Segment, CIRCLE_STEPS> Subject::wizardDetectionLogger(b2Vec2 p1, float radius)
-{
-    std::array<Segment, CIRCLE_STEPS> segments;
-    bool wizard_detected = false;
+std::array<Segment, CIRCLE_STEPS> Subject::wizardDetectionLogger(b2Vec2 p1,
+                                                                 float radius) {
+  std::array<Segment, CIRCLE_STEPS> segments;
+  bool wizard_detected = false;
 
-    for (int i = 0; i < CIRCLE_STEPS; i++)
-    {
-        float radians = (2.0f * M_PI * i) / CIRCLE_STEPS;
-        b2Vec2 p2 = p1 + radius * b2Vec2(sinf(radians), cosf(radians));
+  for (int i = 0; i < CIRCLE_STEPS; i++) {
+    float radians = (2.0f * M_PI * i) / CIRCLE_STEPS;
+    b2Vec2 p2 = p1 + radius * b2Vec2(sinf(radians), cosf(radians));
 
-        rayCastCallback.m_fixture = nullptr;
-        rayCastCallback.m_point = p2;
+    rayCastCallback.m_fixture = nullptr;
+    rayCastCallback.m_point = p2;
 
-        world->RayCast(&rayCastCallback, p1, p2);
-        segments[i] = {p1, rayCastCallback.m_point};
-        if (fixtureIsWizard(rayCastCallback.m_fixture))
-        {
-            wizard_detected = true;
-        }
+    world->RayCast(&rayCastCallback, p1, p2);
+    segments[i] = {p1, rayCastCallback.m_point};
+    if (fixtureIsWizard(rayCastCallback.m_fixture)) {
+      wizard_detected = true;
     }
+  }
 
-    if (wizard_detected)
-    {
-        Notify(WIZARD_DETECTED, &purpleWizard);
-        Notify(WIZARD_DETECTED, &yellowWizard);
-    }
+  if (wizard_detected) {
+    Notify(WIZARD_DETECTED, &purpleWizard);
+    Notify(WIZARD_DETECTED, &yellowWizard);
+  }
 
-    if (!wizard_detected && raycast_wizard_prev)
-    {
-        Notify(WIZARD_UNDETECTED, &purpleWizard);
-        Notify(WIZARD_UNDETECTED, &yellowWizard);
-    }
+  if (!wizard_detected && raycast_wizard_prev) {
+    Notify(WIZARD_UNDETECTED, &purpleWizard);
+    Notify(WIZARD_UNDETECTED, &yellowWizard);
+  }
 
-    raycast_wizard_prev = wizard_detected;
+  raycast_wizard_prev = wizard_detected;
 
-    return segments;
+  return segments;
 }
