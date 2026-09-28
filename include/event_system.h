@@ -21,6 +21,8 @@ typedef enum
     JUMP,
     LAND,
     AIRBORN,
+    MORE_GRAVITY,
+    RESET_GRAVITY,
     EXIT,
     DEBUG,
     WIZARD_DETECTED,
@@ -59,6 +61,7 @@ public:
     void timerLogger();
     void pauseLogger(u32 kDown);
     void airbornLogger();
+    void landingLogger();
     void exitLogger(u32 kDown);
     void debugLogger(u32 kDown);
     void victoryLogger();

@@ -296,3 +296,34 @@ void Subject::victoryLogger()
         Notify(WIN, nullptr);
     }
 }
+
+void apply_gravity(float gravity_scale, b2Body* body)
+{
+    body->SetGravityScale(gravity_scale);
+}
+
+PhysicsClass::PhysicsClass(ISubject& subject) : subject_(subject)
+{
+    subject.Subscribe(MORE_GRAVITY, this);
+    subject.Subscribe(RESET_GRAVITY, this);
+}
+
+void PhysicsClass::Update(EventType event, void* callback)
+{
+
+    Entity* entity = static_cast<Entity*>(callback);
+    if (entity->entity_type == WIZARD_)
+    {
+        Wizard* wizard = static_cast<Wizard*>(entity->sub_struct);
+        switch (event)
+        {
+            case MORE_GRAVITY:
+                apply_gravity(4.490f, wizard->body);
+                break;
+            case RESET_GRAVITY:
+                apply_gravity(3.118f, wizard->body);
+                break;
+            default: break;
+        }
+    }
+}

@@ -9,6 +9,7 @@
 #include "sprite_animation_manager.h"
 #include "objects.h"
 #include "timer.h"
+#include "log.h"    
 
 std::array<Segment, CIRCLE_STEPS> segments;
 
@@ -179,6 +180,7 @@ void createPurpleWizard()
         false,
         false};
     purpleWizard.staff = createStaff(&purpleWizard, true);
+    purpleWizard.body->SetGravityScale(3.118f);
 }
 
 void createYellowWizard()
@@ -197,6 +199,7 @@ void createYellowWizard()
             false};
 
     yellowWizard.staff = createStaff(&yellowWizard, false);
+    yellowWizard.body->SetGravityScale(3.118f);
 }
 
 void createWizards()
@@ -301,6 +304,7 @@ void Subject::keyLogger(u32 kHeld, u32 kDown, u32 kUp)
 {
     movementLogger(kHeld, kDown, kUp);
     jumpLogger(kDown);
+    landingLogger();
     exitLogger(kDown);
     debugLogger(kDown);
     pauseLogger(kDown);
@@ -457,6 +461,7 @@ void Subject::airbornLogger()
         else
         {
             Notify(LAND, &purpleWizard.entity);
+            Notify(RESET_GRAVITY, &purpleWizard.entity);
             purple_prev_air = false;
         }
     }
@@ -471,8 +476,21 @@ void Subject::airbornLogger()
         else
         {
             Notify(LAND, &yellowWizard.entity);
+            Notify(RESET_GRAVITY, &yellowWizard.entity);
             yellow_prev_air = false;
         }
+    }
+}
+
+void Subject::landingLogger()
+{
+    if (purple_current_air && purpleWizard.body->GetLinearVelocity().y > 0)
+    {
+        Notify(MORE_GRAVITY, &purpleWizard.entity);
+    }
+    if (yellow_current_air && yellowWizard.body->GetLinearVelocity().y > 0)
+    {
+        Notify(MORE_GRAVITY, &yellowWizard.entity);
     }
 }
 

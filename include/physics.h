@@ -73,6 +73,13 @@ std::array<Segment, CIRCLE_STEPS> circularRayCast(b2Vec2 p1, float radius);
 
 bool fixtureIsWizard(b2Fixture *fixture);
 
-
+class PhysicsClass : public IObserver
+{
+  private:
+    ISubject& subject_;
+  public:
+    PhysicsClass(ISubject& subject);
+    void Update(EventType event, void* callback);
+};
 
 #endif

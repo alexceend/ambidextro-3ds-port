@@ -85,6 +85,7 @@ int main(int argc, char **argv) {
   new Movement(gameManager);
   new LevelClass(gameManager);
   new SpriteAnimation(gameManager);
+  new PhysicsClass(gameManager);
 
   while (aptMainLoop()) {
     hidScanInput();

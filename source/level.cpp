@@ -27,7 +27,7 @@
 
 static C3D_RenderTarget *top = NULL;
 static C3D_RenderTarget *bottom = NULL;
-char *debugString = NULL;
+const char *debugString = NULL;
 
 FooDraw fooDrawInstance;
 
@@ -325,6 +325,7 @@ Scene levelUpdate(u32 kDown) {
     won = false;
     return SCENE_TRANSITION;
   }
+  debugString = to_string(purpleWizard.num_foot_contacts).c_str();
   updatePhysics();
 
   updateWizard(&purpleWizard);
@@ -562,7 +563,6 @@ void LevelClass::Update(EventType event, void *callback) {
     snprintf(
         debug_buffer, sizeof(debug_buffer), "Offset_Y: %.3f | Offset_X: %.3f",
         cosf(purple_desired_angle) * 2.0f, sinf(purple_desired_angle) * 2.0f);
-    debugString = debug_buffer;
     break;
   case WIZARD_UNDETECTED:
     reset_staff();
