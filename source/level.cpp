@@ -32,6 +32,7 @@ char *debugString = NULL;
 FooDraw fooDrawInstance;
 
 bool paused = false;
+bool won = false;
 
 float purple_desired_angle = 0.0f;
 float yellow_desired_angle = 0.0f;
@@ -319,6 +320,11 @@ Scene levelUpdate(u32 kDown) {
   if (paused) {
     return pauseUpdate(kDown);
   }
+  if (won)
+  {
+    won = false;
+    return SCENE_TRANSITION;
+  }
   updatePhysics();
 
   updateWizard(&purpleWizard);
@@ -536,9 +542,9 @@ LevelClass::LevelClass(ISubject &subject) : subject_(subject) {
 void LevelClass::Update(EventType event, void *callback) {
   switch (event) {
   case WIN:
-    printf("Level won!\n");
-    currentLevel++;
-    restartLevel(top, bottom);
+    won = true;
+    levelCleanup();
+    // restartLevel(top, bottom);
     break;
   case PUASE:
     paused = !paused;

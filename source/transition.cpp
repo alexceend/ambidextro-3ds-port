@@ -2,6 +2,7 @@
 #include <string>
 #include "log.h"
 #include "game_constants.h"
+#include "level.h"
 
 static C3D_RenderTarget *top = nullptr;
 static C3D_RenderTarget *bottom = nullptr;
@@ -202,7 +203,8 @@ Scene transitionUpdate()
 
   if (time_elapsed >= SCENE_TIMER)
   {
-    return SCENE_MENU;
+    currentLevel++;
+    return SCENE_LEVEL;
   }
   float current_time = (float)time_elapsed / (float)TRANSITION_TIMER;
 
