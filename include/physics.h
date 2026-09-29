@@ -21,6 +21,7 @@ class ContactListener : public b2ContactListener
 {
     public:
         void BeginContact(b2Contact* contact) override;
+        void PreSolve(b2Contact* contact, const b2Manifold* oldManifold) override;
         void EndContact(b2Contact* contact) override;
     private:
         void checkFootSensor(b2Fixture* fixture, int delta);

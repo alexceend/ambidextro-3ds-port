@@ -1,6 +1,7 @@
 #include "movement.h"
 #include "level.h"
 #include <iostream>
+#include "log.h"
 
 void applyVelocity(MoveState moveState, b2Body *body, float speed)
 {

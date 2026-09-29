@@ -17,4 +17,4 @@
 
 spawnPurple 16 9
 spawnYellow 13 9
-time 6
+time -99

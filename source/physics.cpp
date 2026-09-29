@@ -236,7 +236,6 @@ void manageSensorContact(uintptr_t data, bool beginContact)
 
 void ContactListener::BeginContact(b2Contact *contact)
 {
-    preSolve(contact);
     fixture_a = contact->GetFixtureA();
     fixture_b = contact->GetFixtureB();
     uintptr_t data_A = fixture_a->GetUserData().pointer;
@@ -244,6 +243,11 @@ void ContactListener::BeginContact(b2Contact *contact)
     
     manageSensorContact(data_A, true);
     manageSensorContact(data_B, true);
+}
+
+void ContactListener::PreSolve(b2Contact* contact, const b2Manifold* oldManifold)
+{
+    preSolve(contact);
 }
 
 void ContactListener::EndContact(b2Contact *contact)
