@@ -295,7 +295,7 @@ void levelCleanup() {
 
 void updateWizard(Wizard *wizard) {
   float desired_angle =
-      wizard->x_flip ? purple_desired_angle : yellow_desired_angle;
+      wizard->x_flip ? yellow_desired_angle : purple_desired_angle;
   wizard->entity.entity_animation.object->position.x =
       metersToPixels(wizard->body->GetPosition().x);
   wizard->entity.entity_animation.object->position.y =
