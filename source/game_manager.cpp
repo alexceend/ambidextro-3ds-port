@@ -26,7 +26,7 @@ bool raycast_wizard_prev = false;
 C2D_Sprite purple_sprite;
 C2D_Sprite yellow_sprite;
 
-uint8_t currentLevel = 1;
+uint8_t currentLevel = 6;
 int retries = 0;
 
 body_properties_t createBodyProperties(float width, float height,

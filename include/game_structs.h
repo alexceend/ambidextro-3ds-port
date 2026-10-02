@@ -35,8 +35,8 @@ using CollisionGeometry = std::variant<
 
 struct TileInfo
 {
-    int offsetX;
-    int offsetY;
+    float offsetX;
+    float offsetY;
     CollisionGeometry geometry;
 };
 

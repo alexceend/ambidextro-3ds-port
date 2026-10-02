@@ -37,11 +37,15 @@ bool won = false;
 float purple_desired_angle = 0.0f;
 float yellow_desired_angle = 0.0f;
 
-typedef enum {
+typedef enum
+{
   TILE_EMPTY = -1,
   TILE_FLOOR_SLAB = 0,
   TILE_FLOOR_HALF_BLOCK = 1,
   TILE_FLOOR = 2,
+  TILE_ONE_WAY_SLAB_DOWN = 4,
+  TILE_ONE_WAY_SLAB_MIDDLE = 5,
+  TILE_ONE_WAY_SLAB_UP = 6,
   TILE_WALL = 15,
   TILE_STAIR_UP_LEFT = 47,
   TILE_STAIR_UP_RIGHT = 46,
@@ -49,19 +53,27 @@ typedef enum {
 
 std::map<TileType, TileInfo> tile = {
 
-    {TILE_WALL, {0, 0, Rectangle{14, 14}}},
-    {TILE_FLOOR_SLAB, {0, 12, Rectangle{14, 3}}},
-    {TILE_FLOOR_HALF_BLOCK, {0, 7, Rectangle{14, 7}}},
-    {TILE_FLOOR, {0, 0, Rectangle{14, 14}}},
-    {TILE_STAIR_UP_LEFT, {0, 0, Triangle{{{0, 0}, {14, 0}, {0, 14}}}}},
-    {TILE_STAIR_UP_RIGHT, {0, 0, Triangle{{{0, 0}, {14, 0}, {14, 14}}}}}};
+    {TILE_WALL, {0.0f, 0.0f, Rectangle{14.0f, 14.0f}}},
+    {TILE_FLOOR_SLAB, {0.0f, 12.0f, Rectangle{14.0f, 3.0f}}},
+    {TILE_FLOOR_HALF_BLOCK, {0.0f, 7.0f, Rectangle{14.0f, 7.0f}}},
+    {TILE_FLOOR, {0.0f, 0.0f, Rectangle{14.0f, 14.0f}}},
 
-typedef struct {
+    {TILE_ONE_WAY_SLAB_DOWN, {0.0f, 10.5f, Rectangle{14.0f, 3.5f}}},
+    {TILE_ONE_WAY_SLAB_MIDDLE, {0.0f, 5.25f, Rectangle{14.0f, 3.5f}}},
+    {TILE_ONE_WAY_SLAB_UP, {0.0f, 0.0f, Rectangle{14.0f, 3.5f}}},
+
+    {TILE_STAIR_UP_LEFT, {0.0f, 0.0f, Triangle{{{0, 0}, {14, 0}, {0, 14}}}}},
+
+    {TILE_STAIR_UP_RIGHT, {0.0f, 0.0f, Triangle{{{0, 0}, {14, 0}, {14, 14}}}}}};
+
+typedef struct
+{
   int spawnX;
   int spawnY;
 } Spawn;
 
-typedef struct {
+typedef struct
+{
   int8_t tiles[LEVEL_HEIGHT][LEVEL_WIDTH];
   Spawn spawns[2];
   int time_limit;
@@ -89,9 +101,11 @@ char debug_buffer[50];
 
 using namespace std;
 
-bool loadLevelFromFile(ifstream *file, Level *level) {
+bool loadLevelFromFile(ifstream *file, Level *level)
+{
 
-  if (!file) {
+  if (!file)
+  {
     printf("ERROR: Could not open level file\n");
     return false;
   }
@@ -99,12 +113,15 @@ bool loadLevelFromFile(ifstream *file, Level *level) {
   int i = 0;
   string line;
 
-  while (getline(*file, line) && i < LEVEL_HEIGHT) {
+  while (getline(*file, line) && i < LEVEL_HEIGHT)
+  {
     std::stringstream ss(line);
     int tile;
     int j = 0;
-    while (ss >> tile && j < LEVEL_WIDTH) {
-      switch (tile) {
+    while (ss >> tile && j < LEVEL_WIDTH)
+    {
+      switch (tile)
+      {
       case -1:
         level->tiles[i][j] = TILE_EMPTY;
         break;
@@ -117,6 +134,15 @@ bool loadLevelFromFile(ifstream *file, Level *level) {
       case 2:
         level->tiles[i][j] = TILE_FLOOR;
         break;
+      case 4:
+          level->tiles[i][j] = TILE_ONE_WAY_SLAB_DOWN;
+          break;
+      case 5:
+          level->tiles[i][j] = TILE_ONE_WAY_SLAB_MIDDLE;
+          break;
+      case 6:
+          level->tiles[i][j] = TILE_ONE_WAY_SLAB_UP;
+          break;
       case 15:
         level->tiles[i][j] = TILE_WALL;
         break;
@@ -137,13 +163,17 @@ bool loadLevelFromFile(ifstream *file, Level *level) {
   return i == LEVEL_HEIGHT;
 }
 
-void initialize_staff_fixture(Wizard *wizard) {
+void initialize_staff_fixture(Wizard *wizard)
+{
   for (b2Fixture *fixture = wizard->body->GetFixtureList(); fixture;
-       fixture = fixture->GetNext()) {
-    if (fixture->GetUserData().pointer != 0) {
+       fixture = fixture->GetNext())
+  {
+    if (fixture->GetUserData().pointer != 0)
+    {
       Entity *entity =
           reinterpret_cast<Entity *>(fixture->GetUserData().pointer);
-      if (entity->entity_type == STAFF_) {
+      if (entity->entity_type == STAFF_)
+      {
         loadStaffHitbox(wizard->staff.body->GetPosition().x +
                             wizard->staff.staff_position.offset_x,
                         wizard->staff.body->GetPosition().y +
@@ -154,15 +184,19 @@ void initialize_staff_fixture(Wizard *wizard) {
   }
 }
 
-void loadPhysics() {
+void loadPhysics()
+{
   b2Vec2 gravity(0.0f, 9.8);
   world = createWorld(gravity);
   world->SetContactListener(&contactListener);
   world->SetDebugDraw(&fooDrawInstance);
 
-  for (int i = 0; i < LEVEL_HEIGHT; i++) {
-    for (int j = 0; j < LEVEL_WIDTH; j++) {
-      if (level.tiles[i][j] != TILE_EMPTY) {
+  for (int i = 0; i < LEVEL_HEIGHT; i++)
+  {
+    for (int j = 0; j < LEVEL_WIDTH; j++)
+    {
+      if (level.tiles[i][j] != TILE_EMPTY)
+      {
         Block *block = new Block;
         block->row = i;
         block->col = j;
@@ -185,31 +219,37 @@ void loadPhysics() {
                    &yellowWizard);
 }
 
-void updateLevelText() {
+void updateLevelText()
+{
   char levelString[8];
   snprintf(levelString, sizeof(levelString), "%03d/100", currentLevel);
   C2D_TextFontParse(&levelLabel, font, textBuf, levelString);
   C2D_TextOptimize(&levelLabel);
 }
 
-void updateRetriesText() {
+void updateRetriesText()
+{
   char retriesString[8];
   snprintf(retriesString, sizeof(retriesString), "%d", retries);
   C2D_TextFontParse(&retriesLabel, font, textBuf, retriesString);
   C2D_TextOptimize(&retriesLabel);
 }
 
-void updateDebugText() {
-  if (debugString != NULL) {
+void updateDebugText()
+{
+  if (debugString != NULL)
+  {
     C2D_TextFontParse(&debugLabel, font, textBuf, debugString);
     C2D_TextOptimize(&debugLabel);
   }
 }
 
-void updateHUD() {
+void updateHUD()
+{
   int remaining = levelTimer.getRemainingTimeInSeconds();
 
-  if (remaining != lastTimeShown) {
+  if (remaining != lastTimeShown)
+  {
     lastTimeShown = remaining;
 
     C2D_TextBufClear(textBuf);
@@ -220,7 +260,8 @@ void updateHUD() {
   }
 }
 
-bool levelInit(C3D_RenderTarget *targetTop, C3D_RenderTarget *targetBottom) {
+bool levelInit(C3D_RenderTarget *targetTop, C3D_RenderTarget *targetBottom)
+{
   top = targetTop;
   bottom = targetBottom;
 
@@ -232,24 +273,33 @@ bool levelInit(C3D_RenderTarget *targetTop, C3D_RenderTarget *targetBottom) {
 
   // Set spawn points for entities and time limit
   string line;
-  while (getline(file, line)) {
+  while (getline(file, line))
+  {
     int col, row;
     int time_limit;
-    if (line.find("spawnPurple") != string::npos) {
+    if (line.find("spawnPurple") != string::npos)
+    {
       sscanf(line.c_str(), "spawnPurple %d %d", &col, &row);
       level.spawns[0].spawnX = col * TILE_SIZE + OFFSET_X;
       level.spawns[0].spawnY = row * TILE_SIZE + OFFSET_Y;
-    } else if (line.find("spawnYellow") != string::npos) {
+    }
+    else if (line.find("spawnYellow") != string::npos)
+    {
       sscanf(line.c_str(), "spawnYellow %d %d", &col, &row);
       level.spawns[1].spawnX = col * TILE_SIZE + OFFSET_X;
       level.spawns[1].spawnY = row * TILE_SIZE + OFFSET_Y;
-    } else if (line.find("time") != string::npos) {
+    }
+    else if (line.find("time") != string::npos)
+    {
       sscanf(line.c_str(), "time %d", &time_limit);
-      if (time_limit > 0) {
+      if (time_limit > 0)
+      {
         level.time_limit = time_limit;
         levelTimer.reset(level.time_limit);
         initialTime = static_cast<float>(level.time_limit);
-      } else {
+      }
+      else
+      {
         level.time_limit = TIME_INFINITE;
         levelTimer.stop();
         initialTime = 0.0f;
@@ -272,28 +322,34 @@ bool levelInit(C3D_RenderTarget *targetTop, C3D_RenderTarget *targetBottom) {
   return true;
 }
 
-void levelCleanup() {
-  for (Block *block : blockList) {
+void levelCleanup()
+{
+  for (Block *block : blockList)
+  {
     delete block;
   }
   blockList.clear();
 
-  if (purpleWizard.body) {
+  if (purpleWizard.body)
+  {
     world->DestroyBody(purpleWizard.body);
     purpleWizard.body = NULL;
   }
-  if (yellowWizard.body) {
+  if (yellowWizard.body)
+  {
     world->DestroyBody(yellowWizard.body);
     yellowWizard.body = NULL;
   }
-  if (world) {
+  if (world)
+  {
     world.reset();
   }
   top = NULL;
   bottom = NULL;
 }
 
-void updateWizard(Wizard *wizard) {
+void updateWizard(Wizard *wizard)
+{
   float desired_angle =
       wizard->x_flip ? yellow_desired_angle : purple_desired_angle;
   wizard->entity.entity_animation.object->position.x =
@@ -316,11 +372,14 @@ void updateWizard(Wizard *wizard) {
       desired_angle);
 }
 
-Scene levelUpdate(u32 kDown) {
-  if (paused) {
+Scene levelUpdate(u32 kDown)
+{
+  if (paused)
+  {
     return pauseUpdate(kDown);
   }
-  if (won) {
+  if (won)
+  {
     won = false;
     return SCENE_TRANSITION;
   }
@@ -353,30 +412,35 @@ Scene levelUpdate(u32 kDown) {
 }
 
 void FooDraw::DrawSolidPolygon(const b2Vec2 *vertices, int32 vertexCount,
-                               const b2Color &color) {
+                               const b2Color &color)
+{
   u32 fillColor = C2D_Color32f(color.r, color.g, color.b, 0.5f);
   u32 lineColor = C2D_Color32f(color.r, color.g, color.b, 1.0f);
 
   b2Vec2 pixels[b2_maxPolygonVertices];
-  for (int32 i = 0; i < vertexCount; i++) {
+  for (int32 i = 0; i < vertexCount; i++)
+  {
     pixels[i].x = metersToPixels(vertices[i].x);
     pixels[i].y = metersToPixels(vertices[i].y);
   }
 
-  for (int32 i = 1; i < vertexCount - 1; i++) {
+  for (int32 i = 1; i < vertexCount - 1; i++)
+  {
     C2D_DrawTriangle(pixels[0].x, pixels[0].y, fillColor, pixels[i].x,
                      pixels[i].y, fillColor, pixels[i + 1].x, pixels[i + 1].y,
                      fillColor, 0.0f);
   }
 
-  for (int32 i = 0; i < vertexCount; i++) {
+  for (int32 i = 0; i < vertexCount; i++)
+  {
     const b2Vec2 &a = pixels[i];
     const b2Vec2 b = pixels[(i + 1) % vertexCount];
     C2D_DrawLine(a.x, a.y, lineColor, b.x, b.y, lineColor, 1.0f, 0.0f);
   }
 }
 
-void drawTimeBar() {
+void drawTimeBar()
+{
   float centerX = BOTTOM_SCREEN_WIDTH / 2.0f;
 
   float barWidth = BOTTOM_SCREEN_WIDTH * 0.25f;
@@ -421,22 +485,27 @@ void drawTimeBar() {
                   NULL, 1.0f, 1.0f);
 }
 
-void bottomDebugDraw() {
+void bottomDebugDraw()
+{
   C2D_DrawText(&debugLabel, C2D_WithColor, 80.0f, 80.0f, 0.0f, 0.3f, 0.3f,
                C2D_Color32(255, 255, 255, 255));
 }
 
-void levelDraw() {
+void levelDraw()
+{
   C2D_TargetClear(top, C2D_Color32(20, 20, 40, 255));
   C2D_SceneBegin(top);
 
-  if (paused) {
+  if (paused)
+  {
     pauseDraw();
     return;
   }
 
-  for (Block *block : blockList) {
-    if (level.tiles[block->row][block->col] != TILE_EMPTY) {
+  for (Block *block : blockList)
+  {
+    if (level.tiles[block->row][block->col] != TILE_EMPTY)
+    {
       C2D_DrawImageAt(
           getAtlasTexture(atlas_dungeon, level.tiles[block->row][block->col]),
           block->col * TILE_SIZE + OFFSET_X, block->row * TILE_SIZE + OFFSET_Y,
@@ -461,8 +530,10 @@ void levelDraw() {
                   .animation_map[yellowWizard.staff.entity.entity_animation
                                      .sprite_info.currentAnimationType]);
 
-  if (DEBUG_RAYCAST) {
-    for (size_t i = 0; i < CIRCLE_STEPS; i++) {
+  if (DEBUG_RAYCAST)
+  {
+    for (size_t i = 0; i < CIRCLE_STEPS; i++)
+    {
       C2D_DrawLine(metersToPixels(segments.at(i).p1.x),
                    metersToPixels(segments.at(i).p1.y),
                    C2D_Color32f(1.0f, 1.0f, 1.0f, 0.2f),
@@ -473,7 +544,8 @@ void levelDraw() {
   }
 
   fooDrawInstance.SetFlags(b2Draw::e_shapeBit);
-  if (showDebug) {
+  if (showDebug)
+  {
     world->DebugDraw();
   }
 
@@ -499,7 +571,8 @@ void levelDraw() {
   C2D_Flush();
 }
 
-void rotate_staff() {
+void rotate_staff()
+{
   purple_desired_angle = atan2f(yellowWizard.body->GetPosition().y -
                                     purpleWizard.body->GetPosition().y,
                                 yellowWizard.body->GetPosition().x -
@@ -523,12 +596,14 @@ void rotate_staff() {
       sinf(yellow_desired_angle) * STAFF_PIVOT_LENGTH;
 }
 
-void reset_staff() {
+void reset_staff()
+{
   purple_desired_angle = 0.0f;
   yellow_desired_angle = 0.0f;
 }
 
-LevelClass::LevelClass(ISubject &subject) : subject_(subject) {
+LevelClass::LevelClass(ISubject &subject) : subject_(subject)
+{
   subject.Subscribe(WIN, this);
   subject.Subscribe(PUASE, this);
   subject.Subscribe(DEATH, this);
@@ -539,8 +614,10 @@ LevelClass::LevelClass(ISubject &subject) : subject_(subject) {
   subject.Subscribe(PUASE, &levelTimer);
 }
 
-void LevelClass::Update(EventType event, void *callback) {
-  switch (event) {
+void LevelClass::Update(EventType event, void *callback)
+{
+  switch (event)
+  {
   case WIN:
     won = true;
     levelCleanup();
@@ -573,7 +650,8 @@ void LevelClass::Update(EventType event, void *callback) {
   }
 }
 
-void restartLevel(C3D_RenderTarget *targetTop, C3D_RenderTarget *targetBottom) {
+void restartLevel(C3D_RenderTarget *targetTop, C3D_RenderTarget *targetBottom)
+{
   levelCleanup();
   levelInit(targetTop, targetBottom);
 }
