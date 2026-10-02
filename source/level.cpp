@@ -43,6 +43,7 @@ typedef enum
   TILE_FLOOR_SLAB = 0,
   TILE_FLOOR_HALF_BLOCK = 1,
   TILE_FLOOR = 2,
+  TILE_FLOOR_HALF_BLOCK_UP = 3,
   TILE_ONE_WAY_SLAB_DOWN = 4,
   TILE_ONE_WAY_SLAB_MIDDLE = 5,
   TILE_ONE_WAY_SLAB_UP = 6,
@@ -57,6 +58,7 @@ std::map<TileType, TileInfo> tile = {
     {TILE_FLOOR_SLAB, {0.0f, 12.0f, Rectangle{14.0f, 3.0f}}},
     {TILE_FLOOR_HALF_BLOCK, {0.0f, 7.0f, Rectangle{14.0f, 7.0f}}},
     {TILE_FLOOR, {0.0f, 0.0f, Rectangle{14.0f, 14.0f}}},
+    {TILE_FLOOR_HALF_BLOCK_UP, {0.0f, 0.0f, Rectangle{14.0f, 7.0f}}},
 
     {TILE_ONE_WAY_SLAB_DOWN, {0.0f, 10.5f, Rectangle{14.0f, 3.5f}}},
     {TILE_ONE_WAY_SLAB_MIDDLE, {0.0f, 5.25f, Rectangle{14.0f, 3.5f}}},
@@ -134,6 +136,9 @@ bool loadLevelFromFile(ifstream *file, Level *level)
       case 2:
         level->tiles[i][j] = TILE_FLOOR;
         break;
+      case 3:
+          level->tiles[i][j] = TILE_FLOOR_HALF_BLOCK_UP;
+          break;
       case 4:
           level->tiles[i][j] = TILE_ONE_WAY_SLAB_DOWN;
           break;
